@@ -4,11 +4,11 @@ Last updated: 2026-03-22
 
 ## Goal
 
-Create an open-source project that helps teams ship AI-written code with production guardrails and low-friction setup.
+Build the production-safety layer for AI coding workflows, with an open-source merge-gate baseline and a clear path toward agent-native automation.
 
 ## Current focus
 
-Hold the public OSS release until the repo has enough semantic depth and real-world proof to justify the current product claim, then keep the packaging and messaging honest.
+Keep the published OSS baseline honest while refining market positioning, commercialization boundaries, and the next product layer above the CLI.
 
 ## Done recently
 
@@ -77,13 +77,17 @@ Hold the public OSS release until the repo has enough semantic depth and real-wo
 - Added `docs/REAL_REPO_PILOT.md` to summarize the source-repo self-pilot and the meaningful catches beyond the OSS baseline
 - Re-verified `npm test`, `npm run benchmark`, and all five runnable demos after the new semantic milestones landed
 - Aligned `package.json` repository, homepage, and bugs metadata to the `logi-cmd/agent-guardrails` GitHub repository
+- Simplified the README onboarding flow so the first workflow is copy-paste friendly and task/path choices are minimized for new users
+- Published the repo to GitHub and released `agent-guardrails@0.1.0` on npm
+- Added market-facing positioning updates across the README, product strategy, and commercialization docs
+- Added `docs/MARKET_RESEARCH.md` to capture adjacent categories, target-user pain, whitespace, and the recommended go-to-market framing
 
 ## Blockers
 
 - Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
-- Proof-of-value now includes a source-repo self-pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
-- The local git repository does not currently have a configured remote, so the publish step still needs an actual `git remote add origin` before the first push
+- Proof-of-value now includes a documented source-repo pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
+- The product direction above the CLI is still a strategy-level plan; skill, MCP, and agent-native entrypoints are not implemented yet
 
 ## Next step
 
-Add the real GitHub remote if it differs from `logi-cmd/agent-guardrails`, then push the release branch and create the GitHub release from the now-satisfied OSS gate.
+Turn the market and product strategy into the first concrete automation spec: define the Skill MVP, MCP MVP, and the minimum agent-native workflow without weakening the current merge-gate quality bar.

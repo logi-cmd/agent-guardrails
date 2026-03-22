@@ -10,6 +10,19 @@ It should position itself as:
 
 > A production-safety layer for AI coding workflows.
 
+That positioning matters because the adjacent market is already crowded with:
+
+- AI editors and agent platforms
+- AI PR review tools
+- static-analysis and code-quality products
+
+`agent-guardrails` should not try to win on "who writes code faster."
+It should win on:
+
+- whether AI-generated changes are safe to merge
+- whether AI-generated changes stay reviewable
+- whether AI-generated changes remain maintainable over time
+
 The real user pain is not syntax mistakes. It is AI-generated changes that are too broad, weakly validated, misaligned with repo patterns, or risky to merge.
 
 ## Current state
@@ -56,8 +69,15 @@ The durable goal is:
 - behavior-changing work is validated credibly
 - high-risk surfaces are escalated automatically
 - human reviewers can decide faster and with lower distrust
+- follow-up changes stay maintainable instead of fragmenting into AI-shaped patchwork
 
 Operationally, the product is successful when AI-written code can enter a normal PR flow with materially lower review cost and rollback risk.
+
+For the first go-to-market motion, the best-fit user is:
+
+- a heavy AI-coding individual developer
+- a freelancer or agency
+- a small AI-heavy engineering team
 
 ## Product architecture
 
@@ -213,6 +233,11 @@ Best-fit users:
 - solo maintainers with heavy AI coding usage
 - small AI-heavy teams
 
+The paid value should focus on two things:
+
+- less manual workflow overhead
+- lower long-term maintenance cost
+
 Recommended shape:
 
 ### Open-source core
@@ -269,6 +294,16 @@ Recommended positioning:
 - Production guardrails for Cursor, Copilot, Claude Code, and agent loops
 - Catch scope drift, unsafe changes, and missing validation before AI code hits production
 
+Recommended supporting value line:
+
+- Smaller changes, clearer risks, lower maintenance cost for AI-written code
+
+Do not position as:
+
+- another AI coding assistant
+- another PR review bot
+- a generic static-analysis platform
+
 Avoid claiming:
 
 - guaranteed production-ready AI code
@@ -286,8 +321,12 @@ The stronger future claim, after benchmarks and pilots, is:
 
 1. Expand `@agent-guardrails/plugin-ts` beyond the first four proof points into higher-confidence review and protected-area semantic escalation.
 2. Tune boundary and source-to-test rules with more real-repo examples before broadening the claim.
-3. Add repo policy concepts for richer protected-area and public-surface rules.
-4. Implement the next semantic pack after TypeScript or JavaScript:
+3. Add repo policy concepts for richer protected-area, public-surface, and maintenance-continuity rules.
+4. Define the first automation layer above the CLI:
+   - skill-first workflow
+   - MCP-first service boundary
+   - agent-native orchestration goals
+5. Implement the next semantic pack after TypeScript or JavaScript:
    - Python interface and boundary analysis
    - Python source-to-test relevance baseline
-5. Run external real-repo pilots beyond the documented source-repo pilot and publish the outcomes.
+6. Run external real-repo pilots beyond the documented source-repo pilot and publish the outcomes.

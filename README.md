@@ -4,6 +4,9 @@ Ship AI-written code with production guardrails.
 
 `agent-guardrails` is a zero-dependency CLI for teams that want coding agents to work like disciplined contributors instead of improvisational code generators. It adds repo-local memory, task contracts, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
 
+It is not trying to be another AI coding assistant or another PR review bot.
+It is trying to be the production-safety layer that sits between AI-generated changes and merge.
+
 ## Start Here
 
 If you are new, copy the short workflow below and only replace the task text and file paths.
@@ -28,6 +31,12 @@ Coding agents usually fail in predictable ways:
 1. `init` seeds repo-local instructions and templates
 2. `plan` writes a bounded task contract
 3. `check` validates scope, consistency, correctness, and review or risk signals
+
+The product is most valuable when you want three things at once:
+
+- smaller AI-generated changes
+- clearer merge and review signals
+- lower maintenance cost over time
 
 ## 60-Second Quick Start
 
@@ -181,6 +190,7 @@ The open-source core is already the product:
 - stronger validation and risk visibility before merge
 - public benchmarks and cross-platform CI proof
 - active semantic proof points for pattern drift, interface drift, boundary violation, and source-to-test relevance
+- a baseline repo-local workflow that can already act as a real merge gate
 
 ### Next
 
@@ -191,13 +201,14 @@ The next technical step is deeper enforcement behind the same CLI:
 - a repo-contained first TypeScript or JavaScript semantic pack under `plugins/plugin-ts/`
 - first active semantic proofs for pattern drift, interface drift, boundary violation, and source-to-test relevance
 - semantic analyzers for TypeScript or JavaScript first, Python second
+- skill-first automation, then MCP, then agent-native workflows
 - broader real-repo pilots beyond the documented pilot
 
 ### Paid
 
 Paid tiers should extend the baseline rather than replace it:
 
-- `Pro Local`: semantic packs, richer local review, and pattern-learning workflows
+- `Pro Local`: semantic packs, auto task generation, richer local review, and maintenance-aware workflows
 - `Pro Cloud`: hosted review, shared policies, trend dashboards, and centralized governance
 
 Baseline merge-gate features stay open source.
@@ -330,6 +341,10 @@ See [docs/ROADMAP.md](./docs/ROADMAP.md).
 ## Strategy
 
 See [docs/PRODUCT_STRATEGY.md](./docs/PRODUCT_STRATEGY.md) for the current semantic-analysis direction, proof-of-value plan, and open-source versus paid product split.
+
+## Market Research
+
+See [docs/MARKET_RESEARCH.md](./docs/MARKET_RESEARCH.md) for the current market framing, adjacent product landscape, target-user pain, and commercialization rationale.
 
 ## Architecture
 
