@@ -6,12 +6,7 @@ Ship AI-written code with production guardrails.
 
 ## Start Here
 
-If you are new, use this order:
-
-1. Read the quick start below.
-2. Pick the preset that matches your repo.
-3. Copy the commands exactly.
-4. Run `check` after you finish a task.
+If you are new, copy the short workflow below and only replace the task text and file paths.
 
 If you want to see it working before using your own repo, run the demo first:
 
@@ -36,11 +31,14 @@ Coding agents usually fail in predictable ways:
 
 ## 60-Second Quick Start
 
+If you just want the shortest possible path, copy this:
+
 ```bash
 npm install -g agent-guardrails
-agent-guardrails init . --preset node-service --adapter openclaw --lang en
-agent-guardrails plan --task "Add refund status transitions to the order service" --allow-paths "src/,tests/" --intended-files "src/orders/refund.js,tests/refund.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md" --lang en
-agent-guardrails check --base-ref origin/main --commands-run "npm test" --review --lang en
+agent-guardrails init . --preset node-service
+agent-guardrails plan --task "Add refund status transitions to the order service" --allow-paths "src/,tests/" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"
+npm test
+agent-guardrails check --commands-run "npm test" --review
 ```
 
 If you do not want a global install, use `npx agent-guardrails ...` instead.
@@ -59,6 +57,8 @@ If you are unsure which preset to choose:
 - `nextjs` for Next.js apps
 - `python-fastapi` for Python APIs
 - `monorepo` for multi-package repos
+
+If you are not sure about file paths, start with the folders that you expect to change most often, such as `src/` and `tests/`, and add more later if needed.
 
 ## What This Proves
 
@@ -117,8 +117,10 @@ npm run demo:source-test-relevance
 Use this docs-first loop in day-to-day work. Copy it, then replace only the task text and file paths:
 
 ```bash
-agent-guardrails plan --task "Add audit logging to the release approval endpoint" --allow-paths "src/,tests/" --intended-files "src/release/approve.js,tests/release/approve.test.js" --allowed-change-types "implementation-only" --risk-level medium --required-commands "npm test,npm run lint" --evidence ".agent-guardrails/evidence/current-task.md"
-agent-guardrails check --base-ref origin/main --commands-run "npm test,npm run lint" --review
+agent-guardrails plan --task "Add audit logging to the release approval endpoint" --allow-paths "src/,tests/" --required-commands "npm test,npm run lint" --evidence ".agent-guardrails/evidence/current-task.md"
+npm test
+npm run lint
+agent-guardrails check --commands-run "npm test,npm run lint" --review
 ```
 
 If your repo does not have `origin/main`, use the branch that matches your default branch.
