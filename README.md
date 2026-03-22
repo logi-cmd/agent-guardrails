@@ -4,6 +4,21 @@ Ship AI-written code with production guardrails.
 
 `agent-guardrails` is a zero-dependency CLI for teams that want coding agents to work like disciplined contributors instead of improvisational code generators. It adds repo-local memory, task contracts, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
 
+## Start Here
+
+If you are new, use this order:
+
+1. Read the quick start below.
+2. Pick the preset that matches your repo.
+3. Copy the commands exactly.
+4. Run `check` after you finish a task.
+
+If you want to see it working before using your own repo, run the demo first:
+
+```bash
+npm run demo
+```
+
 ## Why this exists
 
 Coding agents usually fail in predictable ways:
@@ -28,9 +43,22 @@ agent-guardrails plan --task "Add refund status transitions to the order service
 agent-guardrails check --base-ref origin/main --commands-run "npm test" --review --lang en
 ```
 
-If you do not want a global install, `npx agent-guardrails ...` works too.
+If you do not want a global install, use `npx agent-guardrails ...` instead.
 
 The CLI currently supports `en` and `zh-CN`. You can switch with `--lang zh-CN` or `AGENT_GUARDRAILS_LOCALE=zh-CN`.
+
+What each step means:
+
+- `init` writes the guardrail files into your repo.
+- `plan` creates a task contract for the specific change you want to make.
+- `check` compares the real change against that contract and your repo rules.
+
+If you are unsure which preset to choose:
+
+- `node-service` for backend APIs and services
+- `nextjs` for Next.js apps
+- `python-fastapi` for Python APIs
+- `monorepo` for multi-package repos
 
 ## What This Proves
 
@@ -86,12 +114,14 @@ npm run demo:source-test-relevance
 
 ## Local Workflow
 
-Use this docs-first loop in day-to-day work:
+Use this docs-first loop in day-to-day work. Copy it, then replace only the task text and file paths:
 
 ```bash
 agent-guardrails plan --task "Add audit logging to the release approval endpoint" --allow-paths "src/,tests/" --intended-files "src/release/approve.js,tests/release/approve.test.js" --allowed-change-types "implementation-only" --risk-level medium --required-commands "npm test,npm run lint" --evidence ".agent-guardrails/evidence/current-task.md"
 agent-guardrails check --base-ref origin/main --commands-run "npm test,npm run lint" --review
 ```
+
+If your repo does not have `origin/main`, use the branch that matches your default branch.
 
 Keep a short evidence note at `.agent-guardrails/evidence/current-task.md` with:
 
@@ -200,6 +230,8 @@ Example:
 ```bash
 agent-guardrails init . --preset nextjs --adapter openclaw
 ```
+
+If you are not sure what to type, start with `init`, then copy the local workflow example above.
 
 ### `plan`
 
