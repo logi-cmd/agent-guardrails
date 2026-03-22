@@ -10,7 +10,7 @@ It should position itself as:
 
 > A production-safety layer for AI coding workflows.
 
-That positioning matters because the adjacent market is already crowded with:
+That positioning matters because the surrounding market is already crowded with:
 
 - AI editors and agent platforms
 - AI PR review tools
@@ -25,7 +25,7 @@ It should win on:
 
 The real user pain is not syntax mistakes. It is AI-generated changes that are too broad, weakly validated, misaligned with repo patterns, or risky to merge.
 
-## Current state
+## Product today
 
 Today the product is already useful as a repo-local workflow governor:
 
@@ -51,11 +51,11 @@ What it does not yet reliably catch:
 
 The current semantic milestone changes that meaningfully:
 
-- a repo-contained TypeScript or JavaScript plugin package exists
-- pattern drift has a first narrow proof point
-- interface drift now has a first narrow proof point
-- module boundary analysis now has a first config-driven proof point
-- source-to-test relevance now has a first validation-quality proof point
+- a TypeScript or JavaScript semantic plugin package exists in this repository
+- pattern drift has a first narrow semantic example
+- interface drift now has a first narrow semantic example
+- module boundary analysis now has a first config-driven semantic example
+- source-to-test relevance now has a first validation-quality semantic example
 - the result is still intentionally narrow and not marketed as full semantic coverage
 
 ## Product goal
@@ -73,7 +73,7 @@ The durable goal is:
 
 Operationally, the product is successful when AI-written code can enter a normal PR flow with materially lower review cost and rollback risk.
 
-For the first go-to-market motion, the best-fit user is:
+The best-fit early user is:
 
 - a heavy AI-coding individual developer
 - a freelancer or agency
@@ -137,12 +137,12 @@ Suggested first plugins:
 
 The first implementation step is deliberately narrow:
 
-- ship `@agent-guardrails/plugin-ts` as a repo-contained local package
+- ship `@agent-guardrails/plugin-ts` as the first local semantic package
 - prove one warning-level detector for pattern drift
 - prove one hybrid-severity detector for interface drift
 - prove one config-driven detector for boundary violation
 - prove one heuristic detector for source-to-test relevance
-- use benchmarks, demos, and a self-pilot to validate signal before expanding further
+- use benchmarks, demos, and documented pilots to validate signal before expanding further
 
 ## Quality strategy
 
@@ -266,7 +266,7 @@ Suggested scope:
 - repo pattern learning
 - higher-confidence reviewer summary enrichment
 
-Suggested price hypothesis:
+Suggested starting price range:
 
 - `$12-$15/month`
 - or `$99-$129/year`
@@ -282,7 +282,7 @@ Suggested scope:
 - shared rule packs and sync
 - included compute credits
 
-Suggested price hypothesis:
+Suggested starting price range:
 
 - `$24-$29/month per developer`
 
@@ -319,7 +319,7 @@ The stronger future claim, after benchmarks and pilots, is:
 
 ## Next 90 days
 
-1. Expand `@agent-guardrails/plugin-ts` beyond the first four proof points into higher-confidence review and protected-area semantic escalation.
+1. Expand `@agent-guardrails/plugin-ts` beyond the first four semantic examples into higher-confidence review and protected-area semantic escalation.
 2. Tune boundary and source-to-test rules with more real-repo examples before broadening the claim.
 3. Add repo policy concepts for richer protected-area, public-surface, and maintenance-continuity rules.
 4. Define the first automation layer above the CLI:

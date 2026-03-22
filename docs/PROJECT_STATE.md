@@ -81,6 +81,7 @@ Keep the published OSS baseline honest while refining market positioning, commer
 - Published the repo to GitHub and released `agent-guardrails@0.1.0` on npm
 - Added market-facing positioning updates across the README, product strategy, and commercialization docs
 - Added `docs/MARKET_RESEARCH.md` to capture adjacent categories, target-user pain, whitespace, and the recommended go-to-market framing
+- Lowered the README prominence of `Market Research` so it reads as background material rather than a primary onboarding path
 
 ## Blockers
 
@@ -90,4 +91,4 @@ Keep the published OSS baseline honest while refining market positioning, commer
 
 ## Next step
 
-Turn the market and product strategy into the first concrete automation spec: define the Skill MVP, MCP MVP, and the minimum agent-native workflow without weakening the current merge-gate quality bar.
+Keep the public docs concise and turn the market and product strategy into the first concrete automation spec: define the Skill MVP, MCP MVP, and the minimum agent-native workflow without weakening the current merge-gate quality bar.

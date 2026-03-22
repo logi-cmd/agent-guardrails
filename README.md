@@ -71,7 +71,7 @@ If you are not sure about file paths, start with the folders that you expect to 
 
 ## What This Proves
 
-The flagship proof-of-value examples are:
+The flagship examples are:
 
 - the bounded-scope demo in [examples/bounded-scope-demo](./examples/bounded-scope-demo)
 - the first semantic pattern-drift demo in [examples/pattern-drift-demo](./examples/pattern-drift-demo)
@@ -189,7 +189,7 @@ The open-source core is already the product:
 - smaller, more reviewable AI changes
 - stronger validation and risk visibility before merge
 - public benchmarks and cross-platform CI proof
-- active semantic proof points for pattern drift, interface drift, boundary violation, and source-to-test relevance
+- active semantic examples for pattern drift, interface drift, boundary violation, and source-to-test relevance
 - a baseline repo-local workflow that can already act as a real merge gate
 
 ### Next
@@ -197,8 +197,8 @@ The open-source core is already the product:
 The next technical step is deeper enforcement behind the same CLI:
 
 - detector pipeline foundation
-- benchmarked proof-of-value
-- a repo-contained first TypeScript or JavaScript semantic pack under `plugins/plugin-ts/`
+- benchmarked semantic examples
+- a first TypeScript or JavaScript semantic pack under `plugins/plugin-ts/`
 - first active semantic proofs for pattern drift, interface drift, boundary violation, and source-to-test relevance
 - semantic analyzers for TypeScript or JavaScript first, Python second
 - skill-first automation, then MCP, then agent-native workflows
@@ -213,7 +213,7 @@ Paid tiers should extend the baseline rather than replace it:
 
 Baseline merge-gate features stay open source.
 
-The first semantic pack lives publicly in this repo today as a proof point. It is positioned as the future `Pro Local` direction, not as a separate closed-source runtime.
+The first semantic pack lives publicly in this repo today as an early semantic milestone. It is positioned as the future `Pro Local` direction, not as a separate closed-source runtime.
 
 ## Supported Agents
 
@@ -340,11 +340,13 @@ See [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ## Strategy
 
-See [docs/PRODUCT_STRATEGY.md](./docs/PRODUCT_STRATEGY.md) for the current semantic-analysis direction, proof-of-value plan, and open-source versus paid product split.
+See [docs/PRODUCT_STRATEGY.md](./docs/PRODUCT_STRATEGY.md) for the current semantic-analysis direction, rollout plan, and open-source versus paid product split.
 
-## Market Research
+## More Docs
 
-See [docs/MARKET_RESEARCH.md](./docs/MARKET_RESEARCH.md) for the current market framing, adjacent product landscape, target-user pain, and commercialization rationale.
+- [Market Research](./docs/MARKET_RESEARCH.md)
+- [Strategy](./docs/PRODUCT_STRATEGY.md)
+- [Commercialization](./docs/COMMERCIALIZATION.md)
 
 ## Architecture
 

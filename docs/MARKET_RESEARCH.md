@@ -17,7 +17,7 @@ The strongest customer value is not raw generation speed. It is reducing:
 - maintenance drift
 - manual workflow overhead
 
-For the first go-to-market motion, the best-fit audience is:
+The best-fit early audience is:
 
 - indie developers
 - agencies and freelancers
@@ -26,7 +26,7 @@ For the first go-to-market motion, the best-fit audience is:
 
 ## Market categories
 
-The adjacent market is crowded, but the overlap is incomplete.
+The surrounding market is crowded, but the overlap is incomplete.
 
 ### 1. AI editors and agent platforms
 
@@ -75,7 +75,7 @@ Where they stop:
 
 Conclusion:
 
-- this is the closest adjacent market
+- this is the closest comparison category
 - `agent-guardrails` should differentiate by controlling the change before merge, not only commenting on it afterward
 
 ### 3. Static analysis and code quality platforms

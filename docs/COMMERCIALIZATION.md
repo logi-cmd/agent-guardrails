@@ -10,11 +10,11 @@ Last updated: 2026-03-22
 - paid tiers extend semantic depth, collaboration, and review speed
 - paid tiers do not lock away baseline safety checks
 
-This project should not use open-core bait-and-switch tactics.
+This project should not weaken the open-source baseline in order to force upgrades.
 
-The commercial wedge should not be "basic checks finally work."
+The paid story should not be "basic checks finally work."
 
-The commercial wedge should be:
+The strongest paid value should be:
 
 - higher-signal semantic analysis
 - lower manual workflow overhead
@@ -59,11 +59,11 @@ It should sell higher-signal semantic analysis, not basic usability:
 - local agent-native orchestration
 - BYO model key
 
-The first repo-contained semantic pack in `plugins/plugin-ts/` is public as a development milestone and proof point. That does not change the product boundary:
+The first semantic pack in `plugins/plugin-ts/` is public in this repository as an early semantic milestone. That does not change the product boundary:
 
 - OSS still owns the merge-gate baseline and public benchmark visibility
 - Pro Local owns deeper semantic detection quality over time
-- the current local package is a transparent bridge toward that boundary, not a bait-and-switch
+- the current local package is an early public milestone, not a replacement for the OSS merge gate
 
 Today that public proof layer includes:
 
@@ -72,7 +72,7 @@ Today that public proof layer includes:
 - boundary violation detection
 - source-to-test relevance detection
 
-Those proof points are visible so users can evaluate product value honestly, even though the long-term Pro Local boundary still centers on deeper semantic quality and higher signal.
+Those semantic examples are visible so users can evaluate product value honestly, even though the long-term Pro Local boundary still centers on deeper semantic quality and higher signal.
 
 The strongest paid promise for Pro Local should be:
 
@@ -80,7 +80,7 @@ The strongest paid promise for Pro Local should be:
 - lower review effort
 - lower maintenance drift over time
 
-Suggested price hypothesis:
+Suggested starting price range:
 
 - `$12-$15/month`
 - or `$99-$129/year`
@@ -97,7 +97,7 @@ Suggested price hypothesis:
 - centralized MCP or automation services
 - included compute
 
-Suggested price hypothesis:
+Suggested starting price range:
 
 - `$24-$29/month per developer`
 
