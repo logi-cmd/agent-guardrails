@@ -82,6 +82,7 @@ Keep the published OSS baseline honest while refining market positioning, commer
 - Added market-facing positioning updates across the README, product strategy, and commercialization docs
 - Added `docs/MARKET_RESEARCH.md` to capture adjacent categories, target-user pain, whitespace, and the recommended go-to-market framing
 - Lowered the README prominence of `Market Research` so it reads as background material rather than a primary onboarding path
+- Added `docs/AUTOMATION_SPEC.md` to define the first Skill, MCP, and agent-native workflow layer
 
 ## Blockers
 
@@ -91,4 +92,4 @@ Keep the published OSS baseline honest while refining market positioning, commer
 
 ## Next step
 
-Keep the public docs concise and turn the market and product strategy into the first concrete automation spec: define the Skill MVP, MCP MVP, and the minimum agent-native workflow without weakening the current merge-gate quality bar.
+Implement the first automation layer from `docs/AUTOMATION_SPEC.md` by turning the Skill MVP, MCP MVP, and minimum agent-native workflow into concrete repo behavior without weakening the current merge-gate quality bar.

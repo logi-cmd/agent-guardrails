@@ -344,6 +344,7 @@ See [docs/PRODUCT_STRATEGY.md](./docs/PRODUCT_STRATEGY.md) for the current seman
 
 ## More Docs
 
+- [Automation Spec](./docs/AUTOMATION_SPEC.md)
 - [Market Research](./docs/MARKET_RESEARCH.md)
 - [Strategy](./docs/PRODUCT_STRATEGY.md)
 - [Commercialization](./docs/COMMERCIALIZATION.md)
