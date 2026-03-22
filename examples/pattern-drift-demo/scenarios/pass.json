@@ -1,0 +1,18 @@
+{
+  "name": "PASS",
+  "description": "The task still stays inside the OSS contract, but now reuses the existing refund service pattern instead of introducing a helper.",
+  "task": "Refine refund support in the orders service",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-service.ts", "tests/refund-service.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "writes": {
+    "src/orders/refund-service.ts": "function refundOrder() { return { ok: true, pattern: \"service\", audit: true }; }\n",
+    "tests/refund-service.test.ts": "export const refundServiceCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/refund-service.ts", "tests/refund-service.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": true,
+  "expectFindingCode": null,
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund support in the orders service.\n- Commands run: npm test\n- Notable results: The pass scenario reuses the existing service abstraction and clears the semantic warning.\n- Residual risk: none\n"
+}

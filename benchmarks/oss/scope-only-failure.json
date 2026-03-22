@@ -1,0 +1,30 @@
+{
+  "name": "scope-only-failure",
+  "tier": "oss",
+  "status": "active",
+  "goal": "Catch out-of-scope edits before review and merge.",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/"]
+    }
+  },
+  "planFlags": {
+    "task": "Update the service logic only",
+    "allow-paths": "src/,tests/",
+    "allowed-change-types": "implementation-only"
+  },
+  "files": {
+    "src/service.js": "export const x = 1;\n",
+    "tests/service.test.js": "export const ok = true;\n",
+    "docs/notes.md": "# note\n"
+  },
+  "changedFiles": ["src/service.js", "tests/service.test.js", "docs/notes.md"],
+  "expected": {
+    "ok": false,
+    "findingCodes": ["repo-allowed-path-violation", "task-path-violation"],
+    "minimumReviewSummary": {
+      "scopeIssues": 2
+    }
+  }
+}

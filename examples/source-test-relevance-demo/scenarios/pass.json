@@ -1,0 +1,18 @@
+{
+  "name": "source-test-relevance-pass",
+  "description": "The corrected implementation updates the refund-focused test so the semantic detector sees a plausible validation link.",
+  "task": "Refine refund service internals while keeping the behavior validated",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-service.ts", "tests/refund-service.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "expectedTestTargets": ["tests/refund-service.test.ts"],
+  "writes": {
+    "src/orders/refund-service.ts": "function refundOrder() {\n  return { ok: true, flow: \"refined\" };\n}\n\nrefundOrder();\n",
+    "tests/refund-service.test.ts": "import { strict as assert } from \"node:assert\";\n\nfunction refundOrder() {\n  return { ok: true, flow: \"refined\" };\n}\n\nassert.equal(refundOrder().flow, \"refined\");\n"
+  },
+  "changedFiles": ["src/orders/refund-service.ts", "tests/refund-service.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": true,
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund service internals while keeping the behavior validated\n- Commands run: npm test\n- Notable results: The changed test now targets the refund path and mentions the updated behavior surface.\n- Residual risk: none\n"
+}

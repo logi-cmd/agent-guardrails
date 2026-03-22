@@ -1,0 +1,27 @@
+{
+  "name": "missing-tests-failure",
+  "tier": "oss",
+  "status": "active",
+  "goal": "Catch behavior changes that land without accompanying test edits.",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/"]
+    }
+  },
+  "planFlags": {
+    "task": "Update the service logic only",
+    "allow-paths": "src/,tests/"
+  },
+  "files": {
+    "src/service.js": "export const x = 1;\n"
+  },
+  "changedFiles": ["src/service.js"],
+  "expected": {
+    "ok": false,
+    "findingCodes": ["source-without-tests"],
+    "minimumReviewSummary": {
+      "validationIssues": 1
+    }
+  }
+}

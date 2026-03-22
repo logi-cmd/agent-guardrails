@@ -1,0 +1,18 @@
+{
+  "name": "PASS",
+  "description": "The task keeps the helper internal, so the implementation-only contract and semantic detector both pass.",
+  "task": "Refine refund workflow internals without changing the public contract",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-workflow.ts", "tests/refund-workflow.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "writes": {
+    "src/orders/refund-workflow.ts": "function buildRefundPayload() { return { ok: true, visibility: \"internal\", audit: true }; }\n\nfunction refundOrder() {\n  return buildRefundPayload();\n}\n",
+    "tests/refund-workflow.test.ts": "export const refundWorkflowCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/refund-workflow.ts", "tests/refund-workflow.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": true,
+  "expectFindingCode": null,
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund workflow internals without changing the public contract.\n- Commands run: npm test\n- Notable results: The pass scenario keeps the helper internal and preserves the original public surface.\n- Residual risk: none\n"
+}

@@ -1,0 +1,103 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { runCli } from "../lib/cli.js";
+import { runInit } from "../lib/commands/init.js";
+import { runPlan } from "../lib/commands/plan.js";
+
+function captureLogs(run) {
+  const original = console.log;
+  let output = "";
+  console.log = (...args) => {
+    output += `${args.join(" ")}\n`;
+  };
+
+  return Promise.resolve()
+    .then(run)
+    .then(() => output)
+    .finally(() => {
+      console.log = original;
+    });
+}
+
+async function cliHelpSupportsChinese() {
+  const output = await captureLogs(() => runCli(["help", "--lang", "zh-CN"]));
+  assert.match(output, /用法：/);
+  assert.match(output, /支持的语言：/);
+}
+
+async function initSeedsChineseTemplates() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-i18n-init-"));
+
+  const output = await captureLogs(() =>
+    runInit({
+      positional: [tempDir],
+      flags: { preset: "node-service", adapter: "claude-code,openclaw", lang: "zh-CN" },
+      locale: "zh-CN"
+    })
+  );
+
+  const agents = fs.readFileSync(path.join(tempDir, "AGENTS.md"), "utf8");
+  const claude = fs.readFileSync(path.join(tempDir, "CLAUDE.md"), "utf8");
+  const openclaw = fs.readFileSync(path.join(tempDir, "OPENCLAW.md"), "utf8");
+
+  assert.match(output, /下一步：/);
+  assert.match(agents, /开始写代码前/);
+  assert.match(claude, /工作流/);
+  assert.match(openclaw, /默认任务模式/);
+}
+
+async function planRespectsLocaleEnvAndOverride() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-i18n-plan-"));
+  await runInit({
+    positional: [tempDir],
+    flags: { preset: "node-service" }
+  });
+
+  const originalCwd = process.cwd();
+  const originalLocale = process.env.AGENT_GUARDRAILS_LOCALE;
+  process.chdir(tempDir);
+  process.env.AGENT_GUARDRAILS_LOCALE = "zh-CN";
+
+  try {
+    const zhOutput = await captureLogs(() =>
+      runPlan({
+        positional: [],
+        flags: {
+          task: "更新订单服务",
+          "allow-paths": "src/,tests/"
+        }
+      })
+    );
+    assert.match(zhOutput, /任务简报/);
+    assert.match(zhOutput, /允许路径：/);
+
+    const enOutput = await captureLogs(() =>
+      runPlan({
+        positional: [],
+        flags: {
+          task: "Update order service",
+          "allow-paths": "src/,tests/",
+          lang: "en"
+        },
+        locale: "en"
+      })
+    );
+    assert.match(enOutput, /Task Brief/);
+    assert.match(enOutput, /Allowed path:/);
+  } finally {
+    process.chdir(originalCwd);
+    if (originalLocale === undefined) {
+      delete process.env.AGENT_GUARDRAILS_LOCALE;
+    } else {
+      process.env.AGENT_GUARDRAILS_LOCALE = originalLocale;
+    }
+  }
+}
+
+export async function run() {
+  await cliHelpSupportsChinese();
+  await initSeedsChineseTemplates();
+  await planRespectsLocaleEnvAndOverride();
+}

@@ -1,0 +1,18 @@
+{
+  "name": "boundary-violation-fail",
+  "description": "The task stays within the OSS contract but a controller import still crosses a declared forbidden boundary.",
+  "task": "Refine refund controller internals without changing data-layer boundaries",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/controllers/refund-controller.ts", "tests/refund-controller.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "writes": {
+    "src/orders/controllers/refund-controller.ts": "import { loadRefundRecords } from \"../data/refund-repo\";\n\nfunction buildRefundResponse() {\n  return loadRefundRecords();\n}\n\nbuildRefundResponse();\n",
+    "tests/refund-controller.test.ts": "export const refundControllerCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/controllers/refund-controller.ts", "tests/refund-controller.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": false,
+  "expectFindingCode": "boundary-violation-forbidden-import",
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund controller internals without changing data-layer boundaries\n- Commands run: npm test\n- Notable results: The task stayed narrow, but the controller still imported the data layer directly.\n- Residual risk: none\n"
+}

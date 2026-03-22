@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 2,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "test"
+    ],
+    "constraints": [
+      "Follow existing service and data-access patterns before adding new layers.",
+      "Keep endpoint and domain changes bounded to the smallest working slice.",
+      "Prefer extending current validation and logging conventions over introducing a parallel path."
+    ],
+    "definitionOfDone": [
+      "Behavior changes have test coverage.",
+      "The change stays within the configured file budget.",
+      "Project state is still accurate after the task."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 12,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [],
+    "consistency": {
+      "maxChangedFilesPerTask": 12,
+      "maxTopLevelEntries": 3,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["src", "lib"],
+    "sourceExtensions": [".js", ".mjs", ".cjs", ".ts"],
+    "testRoots": ["test", "tests"],
+    "testExtensions": [".js", ".ts"],
+    "testFileSignals": [".test.", ".spec."]
+  },
+  "protectedAreas": [
+    {
+      "path": "src/auth/",
+      "label": "auth flows",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "src/billing/",
+      "label": "billing logic",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "infra/",
+      "label": "infra configuration",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "src/contracts/",
+      "label": "shared contracts",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-service": {
+      "focus": ["correctness", "reliability", "maintainability", "observability"],
+      "validationProfile": "standard"
+    },
+    "high-throughput-api": {
+      "focus": ["performance", "concurrency", "reliability", "observability"],
+      "validationProfile": "strict"
+    }
+  },
+  "nfrPolicies": {
+    "performance": {
+      "evidenceHint": "Mention latency, throughput, or hotspot validation in evidence."
+    },
+    "concurrency": {
+      "evidenceHint": "Mention concurrency, contention, or load validation in evidence."
+    },
+    "observability": {
+      "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
+    }
+  },
+  "languagePlugins": {
+    "javascript": ["@agent-guardrails/plugin-ts"]
+  },
+  "criticalPaths": ["src/auth/", "src/billing/", "src/contracts/"],
+  "runtimeSurfaces": ["src/", "infra/"],
+  "performanceSensitiveAreas": ["src/billing/", "src/cache/", "src/queue/"],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

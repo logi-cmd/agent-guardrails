@@ -1,0 +1,10 @@
+{
+  "name": "interface-drift-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo:fail": "node ./scripts/run-demo.mjs fail",
+    "demo:pass": "node ./scripts/run-demo.mjs pass",
+    "demo:all": "node ./scripts/run-demo.mjs all"
+  }
+}

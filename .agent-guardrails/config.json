@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "test"
+    ],
+    "constraints": [
+      "Follow existing service and data-access patterns before adding new layers.",
+      "Keep endpoint and domain changes bounded to the smallest working slice.",
+      "Prefer extending current validation and logging conventions over introducing a parallel path."
+    ],
+    "definitionOfDone": [
+      "Behavior changes have test coverage.",
+      "The change stays within the configured file budget.",
+      "Project state is still accurate after the task."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 12,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "package.json",
+      ".gitignore",
+      "bin/",
+      "docs/",
+      "lib/",
+      "templates/",
+      "tests/",
+      ".agent-guardrails/"
+    ],
+    "consistency": {
+      "maxChangedFilesPerTask": 12,
+      "maxTopLevelEntries": 4,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": [
+      "src",
+      "lib"
+    ],
+    "sourceExtensions": [
+      ".js",
+      ".mjs",
+      ".cjs",
+      ".ts"
+    ],
+    "testRoots": [
+      "test",
+      "tests"
+    ],
+    "testExtensions": [
+      ".js",
+      ".ts"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec."
+    ]
+  },
+  "protectedAreas": [
+    {
+      "path": "lib/commands/",
+      "label": "core command logic",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "templates/",
+      "label": "seeded repo templates",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": ".github/workflows/",
+      "label": "automation workflows",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-cli": {
+      "focus": ["correctness", "maintainability", "operability"],
+      "validationProfile": "standard"
+    },
+    "release-critical": {
+      "focus": ["reliability", "maintainability", "operability"],
+      "validationProfile": "strict"
+    }
+  },
+  "nfrPolicies": {
+    "maintainability": {
+      "evidenceHint": "Call out user-visible workflow changes and follow-up risk."
+    },
+    "operability": {
+      "evidenceHint": "Mention rollback or release notes for automation-facing changes."
+    }
+  },
+  "languagePlugins": {
+    "javascript": ["@agent-guardrails/plugin-ts"]
+  },
+  "criticalPaths": [
+    "lib/commands/",
+    "templates/",
+    ".github/workflows/"
+  ],
+  "runtimeSurfaces": [
+    "bin/",
+    "lib/",
+    "templates/",
+    ".github/workflows/"
+  ],
+  "performanceSensitiveAreas": [
+    "lib/commands/check.js",
+    "tests/install-smoke.js",
+    ".github/workflows/"
+  ],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

@@ -1,0 +1,33 @@
+name: Agent Guardrails
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run guardrail checks
+        env:
+          AGENT_GUARDRAILS_COMMANDS_RUN: ${{ vars.AGENT_GUARDRAILS_COMMANDS_RUN }}
+        run: npx agent-guardrails check --base-ref origin/${{ github.event.repository.default_branch }} --json > agent-guardrails-report.json
+
+      - name: Upload guardrail report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-guardrails-report
+          path: agent-guardrails-report.json

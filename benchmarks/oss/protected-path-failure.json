@@ -1,0 +1,34 @@
+{
+  "name": "protected-path-failure",
+  "tier": "oss",
+  "status": "active",
+  "goal": "Escalate high-risk protected paths when task risk or review notes are missing.",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/", ".agent-guardrails/"]
+    }
+  },
+  "planFlags": {
+    "task": "Update auth flow",
+    "allow-paths": "src/,tests/",
+    "risk-level": "medium",
+    "rollback-notes": "Revert the auth handler change if needed.",
+    "required-commands": "npm test",
+    "evidence": ".agent-guardrails/evidence/current-task.md"
+  },
+  "files": {
+    "src/auth/service.js": "export const login = () => true;\n",
+    "tests/auth.test.js": "export const ok = true;\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Update auth flow\n- Commands run: npm test\n"
+  },
+  "changedFiles": ["src/auth/service.js", "tests/auth.test.js"],
+  "commandsRun": ["npm test"],
+  "expected": {
+    "ok": false,
+    "findingCodes": ["protected-area-risk-level-too-low", "protected-area-missing-review-notes"],
+    "minimumReviewSummary": {
+      "riskConcerns": 2
+    }
+  }
+}

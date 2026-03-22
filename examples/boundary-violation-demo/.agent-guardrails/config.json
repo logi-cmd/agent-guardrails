@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 2,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "tests"
+    ],
+    "constraints": [
+      "Keep the demo task bounded to src/, tests/, and .agent-guardrails/.",
+      "Do not bypass the service layer from controller code.",
+      "Use the demo to explain module-boundary enforcement, not broader application design."
+    ],
+    "definitionOfDone": [
+      "The fail scenario produces a boundary-violation finding.",
+      "The pass scenario clears the boundary-violation finding.",
+      "The demo remains runnable from the repo root CI workflow."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 8,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "docs/",
+      "src/",
+      "tests/",
+      "scripts/",
+      "scenarios/",
+      ".agent-guardrails/"
+    ],
+    "consistency": {
+      "maxChangedFilesPerTask": 8,
+      "maxTopLevelEntries": 2,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["src"],
+    "sourceExtensions": [".ts"],
+    "testRoots": ["tests"],
+    "testExtensions": [".ts"],
+    "testFileSignals": [".test.", ".spec."]
+  },
+  "boundaries": [
+    {
+      "from": "src/orders/controllers/",
+      "disallow": ["src/orders/data/"],
+      "label": "controller-to-data boundary"
+    }
+  ],
+  "languagePlugins": {
+    "typescript": ["@agent-guardrails/plugin-ts"]
+  },
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

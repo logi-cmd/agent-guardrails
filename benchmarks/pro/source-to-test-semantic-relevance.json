@@ -1,0 +1,39 @@
+{
+  "name": "source-to-test-semantic-relevance",
+  "tier": "pro",
+  "status": "active",
+  "goal": "Detect tests that changed without materially validating the affected behavior surface.",
+  "plugin": "@agent-guardrails/plugin-ts",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/"]
+    },
+    "languagePlugins": {
+      "typescript": ["@agent-guardrails/plugin-ts"]
+    }
+  },
+  "planFlags": {
+    "task": "Refine refund service internals while keeping the behavior validated",
+    "allow-paths": "src/,tests/",
+    "intended-files": "src/orders/refund-service.ts,tests/invoice-service.test.ts",
+    "allowed-change-types": "implementation-only",
+    "expected-test-targets": "tests/refund-service.test.ts",
+    "required-commands": "npm test",
+    "evidence": ".agent-guardrails/evidence/current-task.md"
+  },
+  "files": {
+    "src/orders/refund-service.ts": "function refundOrder() {\n  return { ok: true };\n}\n\nrefundOrder();\n",
+    "tests/invoice-service.test.ts": "export const invoiceCoverage = true;\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Refine refund service internals while keeping the behavior validated\n- Commands run: npm test\n- Notable results: Tests changed, but the changed test file does not match the declared refund target.\n- Residual risk: none\n"
+  },
+  "changedFiles": ["src/orders/refund-service.ts", "tests/invoice-service.test.ts"],
+  "commandsRun": ["npm test"],
+  "expected": {
+    "ok": false,
+    "findingCodes": ["source-test-relevance-missed-expected-targets"],
+    "minimumReviewSummary": {
+      "validationIssues": 1
+    }
+  }
+}

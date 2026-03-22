@@ -1,0 +1,7 @@
+{
+  "name": "higher-confidence-review-summary",
+  "tier": "pro",
+  "status": "planned",
+  "goal": "Generate a richer reviewer summary from semantic evidence rather than file-shape heuristics alone.",
+  "plugin": "@agent-guardrails/plugin-ts"
+}

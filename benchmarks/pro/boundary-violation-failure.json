@@ -1,0 +1,46 @@
+{
+  "name": "boundary-violation-failure",
+  "tier": "pro",
+  "status": "active",
+  "goal": "Detect dependency-direction or module-boundary violations in semantic analysis.",
+  "plugin": "@agent-guardrails/plugin-ts",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/"]
+    },
+    "languagePlugins": {
+      "typescript": ["@agent-guardrails/plugin-ts"]
+    },
+    "boundaries": [
+      {
+        "from": "src/orders/controllers/",
+        "disallow": ["src/orders/data/"],
+        "label": "controller-to-data boundary"
+      }
+    ]
+  },
+  "planFlags": {
+    "task": "Refine refund controller internals without changing data-layer boundaries",
+    "allow-paths": "src/,tests/",
+    "intended-files": "src/orders/controllers/refund-controller.ts,tests/refund-controller.test.ts",
+    "allowed-change-types": "implementation-only",
+    "required-commands": "npm test",
+    "evidence": ".agent-guardrails/evidence/current-task.md"
+  },
+  "files": {
+    "src/orders/data/refund-repo.ts": "export function loadRefundRecords() { return []; }\n",
+    "src/orders/controllers/refund-controller.ts": "import { loadRefundRecords } from \"../data/refund-repo\";\n\nfunction buildRefundResponse() {\n  return loadRefundRecords();\n}\n\nbuildRefundResponse();\n",
+    "tests/refund-controller.test.ts": "export const refundControllerCoverage = true;\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Refine refund controller internals without changing data-layer boundaries\n- Commands run: npm test\n- Notable results: The change stayed inside the task scope and still crossed the declared controller-to-data boundary.\n- Residual risk: none\n"
+  },
+  "changedFiles": ["src/orders/controllers/refund-controller.ts", "tests/refund-controller.test.ts"],
+  "commandsRun": ["npm test"],
+  "expected": {
+    "ok": false,
+    "findingCodes": ["boundary-violation-forbidden-import"],
+    "minimumReviewSummary": {
+      "consistencyConcerns": 1
+    }
+  }
+}

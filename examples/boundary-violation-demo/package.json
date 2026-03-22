@@ -1,0 +1,10 @@
+{
+  "name": "boundary-violation-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo:all": "node ./scripts/run-demo.mjs all",
+    "demo:fail": "node ./scripts/run-demo.mjs fail",
+    "demo:pass": "node ./scripts/run-demo.mjs pass"
+  }
+}

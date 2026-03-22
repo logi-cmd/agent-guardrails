@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "tests"
+    ],
+    "constraints": [
+      "Keep the task bounded to src/, tests/, and .agent-guardrails/.",
+      "Do not change the public contract unless the task explicitly declares interface intent.",
+      "Use this demo to explain semantic contract enforcement, not broader API design."
+    ],
+    "definitionOfDone": [
+      "The fail scenario blocks on interface drift.",
+      "The pass scenario clears the interface drift failure.",
+      "The demo remains runnable from the repo root CI workflow."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 8,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "docs/",
+      "src/",
+      "tests/",
+      "scripts/",
+      "scenarios/",
+      ".agent-guardrails/"
+    ],
+    "consistency": {
+      "maxChangedFilesPerTask": 8,
+      "maxTopLevelEntries": 2,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["src"],
+    "sourceExtensions": [".ts"],
+    "testRoots": ["tests"],
+    "testExtensions": [".ts"],
+    "testFileSignals": [".test.", ".spec."]
+  },
+  "languagePlugins": {
+    "typescript": ["@agent-guardrails/plugin-ts"]
+  },
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 2,
+  "preset": "nextjs",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "app",
+      "components",
+      "lib"
+    ],
+    "constraints": [
+      "Preserve existing UI and routing patterns unless the task explicitly changes them.",
+      "Prefer server/client boundaries already used in the repo.",
+      "Keep styling changes local and avoid broad visual churn."
+    ],
+    "definitionOfDone": [
+      "Behavioral UI changes include tests or targeted validation notes.",
+      "The change respects the configured file budget.",
+      "The implementation uses existing patterns for data loading and component structure."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 14,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [],
+    "consistency": {
+      "maxChangedFilesPerTask": 14,
+      "maxTopLevelEntries": 4,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["app", "components", "lib", "src"],
+    "sourceExtensions": [".js", ".jsx", ".ts", ".tsx"],
+    "testRoots": ["test", "tests"],
+    "testExtensions": [".js", ".jsx", ".ts", ".tsx"],
+    "testFileSignals": [".test.", ".spec."]
+  },
+  "protectedAreas": [
+    {
+      "path": "app/api/",
+      "label": "route handlers",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "middleware.ts",
+      "label": "middleware",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "lib/auth/",
+      "label": "auth utilities",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-webapp": {
+      "focus": ["correctness", "maintainability", "observability"],
+      "validationProfile": "standard"
+    },
+    "traffic-sensitive-web": {
+      "focus": ["performance", "reliability", "observability"],
+      "validationProfile": "strict"
+    }
+  },
+  "nfrPolicies": {
+    "performance": {
+      "evidenceHint": "Mention render, fetch, or route latency impact in evidence."
+    },
+    "observability": {
+      "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
+    }
+  },
+  "languagePlugins": {
+    "typescript": ["@agent-guardrails/plugin-ts"]
+  },
+  "criticalPaths": ["app/api/", "middleware.ts", "lib/auth/"],
+  "runtimeSurfaces": ["app/", "components/", "lib/"],
+  "performanceSensitiveAreas": ["app/api/", "lib/cache/", "lib/data/"],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

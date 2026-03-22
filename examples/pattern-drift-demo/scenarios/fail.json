@@ -1,0 +1,18 @@
+{
+  "name": "FAIL",
+  "description": "The task stays inside the OSS contract, but introduces a parallel helper abstraction next to an existing refund service.",
+  "task": "Add refund support to the orders module",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-helper.ts", "tests/refund-helper.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "writes": {
+    "src/orders/refund-helper.ts": "function buildRefundPayload() { return { ok: true, pattern: \"helper\" }; }\n",
+    "tests/refund-helper.test.ts": "export const refundHelperCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/refund-helper.ts", "tests/refund-helper.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": true,
+  "expectFindingCode": "pattern-drift-parallel-abstraction",
+  "evidenceContent": "# Task Evidence\n\n- Task: Add refund support to the orders module.\n- Commands run: npm test\n- Notable results: The fail scenario adds a parallel helper abstraction while the OSS contract still looks valid.\n- Residual risk: none\n"
+}

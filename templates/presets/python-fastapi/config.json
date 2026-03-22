@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 2,
+  "preset": "python-fastapi",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "app",
+      "tests"
+    ],
+    "constraints": [
+      "Reuse the current API, schema, and service layout before creating new modules.",
+      "Keep endpoint changes paired with request and response validation updates when needed.",
+      "Prefer incremental extension of dependency wiring over parallel setup paths."
+    ],
+    "definitionOfDone": [
+      "Behavior changes have test coverage.",
+      "The change stays within the configured file budget.",
+      "The implementation still matches current FastAPI structure."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 12,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [],
+    "consistency": {
+      "maxChangedFilesPerTask": 12,
+      "maxTopLevelEntries": 3,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["app"],
+    "sourceExtensions": [".py"],
+    "testRoots": ["tests"],
+    "testExtensions": [".py"],
+    "testFileSignals": ["test_", "_test.py"]
+  },
+  "protectedAreas": [
+    {
+      "path": "app/api/",
+      "label": "API handlers",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "app/auth/",
+      "label": "auth flows",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "alembic/",
+      "label": "database migrations",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-api": {
+      "focus": ["correctness", "reliability", "observability"],
+      "validationProfile": "standard"
+    },
+    "high-throughput-api": {
+      "focus": ["performance", "concurrency", "reliability", "observability"],
+      "validationProfile": "strict"
+    }
+  },
+  "nfrPolicies": {
+    "performance": {
+      "evidenceHint": "Mention endpoint latency, query cost, or load-sensitive behavior in evidence."
+    },
+    "observability": {
+      "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
+    }
+  },
+  "languagePlugins": {
+    "python": ["@agent-guardrails/plugin-python"]
+  },
+  "criticalPaths": ["app/api/", "app/auth/", "alembic/"],
+  "runtimeSurfaces": ["app/", "alembic/"],
+  "performanceSensitiveAreas": ["app/api/", "app/cache/", "app/queue/"],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

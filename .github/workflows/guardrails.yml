@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  maintainer-ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    env:
+      NPM_CONFIG_CACHE: ${{ github.workspace }}/.npm-cache
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run unit and doc validation
+        run: npm test
+
+      - name: Run bounded-scope demo
+        run: node ./examples/bounded-scope-demo/scripts/run-demo.mjs all
+
+      - name: Run pattern-drift demo
+        run: node ./examples/pattern-drift-demo/scripts/run-demo.mjs all
+
+      - name: Run interface-drift demo
+        run: node ./examples/interface-drift-demo/scripts/run-demo.mjs all
+
+      - name: Run boundary-violation demo
+        run: node ./examples/boundary-violation-demo/scripts/run-demo.mjs all
+
+      - name: Run source-test-relevance demo
+        run: node ./examples/source-test-relevance-demo/scripts/run-demo.mjs all
+
+      - name: Run OSS benchmark suite
+        run: npm run benchmark
+
+      - name: Run CLI help smoke
+        run: node ./bin/agent-guardrails.js help
+
+      - name: Run npm pack dry run
+        run: npm pack --dry-run
+
+      - name: Run install smoke
+        run: node ./tests/install-smoke.js

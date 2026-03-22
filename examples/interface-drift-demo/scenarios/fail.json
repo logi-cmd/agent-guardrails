@@ -1,0 +1,18 @@
+{
+  "name": "FAIL",
+  "description": "The task stays within the OSS contract, but silently adds a new public export inside an implementation-only task.",
+  "task": "Refine refund workflow internals without changing the public contract",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-workflow.ts", "tests/refund-workflow.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "writes": {
+    "src/orders/refund-workflow.ts": "export function buildRefundPayload() { return { ok: true, visibility: \"public\" }; }\n\nexport function refundOrder() {\n  return buildRefundPayload();\n}\n",
+    "tests/refund-workflow.test.ts": "export const refundWorkflowCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/refund-workflow.ts", "tests/refund-workflow.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": false,
+  "expectFindingCode": "interface-drift-implementation-only",
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund workflow internals without changing the public contract.\n- Commands run: npm test\n- Notable results: The fail scenario accidentally exports a new helper while still reporting green OSS validation signals.\n- Residual risk: none\n"
+}

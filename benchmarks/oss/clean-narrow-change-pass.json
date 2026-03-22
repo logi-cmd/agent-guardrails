@@ -1,0 +1,37 @@
+{
+  "name": "clean-narrow-change-pass",
+  "tier": "oss",
+  "status": "active",
+  "goal": "Show that a small, validated, in-scope change passes the OSS baseline.",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/", ".agent-guardrails/"]
+    }
+  },
+  "planFlags": {
+    "task": "Update the service logic only",
+    "allow-paths": "src/,tests/",
+    "intended-files": "src/service.js,tests/service.test.js",
+    "allowed-change-types": "implementation-only",
+    "required-commands": "npm test",
+    "evidence": ".agent-guardrails/evidence/current-task.md"
+  },
+  "files": {
+    "src/service.js": "export const x = 1;\n",
+    "tests/service.test.js": "export const ok = true;\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Update the service logic only\n- Commands run: npm test\n- Residual risk: none\n"
+  },
+  "changedFiles": ["src/service.js", "tests/service.test.js"],
+  "commandsRun": ["npm test"],
+  "expected": {
+    "ok": true,
+    "findingCodes": [],
+    "minimumReviewSummary": {
+      "scopeIssues": 0,
+      "validationIssues": 0,
+      "consistencyConcerns": 0,
+      "riskConcerns": 0
+    }
+  }
+}

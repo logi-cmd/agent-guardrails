@@ -1,0 +1,55 @@
+{
+  "name": "agent-guardrails",
+  "version": "0.1.0",
+  "description": "Production guardrails for AI coding agents",
+  "type": "module",
+  "files": [
+    "bin",
+    "lib",
+    "templates",
+    "adapters",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "agent-guardrails": "./bin/agent-guardrails.js"
+  },
+  "scripts": {
+    "check": "node ./bin/agent-guardrails.js check",
+    "test": "node ./tests/run-tests.js",
+    "benchmark": "node ./scripts/run-benchmarks.js",
+    "demo": "node ./examples/bounded-scope-demo/scripts/run-demo.mjs all",
+    "demo:pattern-drift": "node ./examples/pattern-drift-demo/scripts/run-demo.mjs all",
+    "demo:interface-drift": "node ./examples/interface-drift-demo/scripts/run-demo.mjs all",
+    "demo:boundary-violation": "node ./examples/boundary-violation-demo/scripts/run-demo.mjs all",
+    "demo:source-test-relevance": "node ./examples/source-test-relevance-demo/scripts/run-demo.mjs all",
+    "smoke:help": "node ./bin/agent-guardrails.js help",
+    "smoke:install": "node ./tests/install-smoke.js",
+    "plan": "node ./bin/agent-guardrails.js plan --task \"Sample bounded task\"",
+    "init:local": "node ./bin/agent-guardrails.js init . --preset node-service"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "agent-guardrails contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logi-cmd/agent-guardrails.git"
+  },
+  "homepage": "https://github.com/logi-cmd/agent-guardrails#readme",
+  "bugs": {
+    "url": "https://github.com/logi-cmd/agent-guardrails/issues"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "guardrails",
+    "cli",
+    "developer-tools",
+    "codex",
+    "cursor",
+    "claude-code",
+    "openhands"
+  ],
+  "license": "MIT"
+}

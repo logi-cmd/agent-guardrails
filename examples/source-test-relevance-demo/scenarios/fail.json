@@ -1,0 +1,19 @@
+{
+  "name": "source-test-relevance-fail",
+  "description": "A test file changed, but it does not match the declared refund validation target for the changed source file.",
+  "task": "Refine refund service internals while keeping the behavior validated",
+  "allowedPaths": ["src/", "tests/"],
+  "intendedFiles": ["src/orders/refund-service.ts", "tests/invoice-service.test.ts"],
+  "requiredCommands": ["npm test"],
+  "evidencePaths": [".agent-guardrails/evidence/current-task.md"],
+  "expectedTestTargets": ["tests/refund-service.test.ts"],
+  "writes": {
+    "src/orders/refund-service.ts": "function refundOrder() {\n  return { ok: true, flow: \"refined\" };\n}\n\nrefundOrder();\n",
+    "tests/invoice-service.test.ts": "export const invoiceCoverage = true;\n"
+  },
+  "changedFiles": ["src/orders/refund-service.ts", "tests/invoice-service.test.ts"],
+  "commandsRun": ["npm test"],
+  "expectedOk": false,
+  "expectFindingCode": "source-test-relevance-missed-expected-targets",
+  "evidenceContent": "# Task Evidence\n\n- Task: Refine refund service internals while keeping the behavior validated\n- Commands run: npm test\n- Notable results: A test file changed, but the changed test does not match the declared refund validation target.\n- Residual risk: none\n"
+}

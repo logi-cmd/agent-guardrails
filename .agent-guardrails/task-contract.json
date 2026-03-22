@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "task": "Should fail without init",
+  "preset": "node-service",
+  "createdAt": "2026-03-22T02:48:12.925Z",
+  "allowedPaths": []
+}

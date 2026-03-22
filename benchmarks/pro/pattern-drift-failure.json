@@ -1,0 +1,39 @@
+{
+  "name": "pattern-drift-failure",
+  "tier": "pro",
+  "status": "active",
+  "goal": "Detect duplicated abstractions and repo-pattern drift with higher semantic confidence.",
+  "plugin": "@agent-guardrails/plugin-ts",
+  "preset": "node-service",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": ["src/", "tests/"]
+    },
+    "languagePlugins": {
+      "typescript": ["@agent-guardrails/plugin-ts"]
+    }
+  },
+  "planFlags": {
+    "task": "Add refund support to the orders module",
+    "allow-paths": "src/,tests/",
+    "intended-files": "src/orders/refund-helper.ts,tests/refund-helper.test.ts",
+    "allowed-change-types": "implementation-only",
+    "required-commands": "npm test",
+    "evidence": ".agent-guardrails/evidence/current-task.md"
+  },
+  "files": {
+    "src/orders/refund-service.ts": "function refundOrder() { return true; }\n",
+    "src/orders/refund-helper.ts": "function buildRefundPayload() { return { ok: true }; }\n",
+    "tests/refund-helper.test.ts": "export const ok = true;\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Add refund support to the orders module\n- Commands run: npm test\n- Residual risk: none\n"
+  },
+  "changedFiles": ["src/orders/refund-helper.ts", "tests/refund-helper.test.ts"],
+  "commandsRun": ["npm test"],
+  "expected": {
+    "ok": true,
+    "findingCodes": ["pattern-drift-parallel-abstraction"],
+    "minimumReviewSummary": {
+      "consistencyConcerns": 1
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@agent-guardrails/plugin-ts",
+  "version": "0.0.0-local",
+  "description": "Local TypeScript/JavaScript semantic detectors for agent-guardrails",
+  "type": "module",
+  "main": "./index.js",
+  "license": "MIT",
+  "private": true
+}

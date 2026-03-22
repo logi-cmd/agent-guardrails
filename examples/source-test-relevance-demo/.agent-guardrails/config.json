@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "tests"
+    ],
+    "constraints": [
+      "Keep the demo task bounded to src/, tests/, and .agent-guardrails/.",
+      "Use the demo to explain semantic validation quality, not broader product behavior.",
+      "Prefer refund-specific validation instead of unrelated invoice coverage."
+    ],
+    "definitionOfDone": [
+      "The fail scenario produces a source-test relevance finding.",
+      "The pass scenario clears the source-test relevance finding.",
+      "The demo remains runnable from the repo root CI workflow."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 8,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "docs/",
+      "src/",
+      "tests/",
+      "scripts/",
+      "scenarios/",
+      ".agent-guardrails/"
+    ],
+    "consistency": {
+      "maxChangedFilesPerTask": 8,
+      "maxTopLevelEntries": 2,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": true,
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": ["src"],
+    "sourceExtensions": [".ts"],
+    "testRoots": ["tests"],
+    "testExtensions": [".ts"],
+    "testFileSignals": [".test.", ".spec."]
+  },
+  "languagePlugins": {
+    "typescript": ["@agent-guardrails/plugin-ts"]
+  },
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

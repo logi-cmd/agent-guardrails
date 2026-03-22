@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "preset": "node-service",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "src",
+      "tests"
+    ],
+    "constraints": [
+      "Keep app changes inside src/.",
+      "Keep task scope narrow and reviewable.",
+      "Do not edit docs or config unless the task explicitly requires it."
+    ],
+    "definitionOfDone": [
+      "The demo still fails when an out-of-scope file is included.",
+      "The demo passes once the scope is corrected.",
+      "The project state and README remain accurate."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 6,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "package.json",
+      "docs/",
+      "infra/",
+      "src/",
+      "tests/",
+      "scripts/",
+      "scenarios/",
+      ".agent-guardrails/"
+    ],
+    "sourceRoots": [
+      "src"
+    ],
+    "sourceExtensions": [
+      ".js"
+    ],
+    "testRoots": [
+      "tests"
+    ],
+    "testExtensions": [
+      ".js"
+    ],
+    "testFileSignals": [
+      ".test."
+    ]
+  }
+}
