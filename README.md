@@ -50,13 +50,19 @@ npm test
 agent-guardrails check --commands-run "npm test" --review
 ```
 
-If you do not want a global install, use `npx agent-guardrails ...` instead.
+If you want the shortest install path, use:
 
-Cross-platform note:
+```bash
+npm install -g agent-guardrails
+```
 
-- `agent-guardrails` is tested in CI on Windows, Linux, and macOS.
-- The examples in this README use shell-neutral commands unless a platform-specific workaround is being documented explicitly.
-- If a global install does not land on your `PATH`, use `npx agent-guardrails ...` instead of troubleshooting your shell first.
+If your shell does not pick up the global binary right away, skip PATH troubleshooting and run:
+
+```bash
+npx agent-guardrails ...
+```
+
+The CLI is tested in CI on Windows, Linux, and macOS, and the README examples stay shell-neutral unless a platform-specific workaround is required.
 
 By default, `plan` now fills in the preset's common allowed paths, required commands, and evidence path for you. Add extra flags only when you need a tighter contract.
 
