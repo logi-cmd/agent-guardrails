@@ -149,6 +149,12 @@ The best differentiation is not "better AI." It is the combination of:
 - users can evaluate the product honestly before paying
 - the paid story can focus on deeper automation and higher-signal semantic control
 
+### 5. A harder-to-replace runtime
+
+- the defensible value should live in runtime behavior, not prompt wording
+- users should gain repo-local memory, review structure, and continuity signals over time
+- replacement should mean rebuilding a workflow system, not copying a checklist
+
 ## Positioning recommendation
 
 Recommended public positioning:
@@ -175,6 +181,7 @@ The strongest paid motion is:
 - deeper semantic analysis
 - lower manual workflow overhead
 - stronger maintenance continuity
+- stronger repo-aware judgment that compounds with continued use
 
 That implies:
 
@@ -191,5 +198,6 @@ That means:
 - do not compete on raw generation
 - do not market as just another PR review tool
 - invest in agent-native workflows, repo-local contracts, and maintenance continuity
+- keep the moat in runtime, memory, and judgment quality instead of prompt packaging
 - treat integrations as distribution
 - treat semantic depth and automation as the main paid wedge

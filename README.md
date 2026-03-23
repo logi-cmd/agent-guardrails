@@ -2,10 +2,10 @@
 
 Ship AI-written code with production guardrails.
 
-`agent-guardrails` is a zero-dependency CLI for teams that want coding agents to work like disciplined contributors instead of improvisational code generators. It adds repo-local memory, task contracts, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
+`agent-guardrails` is a zero-dependency CLI for teams that want coding agents to work like disciplined contributors instead of improvisational code generators. It adds repo-local memory, task contracts, runtime sessions, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
 
 It is not trying to be another AI coding assistant or another PR review bot.
-It is trying to be the production-safety layer that sits between AI-generated changes and merge.
+It is trying to be the repo-aware production-safety runtime that sits between AI-generated changes and merge.
 
 ## Start Here
 
@@ -37,6 +37,9 @@ The product is most valuable when you want three things at once:
 - smaller AI-generated changes
 - clearer merge and review signals
 - lower maintenance cost over time
+
+The moat is not prompt wording.
+The moat is the combination of repo-local contracts, runtime judgment, semantic checks, review structure, and maintenance continuity that compounds with continued use in the same repo.
 
 ## 60-Second Quick Start
 
@@ -371,6 +374,14 @@ Yes. The published CLI is exercised in CI on all three platforms, and the primar
 - `npx agent-guardrails check --review`
 
 Platform-specific commands only appear in docs when a shell-specific workaround is required.
+
+### Why not just use another AI to recreate this?
+
+You can copy prompts and workflows.
+The harder part is copying a repo-aware runtime that keeps state across task bootstrap, validation, review, semantic drift checks, and maintenance continuity.
+
+The value of `agent-guardrails` is not "one clever prompt."
+It is the merge-gate system that sits around AI-generated changes and keeps getting more aligned to the repo over time.
 
 ### What if the global `agent-guardrails` command is not found?
 

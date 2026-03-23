@@ -2,112 +2,165 @@
 
 Last updated: 2026-03-23
 
-## Current implementation state
-
-The first internal runtime layer is now in place:
-
-- `plan` and `check` share a runtime-oriented service layer instead of duplicating all task logic
-- task contracts now carry basic session metadata
-- the runtime can read repo guardrails, suggest a contract shape, and summarize review risks
-- the runtime can now bootstrap a task session and prepare a finish-time check command from the same session context
-
-The first user-facing Skill flow now exists on top of that runtime. The next implementation step is exposing the same flow through MCP methods instead of duplicating logic in prompt text.
-
 ## Goal
 
-Make `agent-guardrails` feel like a mature product instead of a command-line checklist by reducing the steps a user has to remember while keeping the same quality bar.
+Make `agent-guardrails` feel like a product, not a checklist, by turning the existing OSS runtime into the default path for agent work.
 
-The goal is not to hide the guardrails. The goal is to make them the default path.
+The goal is not to hide the guardrails.
+The goal is to make them happen automatically while keeping the same quality bar.
 
 ## Product principles
 
 - Keep the OSS merge gate strong enough to be genuinely useful on its own.
-- Reduce user friction without reducing catch quality.
+- Reduce manual steps without reducing catch quality.
 - Prefer sensible defaults over asking users to hand-write everything.
-- Make the result easy to understand at a glance.
+- Keep one runtime judgment path across CLI, Skill, MCP, and future agent-native flows.
 - Only interrupt the user when the risk is high or the context is genuinely missing.
 
-## Skill MVP
+## Current implementation state
 
-The first automation layer is a repo-aware Skill that helps an agent start and finish work without forcing the user to learn the entire workflow.
+Today the runtime already provides:
+
+- repo guardrail loading
+- task-contract suggestion
+- session bootstrap
+- finish-time check planning
+- review-risk summarization
+
+The first baseline Skill flow already exists through `plan` plus `check`, and the first MCP MVP already exists through `agent-guardrails mcp`.
+
+The next implementation step is not more prompt text.
+It is carrying the same runtime into the first agent-native loop.
+
+## Runtime model
+
+The automation stack should remain four layers:
+
+### 1. Core Engine
+
+- repo policy
+- task contract
+- detector pipeline
+- finding aggregation
+- review formatter
+
+### 2. Automation Runtime
+
+- session bootstrap
+- contract suggestion
+- finish-time command planning
+- next-action planning
+- continuity hints
+
+### 3. Semantic Layer
+
+- pattern drift
+- interface drift
+- boundary violation
+- source-to-test relevance
+- future security, dependency, performance, and continuity detectors
+
+### 4. Agent-facing Interfaces
+
+- baseline Skill flow
+- MCP methods
+- future agent-native loop
+- future IDE integrations
+
+## Skill flow
+
+The baseline Skill flow should keep doing one thing well:
+
+- start from natural-language task input
+- produce a bounded runtime-backed contract
+- guide the agent to the finish-time `check`
 
 ### Inputs
 
-- Natural-language task request
-- Repository path
-- Optional selected files or changed files
-- Optional repo policy and task contract files
+- natural-language task request
+- repository path
+- optional selected files or changed files
 
 ### Outputs
 
-- Draft task contract
-- Task session metadata
-- Suggested allowed paths
-- Suggested intended files
-- Suggested required commands
-- Suggested evidence path
-- Initial risk level
-- Finish-time check command
-- Reviewer-friendly summary
+- draft task contract
+- task session metadata
+- suggested allowed paths
+- suggested intended files
+- suggested required commands
+- suggested evidence path
+- risk dimensions
+- finish-time check command
+- reviewer-friendly next actions
 
-### Behavior
+### Rules
 
-- Infer the most likely task shape from the request and repo context.
-- Reuse repo conventions instead of inventing new ones.
-- Ask at most one clarifying question when the missing context blocks safe defaults.
-- Treat validation and evidence as part of the workflow, not extra ceremony.
-- Route high-risk changes to explicit confirmation before continuing.
-- Keep the same session alive from task bootstrap through finish-time check guidance.
+- reuse repo conventions instead of inventing new ones
+- ask at most one clarifying question only when safe defaults fail
+- treat validation and evidence as part of the workflow, not extra ceremony
+- keep the same session alive from bootstrap through finish-time check
 
-## MCP MVP
+## MCP
 
-The second automation layer now exists as a stdio MCP service exposed through `agent-guardrails mcp`.
+The MCP server should remain a thin interface over the same runtime.
 
-### Methods
+### Current methods
 
 - `read_repo_guardrails`
 - `suggest_task_contract`
 - `run_guardrail_check`
 - `summarize_review_risks`
 
-### Behavior
+### Rules
 
-- Return the same underlying guardrail judgment as the CLI.
-- Keep machine-readable shapes stable.
-- Add semantic help without changing the baseline merge-gate behavior.
-- Fall back cleanly when semantic packs are unavailable.
-- Reuse the same runtime service layer as `plan` and `check` instead of duplicating prompt logic.
+- return the same judgment as the CLI
+- keep machine-readable shapes stable
+- add semantic help without changing baseline merge-gate behavior
+- never duplicate prompt logic outside the runtime
 
-## Agent-native workflow
+## Agent-native loop
 
-The final user-facing mode is agent-native:
+This is the next major implementation target.
 
-1. The user describes the change in plain language.
-2. The agent reads repo guardrails.
-3. The agent drafts or updates the task contract.
-4. The agent implements the change inside the declared scope.
-5. The agent records evidence and runs the required commands.
-6. The agent runs `check`.
-7. The agent returns a short summary that says what changed, what was validated, and what still needs attention.
+The first MVP should let an agent:
 
-### What the user should not need to do
+1. read repo guardrails
+2. draft or update the task contract
+3. implement inside the declared scope
+4. run required commands
+5. update evidence
+6. run `check`
+7. return a short reviewer-friendly summary
 
-- Write a complete task contract by hand every time
-- Memorize workflow commands
-- Decide evidence paths from scratch
-- Understand detector names before they get value
+The user should not need to:
 
-## Success criteria
+- hand-write a complete task contract
+- memorize workflow commands
+- choose evidence paths from scratch
+- understand detector names before getting value
 
-- The user can start from a natural-language request.
-- The user sees fewer manual steps than the raw CLI workflow.
-- The same guardrail quality remains in place.
-- The output is clear enough to trust without reading implementation details.
-- The system feels like a product, not a script collection.
+## Continuity and risk dimensions
+
+Automation should not stop at pass/fail.
+
+The runtime and reviewer surface should keep making these dimensions visible:
+
+- security
+- dependency
+- performance
+- understanding
+- continuity
+
+Near-term follow-on work:
+
+- module history
+- preferred reuse hints
+- continuity break warnings
+- future maintainer risk
 
 ## Boundaries
 
 - Do not move baseline safety checks behind a paid gate.
-- Do not add new top-level commands unless they replace friction, not add it.
-- Do not split the workflow into separate systems that disagree on risk.
-- Do not let automation weaken the review gate.
+- Do not create a separate automation path that disagrees with the CLI.
+- Do not let automation weaken validation, evidence, or risk escalation.
+- Do not treat prompts as the product; the runtime is the product.

@@ -19,6 +19,17 @@ The strongest paid value should be:
 - higher-signal semantic analysis
 - lower manual workflow overhead
 - stronger maintenance continuity
+- deeper repo-aware judgment that is hard to reproduce with prompt text alone
+
+The product moat should not be described as "we have better prompts."
+
+The moat should be described as:
+
+- stateful contracts
+- repo-aware runtime behavior
+- semantic detector quality
+- continuity and review memory
+- deeper workflow integration across Skill, MCP, and agent-native flows
 
 ## OSS Core
 
@@ -38,6 +49,13 @@ The open-source core stays free and production-relevant:
 - a baseline MCP service layer
 
 If the feature is required for a repo to use `agent-guardrails` as a real merge gate, it belongs in OSS.
+
+That means OSS should continue to own:
+
+- baseline runtime-backed workflow
+- baseline automation surfaces
+- baseline reviewer output
+- baseline risk dimensions for security, dependency, performance, understanding, and continuity
 
 ## Pro Local
 
@@ -79,6 +97,7 @@ The strongest paid promise for Pro Local should be:
 - less manual setup
 - lower review effort
 - lower maintenance drift over time
+- stronger repo-specific memory and reuse guidance
 
 Suggested starting price range:
 
