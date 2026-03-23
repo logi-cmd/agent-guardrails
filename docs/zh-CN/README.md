@@ -33,7 +33,7 @@
 
 ```bash
 agent-guardrails init . --preset node-service --adapter openclaw --lang zh-CN
-agent-guardrails plan --task "给订单服务补退款状态流转" --allow-paths "src/,tests/" --intended-files "src/orders/refund.js,tests/refund.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md" --lang zh-CN
+agent-guardrails plan --task "给订单服务补退款状态流转" --lang zh-CN
 agent-guardrails check --base-ref origin/main --commands-run "npm test" --review --lang zh-CN
 ```
 

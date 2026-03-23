@@ -45,12 +45,16 @@ If you just want the shortest possible path, copy this:
 ```bash
 npm install -g agent-guardrails
 agent-guardrails init . --preset node-service
-agent-guardrails plan --task "Add refund status transitions to the order service" --allow-paths "src/,tests/" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"
+agent-guardrails plan --task "Add refund status transitions to the order service"
 npm test
 agent-guardrails check --commands-run "npm test" --review
 ```
 
 If you do not want a global install, use `npx agent-guardrails ...` instead.
+
+By default, `plan` now fills in the preset's common allowed paths, required commands, and evidence path for you. Add extra flags only when you need a tighter contract.
+
+You do not need to hand-write the contract for a normal task. Start with plain task text, let `plan` bootstrap the session, then let `check` tell you the finish-time command and next steps.
 
 The CLI currently supports `en` and `zh-CN`. You can switch with `--lang zh-CN` or `AGENT_GUARDRAILS_LOCALE=zh-CN`.
 
@@ -126,11 +130,20 @@ npm run demo:source-test-relevance
 Use this docs-first loop in day-to-day work. Copy it, then replace only the task text and file paths:
 
 ```bash
-agent-guardrails plan --task "Add audit logging to the release approval endpoint" --allow-paths "src/,tests/" --required-commands "npm test,npm run lint" --evidence ".agent-guardrails/evidence/current-task.md"
+agent-guardrails plan --task "Add audit logging to the release approval endpoint" --required-commands "npm test,npm run lint"
 npm test
 npm run lint
 agent-guardrails check --commands-run "npm test,npm run lint" --review
 ```
+
+Add `--intended-files`, `--allowed-change-types`, or narrower `--allow-paths` only when you want a tighter task contract than the preset default.
+
+The intended low-friction flow is:
+
+1. describe the task in plain language with `plan`
+2. make the smallest change that fits the generated contract
+3. run the commands you actually used
+4. finish with the `check` command the runtime recommends
 
 If your repo does not have `origin/main`, use the branch that matches your default branch.
 
@@ -168,6 +181,19 @@ AGENT_GUARDRAILS_COMMANDS_RUN=npm test,npm run lint
 
 The generated user-repo workflow template lives in [templates/base/workflows/agent-guardrails.yml](./templates/base/workflows/agent-guardrails.yml).
 The maintainer CI for this package lives in [guardrails.yml](./.github/workflows/guardrails.yml).
+
+For agent integrations that prefer MCP over shelling out to separate commands, start the OSS MCP server with:
+
+```bash
+agent-guardrails mcp
+```
+
+The MCP MVP exposes the same runtime-backed judgment through these tools:
+
+- `read_repo_guardrails`
+- `suggest_task_contract`
+- `run_guardrail_check`
+- `summarize_review_risks`
 
 ## Production Baseline
 

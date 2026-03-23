@@ -12,7 +12,7 @@
 ## 工作方式
 
 - 在做较大改动前，先运行 `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`，并把实现限制在契约范围内。
-- 当任务很窄时，补充 `--intended-files` 与 `--allowed-change-types`，让契约和最小实现切片一致。
+- 如果任务特别窄或风险更高，再补 `--intended-files`、`--allowed-change-types` 或更窄的 `--allow-paths`，让契约和最小实现切片一致。
 - 优先复用现有模式，不要轻易新建抽象。
 - 保持改动小、易 review。
 - 任务不简单时，先列出要改的文件。

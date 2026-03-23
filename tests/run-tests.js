@@ -24,6 +24,14 @@ const testModules = [
     path: "./benchmark.test.js"
   },
   {
+    name: "runtime",
+    path: "./runtime.test.js"
+  },
+  {
+    name: "mcp",
+    path: "./mcp.test.js"
+  },
+  {
     name: "release",
     path: "./release.test.js"
   }

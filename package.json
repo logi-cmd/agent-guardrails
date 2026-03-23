@@ -16,6 +16,7 @@
   },
   "scripts": {
     "check": "node ./bin/agent-guardrails.js check",
+    "mcp": "node ./bin/agent-guardrails.js mcp",
     "test": "node ./tests/run-tests.js",
     "benchmark": "node ./scripts/run-benchmarks.js",
     "demo": "node ./examples/bounded-scope-demo/scripts/run-demo.mjs all",

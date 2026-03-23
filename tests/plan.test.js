@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
+import { readConfig } from "../lib/utils.js";
 
 function captureLogs(run) {
   const original = console.log;
@@ -127,6 +128,37 @@ export async function run() {
   assert.deepEqual(contract.observabilityRequirements, ["Structured refund log remains intact"]);
   assert.equal(contract.rollbackNotes, "Revert refund transition patch only");
   assert.equal(contract.riskJustification, "Refund flows are financially sensitive");
+
+  process.chdir(tempDir);
+  const autoOutput = await captureLogs(() =>
+    runPlan({
+      positional: [],
+      flags: {
+        task: "Tighten refund guardrails",
+        lang: "en"
+      },
+      locale: "en"
+    })
+  );
+  process.chdir(original);
+
+  const config = readConfig(tempDir);
+  const autoContract = JSON.parse(
+    fs.readFileSync(path.join(tempDir, ".agent-guardrails", "task-contract.json"), "utf8")
+  );
+
+  assert.match(autoOutput, /Auto-filled from preset defaults: allowed paths, required commands, evidence paths/);
+  assert.match(autoOutput, /Session ID:/);
+  assert.match(autoOutput, /Next actions/);
+  assert.deepEqual(autoContract.allowedPaths, config.workflow.planDefaults.allowedPaths);
+  assert.deepEqual(autoContract.requiredCommands, config.workflow.planDefaults.requiredCommands);
+  assert.deepEqual(autoContract.evidencePaths, config.workflow.planDefaults.evidencePaths);
+  assert.deepEqual(autoContract.autoFilledFields, ["allowed paths", "required commands", "evidence paths"]);
+  assert.equal(typeof autoContract.session.sessionId, "string");
+  assert.equal(autoContract.session.repoRoot, tempDir);
+  assert.deepEqual(autoContract.session.requiredCommandsSuggested, config.workflow.planDefaults.requiredCommands);
+  assert.equal(autoContract.session.evidencePathSuggested, config.workflow.planDefaults.evidencePaths[0]);
+  assert.match(autoContract.session.finishCheckHints.join("\n"), /Finish with agent-guardrails check --review/i);
 
   const uninitializedDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-plan-no-init-"));
   let error = null;

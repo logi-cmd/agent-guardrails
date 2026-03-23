@@ -2,6 +2,11 @@
   "schemaVersion": 2,
   "preset": "python-fastapi",
   "workflow": {
+    "planDefaults": {
+      "allowedPaths": ["app/", "tests/"],
+      "requiredCommands": ["pytest -q"],
+      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+    },
     "readBeforeWrite": [
       "AGENTS.md",
       "docs/PROJECT_STATE.md",

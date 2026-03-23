@@ -86,8 +86,14 @@ async function checkPassesWithTests() {
 
   fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
   fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, ".agent-guardrails", "evidence"), { recursive: true });
   fs.writeFileSync(path.join(tempDir, "src", "service.js"), "export const x = 1;\n", "utf8");
   fs.writeFileSync(path.join(tempDir, "tests", "service.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(
+    path.join(tempDir, ".agent-guardrails", "evidence", "current-task.md"),
+    "# Task Evidence\n\n- Commands run: npm test\n- Residual risk: none\n",
+    "utf8"
+  );
 
   process.env.AGENT_GUARDRAILS_CHANGED_FILES = `src/service.js${path.delimiter}tests/service.test.js`;
   process.exitCode = 0;
@@ -325,8 +331,10 @@ async function checkPassesWhenTaskRequirementsAreSatisfied() {
     assert.deepEqual(result.requiredCommands, ["npm test", "npm run lint"]);
     assert.deepEqual(result.commandsRun, ["npm test", "npm run lint"]);
     assert.deepEqual(result.missingEvidencePaths, []);
+    assert.match(result.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test, npm run lint"/);
     assert.match(output, /Task required commands: 2/);
     assert.match(output, /Missing evidence files: 0/);
+    assert.match(output, /Finish-time command:/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -435,6 +443,11 @@ async function checkIgnoresTheGeneratedTaskContractFile() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-ignore-contract-"));
   await initRepo(tempDir);
   setAllowedPaths(tempDir, ["src/", "tests/", ".agent-guardrails/"]);
+  updateConfig(tempDir, (config) => {
+    config.languagePlugins = {};
+    config.checks.correctness.requireCommandsReported = false;
+    config.checks.correctness.requireEvidenceFiles = false;
+  });
 
   fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
   fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
@@ -609,6 +622,7 @@ async function checkPrintsReviewOutput() {
     assert.match(output, /Review summary:/);
     assert.match(output, /Missing validation:/);
     assert.match(output, /\[error\] Source files changed without any accompanying test changes/);
+    assert.match(output, /Finish-time command:/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;

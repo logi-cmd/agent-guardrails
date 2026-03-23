@@ -14,14 +14,14 @@ It does not add a custom binary integration. Instead, it gives OpenClaw users a 
 
 1. Initialize the repo with `agent-guardrails`, ideally with `--adapter openclaw`.
 2. Use the OpenClaw instruction template to keep tasks bounded.
-3. Run `plan --allow-paths ... --intended-files ... --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"` to write a task contract for the current task.
+3. Run `agent-guardrails plan --task "<task>"` to write a task contract for the current task. Add narrower flags only when the task is especially small or risky.
 4. Update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`, then run `check --base-ref origin/main --commands-run "npm test" --review` before finishing.
 
 Example:
 
 ```bash
 node ./bin/agent-guardrails.js init . --preset node-service --adapter openclaw
-node ./bin/agent-guardrails.js plan --task "Add refund status transitions" --allow-paths "src/,tests/" --intended-files "src/orders/refund.js,tests/refund.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"
+node ./bin/agent-guardrails.js plan --task "Add refund status transitions"
 node ./bin/agent-guardrails.js check --base-ref origin/main --commands-run "npm test" --review
 ```
 

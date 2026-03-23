@@ -69,7 +69,7 @@ export async function runInstallSmoke() {
 
   const agentsContent = fs.readFileSync(path.join(repoDir, "AGENTS.md"), "utf8");
   assert.match(agentsContent, /\.agent-guardrails\/evidence\/current-task\.md/);
-  assert.match(agentsContent, /--commands-run "npm test"/);
+  assert.match(agentsContent, /recommended by the runtime|check .*--review/);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {

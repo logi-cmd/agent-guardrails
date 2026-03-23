@@ -15,7 +15,7 @@
 
 - 保持任务小且可 review。
 - 优先沿用现有仓库结构，不要轻易新建抽象。
-- 如果任务范围很窄，用 `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --intended-files "src/file.js,tests/file.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"` 明确声明。
+- 先运行 `agent-guardrails plan --task "<task>"`。如果任务范围特别窄或风险更高，再补更严格的参数。
 - 如果任务触及行为变化，要补测试，并更新 `.agent-guardrails/evidence/current-task.md`，写清任务名、执行过的命令、关键结果和残余风险或 `none`。
 - 完成前运行 `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`。
 - `agent-guardrails check --json` 用于自动化或 CI，不是默认本地工作流。
@@ -23,7 +23,7 @@
 ## 默认任务模式
 
 1. 阅读仓库状态和任务说明。
-2. 运行 `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --intended-files "src/file.js,tests/file.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`。
+2. 运行 `agent-guardrails plan --task "<task>"`。
 3. 只做符合任务契约的最小实现。
 4. 更新 `.agent-guardrails/evidence/current-task.md`，写入真实执行过的命令和结果，然后运行 `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`。
 5. 如果下一个动作变了，更新 `docs/PROJECT_STATE.md`。

@@ -2,6 +2,11 @@
   "schemaVersion": 2,
   "preset": "node-service",
   "workflow": {
+    "planDefaults": {
+      "allowedPaths": ["src/", "lib/", "test/", "tests/"],
+      "requiredCommands": ["npm test"],
+      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+    },
     "readBeforeWrite": [
       "AGENTS.md",
       "docs/PROJECT_STATE.md",

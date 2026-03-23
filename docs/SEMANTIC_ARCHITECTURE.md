@@ -18,6 +18,8 @@ The internals are moving toward this layered model:
 - finding model
 - review formatter
 - locale layer
+- runtime service layer
+- MCP server layer
 - benchmark runner core
 
 ## Detector pipeline

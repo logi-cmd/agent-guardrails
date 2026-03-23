@@ -1,6 +1,17 @@
 # Automation Spec
 
-Last updated: 2026-03-22
+Last updated: 2026-03-23
+
+## Current implementation state
+
+The first internal runtime layer is now in place:
+
+- `plan` and `check` share a runtime-oriented service layer instead of duplicating all task logic
+- task contracts now carry basic session metadata
+- the runtime can read repo guardrails, suggest a contract shape, and summarize review risks
+- the runtime can now bootstrap a task session and prepare a finish-time check command from the same session context
+
+The first user-facing Skill flow now exists on top of that runtime. The next implementation step is exposing the same flow through MCP methods instead of duplicating logic in prompt text.
 
 ## Goal
 
@@ -30,11 +41,13 @@ The first automation layer is a repo-aware Skill that helps an agent start and f
 ### Outputs
 
 - Draft task contract
+- Task session metadata
 - Suggested allowed paths
 - Suggested intended files
 - Suggested required commands
 - Suggested evidence path
 - Initial risk level
+- Finish-time check command
 - Reviewer-friendly summary
 
 ### Behavior
@@ -44,10 +57,11 @@ The first automation layer is a repo-aware Skill that helps an agent start and f
 - Ask at most one clarifying question when the missing context blocks safe defaults.
 - Treat validation and evidence as part of the workflow, not extra ceremony.
 - Route high-risk changes to explicit confirmation before continuing.
+- Keep the same session alive from task bootstrap through finish-time check guidance.
 
 ## MCP MVP
 
-The second automation layer is an MCP service that exposes the same guardrail intelligence as structured calls.
+The second automation layer now exists as a stdio MCP service exposed through `agent-guardrails mcp`.
 
 ### Methods
 
@@ -62,6 +76,7 @@ The second automation layer is an MCP service that exposes the same guardrail in
 - Keep machine-readable shapes stable.
 - Add semantic help without changing the baseline merge-gate behavior.
 - Fall back cleanly when semantic packs are unavailable.
+- Reuse the same runtime service layer as `plan` and `check` instead of duplicating prompt logic.
 
 ## Agent-native workflow
 

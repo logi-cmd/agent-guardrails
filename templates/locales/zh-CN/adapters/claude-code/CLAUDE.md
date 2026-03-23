@@ -11,7 +11,7 @@
 
 ## 工作流
 
-1. 先读仓库状态，再运行 `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --intended-files "src/file.js,tests/file.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`。
+1. 先读仓库状态，再运行 `agent-guardrails plan --task "<task>"`。如果任务范围特别窄或风险更高，再补更严格的参数。
 2. 除非先更新 scope，否则实现必须限制在任务契约之内。
 3. 如果行为发生变化，要补测试，并更新 `.agent-guardrails/evidence/current-task.md`，写清任务名、执行过的命令、关键结果和残余风险或 `none`。
 4. 完成前运行 `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`。

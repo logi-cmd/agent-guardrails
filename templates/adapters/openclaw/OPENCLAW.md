@@ -15,17 +15,17 @@ Before editing, read:
 
 - Keep tasks small and reviewable.
 - Prefer the existing repo structure over new abstractions.
-- If the task scope is narrow, declare it with `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --intended-files "src/file.js,tests/file.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`.
+- If the task scope is narrow or high-risk, tighten it with `--intended-files`, `--allowed-change-types`, `--allow-paths`, or `--required-commands`.
 - If the task touches behavior, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
-- Before finishing, run `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`.
+- Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime with the commands that actually ran.
 - Use `agent-guardrails check --json` for automation or CI, not as the primary local loop.
 
 ## Default Task Pattern
 
 1. Read the repo state and the task brief.
-2. Run `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --intended-files "src/file.js,tests/file.test.js" --allowed-change-types "implementation-only" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`.
+2. Run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
 3. Make the smallest implementation that fits the task contract.
-4. Update `.agent-guardrails/evidence/current-task.md` with the real commands run and results, then run `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`.
+4. Update `.agent-guardrails/evidence/current-task.md` with the real commands run and results, then finish with the `agent-guardrails check ... --review` command recommended by the runtime.
 5. Update `docs/PROJECT_STATE.md` if the next step changed.
 
 ## Notes

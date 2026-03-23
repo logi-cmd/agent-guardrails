@@ -16,7 +16,7 @@ Before editing, read:
 
 - Keep tasks small and reviewable.
 - Prefer the existing repo structure over new abstractions.
-- If the task scope is narrow, declare it with `agent-guardrails plan --allow-paths ... --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`.
+- Start with `agent-guardrails plan --task "<task>"`. Add narrower flags only when the task is especially small or risky.
 - If the task touches behavior, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
 - Before finishing, run `agent-guardrails check --base-ref origin/main --commands-run "npm test"`.
 - Use `agent-guardrails check --json` for automation or CI, not as the primary local loop.
@@ -24,7 +24,7 @@ Before editing, read:
 ## Default Task Pattern
 
 1. Read the repo state and the task brief.
-2. Run `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"`.
+2. Run `agent-guardrails plan --task "<task>"`.
 3. Make the smallest implementation that fits the task contract.
 4. Update `.agent-guardrails/evidence/current-task.md` with the real commands run and results, then run `agent-guardrails check --base-ref origin/main --commands-run "npm test"`.
 5. Update `docs/PROJECT_STATE.md` if the next step changed.

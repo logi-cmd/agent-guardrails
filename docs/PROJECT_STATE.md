@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-22
+Last updated: 2026-03-23
 
 ## Goal
 
@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest while refining market positioning, commercialization boundaries, and the next product layer above the CLI.
+Keep the published OSS baseline honest while moving the product from a CLI workflow into a real runtime, then carry the same runtime from the CLI and Skill flow into MCP and agent-native entrypoints.
 
 ## Done recently
 
@@ -83,13 +83,38 @@ Keep the published OSS baseline honest while refining market positioning, commer
 - Added `docs/MARKET_RESEARCH.md` to capture adjacent categories, target-user pain, whitespace, and the recommended go-to-market framing
 - Lowered the README prominence of `Market Research` so it reads as background material rather than a primary onboarding path
 - Added `docs/AUTOMATION_SPEC.md` to define the first Skill, MCP, and agent-native workflow layer
+- Changed the repo and global Git author identity to `logi-cmd <975048651@qq.com>` so future commits default to the maintainer identity
+- Added preset-backed `plan` defaults for allowed paths, required commands, and evidence paths so users can start with `agent-guardrails plan --task "..."`
+- Updated README, adapter docs, localized templates, and CLI help text so the primary workflow is copy-paste friendly and advanced flags are explicitly optional
+- Extended tests and repo config to cover the simpler `plan` flow without weakening `check`, and re-verified the suite with `npm test`
+- Added a shared runtime service layer under `lib/runtime/` so `plan` and `check` can reuse repo-guardrail reading, task-contract suggestion, and review-risk summarization
+- Added basic task-session metadata to contracts, including contract source, risk signals, and next actions
+- Extended `check` results with runtime next-action summaries so the product behaves more like a stateful execution layer than a one-off command
+- Added runtime coverage in `tests/runtime.test.js` and re-verified the suite with `npm test`
+- Expanded the runtime session shape with session IDs, finish-time hints, suggested commands, and a recommended `check --review` command
+- Turned the first OSS Skill slice into a real start-and-finish flow by wiring `plan` and `check` through the same session model
+- Added baseline continuity hints to runtime review summaries so the OSS flow starts surfacing maintainability guidance instead of only one-off pass/fail signals
+- Updated README, automation docs, and seeded adapter guidance so the user-facing flow is "natural-language task -> runtime-backed contract -> finish-time check"
+- Re-verified the suite with `npm test` after the runtime/Skill MVP changes
+- Added the first OSS MCP MVP as `agent-guardrails mcp`, exposing `read_repo_guardrails`, `suggest_task_contract`, `run_guardrail_check`, and `summarize_review_risks`
+- Added a stdio-framed MCP server that reuses the existing runtime and `executeCheck()` instead of creating a second judgment path
+- Added MCP integration coverage in `tests/mcp.test.js` and re-verified the suite with `npm test`
 
 ## Blockers
 
 - Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
 - Proof-of-value now includes a documented source-repo pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
-- The product direction above the CLI is still a strategy-level plan; skill, MCP, and agent-native entrypoints are not implemented yet
+- Agent-native entrypoints are still not user-facing yet; the OSS runtime, Skill flow, and MCP server now exist but have not been carried into a full agent-native loop
 
 ## Next step
 
-Implement the first automation layer from `docs/AUTOMATION_SPEC.md` by turning the Skill MVP, MCP MVP, and minimum agent-native workflow into concrete repo behavior without weakening the current merge-gate quality bar.
+Build the first agent-native loop MVP on top of the shared runtime and MCP layer so an agent can bootstrap a task, run validation, and report the result without the user hand-driving each step.
+
+## Handoff
+
+When a meaningful milestone lands, end the project-thread update with:
+
+- `What changed`: one sentence
+- `Revenue Path`: the next missing link before paid
+- `Commercial risk`: the main blocker to the first paid outcome
+- `What I need next`: the one commercial decision or action

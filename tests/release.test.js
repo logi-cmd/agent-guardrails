@@ -43,7 +43,10 @@ export async function run() {
   assert.match(readme, /source-test-relevance demo/);
   assert.match(readme, /REAL_REPO_PILOT/);
   assert.match(readme, /AGENT_GUARDRAILS_COMMANDS_RUN/);
-  assert.match(readme, /--intended-files/);
+  assert.match(readme, /agent-guardrails mcp/);
+  assert.match(readme, /read_repo_guardrails/);
+  assert.match(readme, /agent-guardrails plan --task "Add refund status transitions/);
+  assert.match(readme, /By default, `plan` now fills in/);
   assert.match(readme, /--review/);
   assert.match(readme, /--lang zh-CN/);
   assert.match(readme, /## Chinese Docs/);
@@ -70,6 +73,7 @@ export async function run() {
   assert.match(commercialization, /## Pro Cloud/);
   assert.match(semanticArchitecture, /## Detector pipeline/);
   assert.match(semanticArchitecture, /## Plugin interface/);
+  assert.match(semanticArchitecture, /MCP server layer/);
   assert.match(semanticArchitecture, /plugins\/plugin-ts/);
   assert.match(semanticArchitecture, /interface drift/i);
   assert.match(semanticArchitecture, /boundary violation/i);
@@ -95,7 +99,7 @@ export async function run() {
   for (const content of adapterDocs) {
     assert.match(content, /check --json/);
     assert.match(content, /AGENT_GUARDRAILS_COMMANDS_RUN/);
-    assert.match(content, /--intended-files/);
+    assert.match(content, /agent-guardrails plan --task "<task>"/);
     assert.match(content, /--review/);
     assert.match(content, /\.agent-guardrails\/evidence\/current-task\.md/);
   }

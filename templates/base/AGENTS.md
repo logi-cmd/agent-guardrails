@@ -11,8 +11,8 @@ Before writing code, read:
 
 ## Working Style
 
-- Before substantial edits, run `agent-guardrails plan --task "<task>" --allow-paths "src/,tests/" --required-commands "npm test" --evidence ".agent-guardrails/evidence/current-task.md"` and keep the implementation inside that contract.
-- When the task is narrow, declare `--intended-files` and `--allowed-change-types` so the contract matches the smallest viable slice.
+- Before substantial edits, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session, then keep the implementation inside that contract.
+- When the task is narrow or risky, add `--intended-files`, `--allowed-change-types`, `--allow-paths`, or `--required-commands` so the contract matches the smallest viable slice.
 - Prefer existing patterns over new abstractions.
 - Keep changes small and easy to review.
 - List touched files before editing when the task is non-trivial.
@@ -20,7 +20,7 @@ Before writing code, read:
 - When behavior changes, update or add tests.
 - If the task touches review-critical paths, raise the task risk level and keep the evidence note explicit about reviewer focus.
 - Before finishing, update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
-- Before finishing, run `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review` with the commands that actually ran for the task.
+- Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime with the commands that actually ran for the task.
 
 ## Definition Of Done
 
