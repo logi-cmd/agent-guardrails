@@ -105,6 +105,7 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Polished the public README, troubleshooting guide, and pilot doc so install and usage guidance stays shell-neutral across Windows, Linux, and macOS, with `npx` as the default fallback when global PATH setup differs by platform
 - Prepared the `0.1.1` patch release to capture the onboarding and cross-platform install polish
 - Bumped the package to `0.1.1` and created the local `v0.1.1` tag for the patch release
+- Pushed the `v0.1.1` patch release to GitHub after verifying the release regression suite and benchmark suite stayed green
 
 ## Blockers
 
