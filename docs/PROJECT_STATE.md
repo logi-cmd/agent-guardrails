@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest after the final MCP paste-friction polish. The current focus is now the finalized `0.1.3` release material and tagging/publishing the post-pilot minor.
+Keep the published OSS baseline honest after the final MCP paste-friction polish. The current focus is now post-release verification for `0.1.3` and deciding whether the next step should return to deeper runtime signals.
 
 ## Done recently
 
@@ -44,6 +44,7 @@ Keep the published OSS baseline honest after the final MCP paste-friction polish
 - Completed the OpenClaw sandbox chat with scoped changes, passing tests, evidence, and a reviewer summary
 - Drafted the `0.1.3` release material around setup-first onboarding, repo-local MCP write paths, and the completed sandbox pilot evidence
 - Bumped the package to `0.1.3` and turned the release draft into a final release candidate with validated test and benchmark runs
+- Tagged and pushed `v0.1.3` to GitHub
 - Upgraded the maintainer CI workflow to run tests, demo, help smoke, pack dry-run, and install smoke
 - Added release validation coverage for README/package metadata/workflow quality and a tarball install smoke script
 - Verified release-grade checks locally, including `npm test`, demo run, help smoke, pack dry-run, and a real tarball install/init path
@@ -145,12 +146,11 @@ Keep the published OSS baseline honest after the final MCP paste-friction polish
 - The pilot summary now shows three completed sandbox chats and two setup-only entries, which is enough to judge the setup-first release gate
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
 - The first-run path is now setup-first, but the broader five-entry pilot still needs actual chat runs in supported interactive environments
-- Release tagging and publish sign-off for `0.1.3` are still pending
-- Release tagging and publish sign-off for `0.1.3` are still pending
+- Release tagging and publish sign-off for `0.1.3` are complete
 
 ## Next step
 
-Tag and publish `0.1.3` unless a final release-note adjustment is needed.
+Decide whether the next step should return to deeper runtime signals after the `0.1.3` release.
 
 ## Handoff
 
