@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1 - 2026-03-23
+
+Patch release focused on onboarding and cross-platform usability.
+
+- Shortened the install guidance so the default path is `npm install -g agent-guardrails`
+- Added `npx agent-guardrails ...` as the fallback when the global binary is not on `PATH`
+- Made the onboarding docs and troubleshooting guidance shell-neutral across Windows, Linux, and macOS
+- Added release regressions so the public docs stay platform-neutral
+
 ## 0.1.0 - 2026-03-22
 
 Initial public release.
