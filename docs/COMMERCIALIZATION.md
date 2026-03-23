@@ -21,6 +21,12 @@ The strongest paid value should be:
 - stronger maintenance continuity
 - deeper repo-aware judgment that is hard to reproduce with prompt text alone
 
+The go-to-market shape should also stay clear:
+
+- do not pitch a new standalone coding agent
+- pitch a production-safety runtime that plugs into existing agent chats
+- keep the wrapper cheap and the runtime compounding
+
 The product moat should not be described as "we have better prompts."
 
 The moat should be described as:
@@ -30,6 +36,12 @@ The moat should be described as:
 - semantic detector quality
 - continuity and review memory
 - deeper workflow integration across Skill, MCP, and agent-native flows
+
+The moat should not be described as:
+
+- a better chat prompt
+- a prettier command wrapper
+- a new general-purpose coding agent shell
 
 ## OSS Core
 
@@ -98,6 +110,7 @@ The strongest paid promise for Pro Local should be:
 - lower review effort
 - lower maintenance drift over time
 - stronger repo-specific memory and reuse guidance
+- better results inside the agent workflows users already have
 
 Suggested starting price range:
 

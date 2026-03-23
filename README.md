@@ -1,15 +1,25 @@
-# Agent Guardrails
+﻿# Agent Guardrails
 
 Ship AI-written code with production guardrails.
 
-`agent-guardrails` is a zero-dependency CLI for teams that want coding agents to work like disciplined contributors instead of improvisational code generators. It adds repo-local memory, task contracts, runtime sessions, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
+`agent-guardrails` is a production-safety runtime for AI coding workflows. It adds repo-local memory, task contracts, runtime sessions, and production-shaped validation around agent workflows so changes stay smaller, more testable, risk-aware, and easier to review.
 
-It is not trying to be another AI coding assistant or another PR review bot.
-It is trying to be the repo-aware production-safety runtime that sits between AI-generated changes and merge.
+It is not trying to be another standalone coding agent or another PR review bot.
+It is trying to be the repo-aware runtime that existing agent chats call before code is trusted and merged.
 
 ## Start Here
 
-If you are new, copy the short workflow below and only replace the task text and file paths.
+If you are new, start with `setup`.
+
+The intended product entry is:
+
+1. install `agent-guardrails`
+2. run `agent-guardrails setup --agent claude-code` in your repo
+3. paste the generated MCP snippet into your existing coding agent
+4. describe the task in plain language
+5. let the runtime bootstrap contract, evidence, and finish-time review automatically
+
+The CLI still matters, but it is the infrastructure and fallback layer, not the long-term main user entry.
 
 If you want to see it working before using your own repo, run the demo first:
 
@@ -26,7 +36,7 @@ Coding agents usually fail in predictable ways:
 - they skip tests when behavior changes
 - they ignore project-specific rules unless those rules are explicit and easy to load
 
-`agent-guardrails` gives repos a small, practical workflow:
+`agent-guardrails` gives repos a runtime-backed workflow:
 
 1. `init` seeds repo-local instructions and templates
 2. `plan` writes a bounded task contract
@@ -38,19 +48,16 @@ The product is most valuable when you want three things at once:
 - clearer merge and review signals
 - lower maintenance cost over time
 
-The moat is not prompt wording.
-The moat is the combination of repo-local contracts, runtime judgment, semantic checks, review structure, and maintenance continuity that compounds with continued use in the same repo.
+The moat is not prompt wording or a chat wrapper.
+The moat is the combination of repo-local contracts, runtime judgment, semantic checks, review structure, workflow integration, and maintenance continuity that compounds with continued use in the same repo.
 
-## 60-Second Quick Start
+## Setup-First Quick Start
 
-If you just want the shortest possible path, copy this:
+If you want the intended product entry, install the package and let `setup` prepare the repo plus the MCP snippet you need:
 
 ```bash
 npm install -g agent-guardrails
-agent-guardrails init . --preset node-service
-agent-guardrails plan --task "Add refund status transitions to the order service"
-npm test
-agent-guardrails check --commands-run "npm test" --review
+npx agent-guardrails setup --agent claude-code
 ```
 
 If you want the shortest install path, use:
@@ -65,9 +72,80 @@ If your shell does not pick up the global binary right away, skip PATH troublesh
 npx agent-guardrails ...
 ```
 
-The CLI is tested in CI on Windows, Linux, and macOS, and the README examples stay shell-neutral unless a platform-specific workaround is required.
+The runtime is tested in CI on Windows, Linux, and macOS, and the README examples stay shell-neutral unless a platform-specific workaround is required.
 
-By default, `plan` now fills in the preset's common allowed paths, required commands, and evidence path for you. Add extra flags only when you need a tighter contract.
+`setup` now does the first-run work that heavy vibe-coding users usually do not want to do by hand:
+
+- auto-initializes the repo if `.agent-guardrails/config.json` is missing
+- defaults to the `node-service` preset unless you override it with `--preset`
+- writes safe repo-local helper files such as `CLAUDE.md`, `.cursor/rules/agent-guardrails.mdc`, `.agents/skills/agent-guardrails.md`, or `OPENCLAW.md` when the chosen agent needs them
+- prints the MCP config snippet and tells you exactly where to paste it
+- gives you one first chat message and one canonical MCP loop
+
+Example:
+
+```bash
+npx agent-guardrails setup --agent claude-code
+npx agent-guardrails setup --agent cursor --preset nextjs
+```
+
+If the agent uses a clearly safe repo-local MCP config file, you can remove even the paste step:
+
+```bash
+npx agent-guardrails setup --agent claude-code --write-repo-config
+npx agent-guardrails setup --agent cursor --write-repo-config
+npx agent-guardrails setup --agent openhands --write-repo-config
+npx agent-guardrails setup --agent openclaw --write-repo-config
+```
+
+Today that safe repo-local write path is intended for:
+
+- `claude-code` via `.mcp.json`
+- `cursor` via `.cursor/mcp.json`
+- `openhands` via `.openhands/mcp.json`
+- `openclaw` via `.openclaw/mcp.json`
+
+If you want the current most opinionated happy path, use Claude Code first.
+For broader pilot coverage, validate the same setup-first path across:
+
+- `claude-code` as the primary path
+- `cursor` and `codex` as secondary paths
+- `openhands` and `openclaw` as supplementary paths
+
+Once you paste the generated snippet into your agent, the happy path should feel like normal chat:
+
+- You: `Add refund status transitions to the order service.`
+- Agent: bootstraps the task contract through `start_agent_native_loop`
+- Agent: makes the change, runs required commands, updates evidence
+- Agent: finishes through `finish_agent_native_loop` and returns a reviewer-friendly summary with scope, risk, and future maintenance guidance
+
+If you do not know how to phrase the task yet, you can still start in plain Chinese or plain English:
+
+- `先帮我看看这个仓库最小能改哪里，尽量别扩大范围，最后告诉我还有什么风险。`
+- `帮我修这个问题，先读仓库规则，小范围改动，跑完测试后给我 reviewer summary。`
+- `I only have a rough idea. Please read the repo rules, find the smallest safe change, and finish with a reviewer summary.`
+
+The first recommended MCP flow is:
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. work inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` still exist as lower-level MCP tools, but they are not the preferred first-run chat flow.
+
+## CLI Fallback Quick Start
+
+If you want the shortest manual path, copy this:
+
+```bash
+npx agent-guardrails setup --agent codex
+npx agent-guardrails plan --task "Add refund status transitions to the order service"
+npm test
+npx agent-guardrails check --commands-run "npm test" --review
+```
+
+By default, `setup` handles repo initialization and MCP guidance for you, and `plan` still fills in the preset's common allowed paths, required commands, and evidence path. Add extra flags only when you need a tighter contract.
 
 You do not need to hand-write the contract for a normal task. Start with plain task text, let `plan` bootstrap the session, then let `check` tell you the finish-time command and next steps.
 
@@ -86,7 +164,61 @@ If you are unsure which preset to choose:
 - `python-fastapi` for Python APIs
 - `monorepo` for multi-package repos
 
-If you are not sure about file paths, start with the folders that you expect to change most often, such as `src/` and `tests/`, and add more later if needed.
+If you are not sure about file paths, prefer the MCP flow first. The runtime can infer a sensible starting contract before you tighten anything manually.
+
+## External Pilot Paths
+
+Use the same setup-first loop for all five current agent entries:
+
+- `claude-code`
+- `cursor`
+- `codex`
+- `openhands`
+- `openclaw`
+
+Current pilot priority is:
+
+1. `claude-code`
+2. `cursor`
+3. `codex`
+4. `openhands`
+5. `openclaw`
+
+
+中文说明：
+
+如果你要开始第一条真实 pilot，建议先用 `claude-code`。
+这条路径最容易把 setup、MCP 粘贴、第一次聊天和 reviewer summary 这一整条链路跑通。
+
+每条 pilot 只看这几个问题：
+
+- 是否能从安装直接走到第一次聊天
+- setup 输出是否清楚
+- MCP 配置是否仍然是最大摩擦
+- reviewer summary 是否值得信任
+
+
+For each pilot:
+
+1. run `npx agent-guardrails setup --agent <name>`
+2. paste the generated snippet into that agent's MCP config
+3. send the generated first chat message
+4. confirm the agent uses:
+   - `read_repo_guardrails`
+   - `start_agent_native_loop`
+   - `finish_agent_native_loop`
+
+Use the matching pilot record in [docs/pilots/](./docs/pilots/README.md) for each individual run:
+
+- [Claude Code pilot](./docs/pilots/claude-code.md)
+- [Cursor pilot](./docs/pilots/cursor.md)
+- [Codex pilot](./docs/pilots/codex.md)
+- [OpenHands pilot](./docs/pilots/openhands.md)
+- [OpenClaw pilot](./docs/pilots/openclaw.md)
+
+If you need reusable blank templates instead of the ready-made files above, keep using [docs/PILOT_TEMPLATE.md](./docs/PILOT_TEMPLATE.md) and [docs/PILOT_SUMMARY_TEMPLATE.md](./docs/PILOT_SUMMARY_TEMPLATE.md).
+
+After all five pilot runs are complete, roll the results up into [docs/pilots/SUMMARY.md](./docs/pilots/SUMMARY.md) so the next decision is based on one cross-entry view instead of scattered notes.
 
 ## What This Proves
 
@@ -140,7 +272,7 @@ npm run demo:boundary-violation
 npm run demo:source-test-relevance
 ```
 
-## Local Workflow
+## Manual CLI Workflow
 
 Use this docs-first loop in day-to-day work. Copy it, then replace only the task text and file paths:
 
@@ -197,13 +329,13 @@ AGENT_GUARDRAILS_COMMANDS_RUN=npm test,npm run lint
 The generated user-repo workflow template lives in [templates/base/workflows/agent-guardrails.yml](./templates/base/workflows/agent-guardrails.yml).
 The maintainer CI for this package lives in [guardrails.yml](./.github/workflows/guardrails.yml).
 
-For agent integrations that prefer MCP over shelling out to separate commands, start the OSS MCP server with:
+For agent integrations, the recommended entry is the OSS MCP server:
 
 ```bash
 agent-guardrails mcp
 ```
 
-The MCP MVP exposes the same runtime-backed judgment through these tools:
+The MCP layer exposes the same runtime-backed judgment through these tools:
 
 - `read_repo_guardrails`
 - `suggest_task_contract`
@@ -212,7 +344,7 @@ The MCP MVP exposes the same runtime-backed judgment through these tools:
 - `run_guardrail_check`
 - `summarize_review_risks`
 
-The new loop tools are the first OSS agent-native slice:
+The loop tools are the recommended OSS agent-native slice:
 
 - `start_agent_native_loop` bootstraps a runtime-backed contract, writes it to the repo, and seeds the evidence note
 - `finish_agent_native_loop` updates evidence, runs `check`, and returns a reviewer-friendly summary from the same judgment path
@@ -228,9 +360,10 @@ That reviewer-facing result now also carries continuity guidance from the same O
 
 The current product direction is a generic, repo-local production baseline for AI-written code:
 
-- `plan` shapes the task before implementation with bounded paths, intended files, change-type intent, and risk metadata
+- the runtime shapes the task before implementation with bounded paths, intended files, change-type intent, and risk metadata
 - `check` enforces small-scope, test-aware, evidence-backed, reviewable changes
 - `check --review` turns the same findings into a concise reviewer-oriented report
+- MCP and agent-native loop consumers reuse the same judgment path instead of re-implementing prompts
 
 This is intentionally generic-first. It relies on file-shape heuristics, repo policy, task contracts, and command/evidence enforcement rather than framework-specific AST logic.
 
@@ -249,14 +382,14 @@ The open-source core is already the product:
 
 ### Next
 
-The next technical step is deeper enforcement behind the same CLI:
+The next technical step is conversation-first onboarding and stronger runtime-backed enforcement through the same MCP and CLI surface:
 
 - detector pipeline foundation
 - benchmarked semantic examples
 - a first TypeScript or JavaScript semantic pack under `plugins/plugin-ts/`
 - first active semantic proofs for pattern drift, interface drift, boundary violation, and source-to-test relevance
 - semantic analyzers for TypeScript or JavaScript first, Python second
-- skill-first automation, then MCP, then agent-native workflows
+- MCP-first onboarding and chat-oriented adoption
 - broader real-repo pilots beyond the documented pilot
 
 ### Paid
@@ -299,7 +432,25 @@ Example:
 agent-guardrails init . --preset nextjs --adapter openclaw
 ```
 
-If you are not sure what to type, start with `init`, then copy the local workflow example above.
+If you are not sure what to type, start with `setup --agent <name>`, then use the manual flow only when you want to debug or inspect the runtime directly.
+
+### `setup`
+
+Auto-initializes the repo when needed, generates the MCP config snippet for a supported agent, and tells you exactly how to start chatting.
+
+Example:
+
+```bash
+agent-guardrails setup --agent cursor
+agent-guardrails setup --agent claude-code --preset nextjs
+```
+
+The happy path is:
+
+1. run `setup`
+2. paste the snippet into your agent
+3. ask for the task in chat
+4. let the runtime use `read_repo_guardrails`, `start_agent_native_loop`, and `finish_agent_native_loop`
 
 ### `plan`
 
@@ -391,11 +542,11 @@ Platform-specific commands only appear in docs when a shell-specific workaround 
 
 ### Why not just use another AI to recreate this?
 
-You can copy prompts and workflows.
-The harder part is copying a repo-aware runtime that keeps state across task bootstrap, validation, review, semantic drift checks, and maintenance continuity.
+You can copy prompts and a chat wrapper.
+The harder part is copying a repo-aware runtime that keeps state across task bootstrap, validation, review, semantic drift checks, continuity guidance, and workflow integration.
 
 The value of `agent-guardrails` is not "one clever prompt."
-It is the merge-gate system that sits around AI-generated changes and keeps getting more aligned to the repo over time.
+It is the merge-gate system that existing agent chats call while the runtime keeps getting more aligned to the repo over time.
 
 ### What if the global `agent-guardrails` command is not found?
 

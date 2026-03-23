@@ -1,13 +1,19 @@
 # Adapters
 
-This directory holds small, tool-specific guidance for teams that want to use `agent-guardrails` from a particular coding agent or workflow surface.
+This directory holds setup-first, MCP-first guidance for teams that want to use `agent-guardrails` from a particular coding agent.
 
-All adapter docs now use the same docs-first task loop:
+All adapter docs now use the same product entry:
 
-1. Run `plan` with `--allow-paths`, `--required-commands`, and `--evidence ".agent-guardrails/evidence/current-task.md"`.
-2. Implement inside the task contract.
-3. Update the evidence note with the task name, commands run, notable results, and residual risk or `none`.
-4. Run `check --commands-run ...` locally, or `check --json` in automation.
+1. Run `agent-guardrails setup --agent <name>`.
+2. Paste the generated MCP snippet into the target agent config.
+3. Ask for the task in chat.
+4. Let the runtime guide the canonical loop:
+   - `read_repo_guardrails`
+   - `start_agent_native_loop`
+   - implementation inside the declared scope
+   - `finish_agent_native_loop`
+
+Manual `plan` / `check` still exist as fallback infrastructure, but they are no longer the primary first-run story.
 
 ## Available
 

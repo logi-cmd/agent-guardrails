@@ -1,38 +1,69 @@
 # Cursor Adapter
 
-Cursor supports repository rules in `.cursor/rules`, so this adapter seeds a project rule that reinforces the `agent-guardrails` workflow.
+Cursor should use `agent-guardrails` as the repo safety runtime behind the chat, not as a manual command checklist.
 
-## Seeded file
+## Setup
+
+```bash
+agent-guardrails setup --agent cursor
+```
+
+If you want setup to also write the repo-local MCP file for you:
+
+```bash
+agent-guardrails setup --agent cursor --write-repo-config
+```
+
+`setup` will:
+
+- auto-initialize the repo if needed
+- seed `.cursor/rules/agent-guardrails.mdc`
+- print the MCP config snippet for Cursor
+- tell you where to paste it
+- give you one recommended first chat message
+
+With `--write-repo-config`, setup can also write `.cursor/mcp.json` directly so the remaining step becomes opening Cursor and sending the first chat message.
+
+## Recommended first chat
+
+Use the first chat prompt printed by `setup`, or start with:
+
+> Use agent-guardrails for this repo. Read the repo guardrails, start the agent-native loop, implement the smallest safe change for: `<your task>`, then finish the loop and summarize the reviewer-facing result.
+
+## Canonical MCP flow
+
+Cursor should prefer:
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. implement inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` are still available, but they are not the recommended first-run path.
+
+## Repo-local helper file
+
+`setup` seeds:
 
 - `.cursor/rules/agent-guardrails.mdc`
 
-## Recommended flow
+## Pilot checklist
+
+When you run the broader external pilot pass, record the Cursor result with [docs/pilots/cursor.md](../../docs/pilots/cursor.md).
+
+For Cursor, the key questions are:
+
+- does setup stay clear enough for a heavy vibe-coding user to reach first chat quickly
+- is MCP config paste still the main blocker
+- does the reviewer summary feel worth keeping versus falling back to raw chat output
+
+## Fallback
+
+If you need the manual runtime path, use:
 
 ```bash
-agent-guardrails init . --preset node-service --adapter cursor
+agent-guardrails plan --task "<task>"
+agent-guardrails check --commands-run "npm test" --review
 ```
 
-Then:
-
-1. Open the repo in Cursor.
-2. Let Cursor load the project rule alongside `AGENTS.md`.
-3. Run `agent-guardrails plan --task "<task>"`.
-4. Update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`, then finish with `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`.
-
-Example:
-
-```bash
-agent-guardrails plan --task "Add refund status transitions"
-agent-guardrails check --base-ref origin/main --commands-run "npm test" --review
-```
-
-Use `agent-guardrails check --json` for automation or CI integrations, not as the primary local interaction.
-
-## Automation recipe
-
-```yaml
-- name: Run guardrails
-  env:
-    AGENT_GUARDRAILS_COMMANDS_RUN: npm test
-  run: agent-guardrails check --base-ref origin/${{ github.event.repository.default_branch }} --json > agent-guardrails-report.json
-```
+Use `agent-guardrails check --json` for automation or CI integrations, not as the primary local chat loop.

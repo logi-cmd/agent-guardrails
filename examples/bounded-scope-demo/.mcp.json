@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "agent-guardrails": {
+      "command": "npx",
+      "args": [
+        "agent-guardrails",
+        "mcp"
+      ]
+    }
+  }
+}

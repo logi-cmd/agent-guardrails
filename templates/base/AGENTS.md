@@ -11,7 +11,12 @@ Before writing code, read:
 
 ## Working Style
 
-- Before substantial edits, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session, then keep the implementation inside that contract.
+- If this repo is wired into `agent-guardrails mcp`, prefer the canonical MCP flow:
+  1. `read_repo_guardrails`
+  2. `start_agent_native_loop`
+  3. implement inside the declared scope
+  4. `finish_agent_native_loop`
+- If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session, then keep the implementation inside that contract.
 - When the task is narrow or risky, add `--intended-files`, `--allowed-change-types`, `--allow-paths`, or `--required-commands` so the contract matches the smallest viable slice.
 - Prefer existing patterns over new abstractions.
 - Keep changes small and easy to review.

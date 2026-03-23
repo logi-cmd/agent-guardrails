@@ -1,41 +1,63 @@
 # OpenClaw Adapter
 
-This is the smallest useful OpenClaw slice for `agent-guardrails`.
+OpenClaw should treat `agent-guardrails` as the repo safety runtime behind the chat loop, not as a manual command checklist.
 
-It does not add a custom binary integration. Instead, it gives OpenClaw users a ready-to-use instruction template and a clear workflow for using the repo-local guardrails already in this project.
-
-## What it gives you
-
-- A repo-local instruction template in [OPENCLAW.md](./OPENCLAW.md)
-- A simple adoption flow that uses `init`, `plan`, and `check`
-- A documented path to task contracts and base-ref checks
-
-## Recommended flow
-
-1. Initialize the repo with `agent-guardrails`, ideally with `--adapter openclaw`.
-2. Use the OpenClaw instruction template to keep tasks bounded.
-3. Run `agent-guardrails plan --task "<task>"` to write a task contract for the current task. Add narrower flags only when the task is especially small or risky.
-4. Update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`, then run `check --base-ref origin/main --commands-run "npm test" --review` before finishing.
-
-Example:
+## Setup
 
 ```bash
-node ./bin/agent-guardrails.js init . --preset node-service --adapter openclaw
-node ./bin/agent-guardrails.js plan --task "Add refund status transitions"
-node ./bin/agent-guardrails.js check --base-ref origin/main --commands-run "npm test" --review
+agent-guardrails setup --agent openclaw
 ```
 
-Use `agent-guardrails check --json` when OpenClaw is being orchestrated by automation or CI, not as the default local loop.
+`setup` will:
 
-## Automation recipe
+- auto-initialize the repo if needed
+- seed `OPENCLAW.md`
+- print the MCP config snippet for OpenClaw
+- tell you where to paste it
+- give you one recommended first chat message
 
-```yaml
-- name: Run guardrails
-  env:
-    AGENT_GUARDRAILS_COMMANDS_RUN: npm test
-  run: agent-guardrails check --base-ref origin/${{ github.event.repository.default_branch }} --json > agent-guardrails-report.json
+If you use `--write-repo-config`, setup can also write `.openclaw/mcp.json` directly so the remaining step becomes pointing OpenClaw at the repo-local config and opening the chat.
+
+## Recommended first chat
+
+Use the first chat prompt printed by `setup`, or start with:
+
+> Use agent-guardrails for this repo. Read the repo guardrails, start the agent-native loop, implement the smallest safe change for: `<your task>`, then finish the loop with a reviewer-friendly summary.
+
+## Canonical MCP flow
+
+OpenClaw should prefer:
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. implement inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` remain available as lower-level MCP tools, but they are not the main first-run path.
+
+## Repo-local helper file
+
+`setup` seeds:
+
+- `OPENCLAW.md`
+
+## Pilot checklist
+
+When you run the broader external pilot pass, record the OpenClaw result with [docs/pilots/openclaw.md](../../docs/pilots/openclaw.md).
+
+For OpenClaw, the key questions are:
+
+- does setup still leave only one meaningful manual step
+- is the MCP config location explanation specific enough
+- does the runtime summary feel materially better than a plain OpenClaw chat loop
+
+## Fallback
+
+If you need the manual runtime path, use:
+
+```bash
+agent-guardrails plan --task "<task>"
+agent-guardrails check --commands-run "npm test" --review
 ```
 
-## Best fit
-
-OpenClaw works best here when it is used as the task-execution layer and `agent-guardrails` is the repo policy layer. That keeps the setup lightweight while still enforcing scope, test expectations, and CI-friendly diffs.
+Use `agent-guardrails check --json` for automation or CI, not as the default local loop.

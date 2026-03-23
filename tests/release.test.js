@@ -46,8 +46,27 @@ export async function run() {
   assert.match(readme, /AGENT_GUARDRAILS_COMMANDS_RUN/);
   assert.match(readme, /agent-guardrails mcp/);
   assert.match(readme, /read_repo_guardrails/);
-  assert.match(readme, /agent-guardrails plan --task "Add refund status transitions/);
-  assert.match(readme, /By default, `plan` now fills in/);
+  assert.match(readme, /agent-guardrails setup --agent claude-code/);
+  assert.match(readme, /agent-guardrails setup --agent claude-code --preset nextjs/);
+  assert.match(readme, /agent-guardrails setup --agent claude-code --write-repo-config/);
+  assert.match(readme, /agent-guardrails setup --agent cursor --write-repo-config/);
+  assert.match(readme, /External Pilot Paths/);
+  assert.match(readme, /docs\/PILOT_TEMPLATE\.md/);
+  assert.match(readme, /docs\/PILOT_SUMMARY_TEMPLATE\.md/);
+  assert.match(readme, /docs\/pilots\/README\.md/);
+  assert.match(readme, /docs\/pilots\/claude-code\.md/);
+  assert.match(readme, /docs\/pilots\/cursor\.md/);
+  assert.match(readme, /docs\/pilots\/codex\.md/);
+  assert.match(readme, /docs\/pilots\/openhands\.md/);
+  assert.match(readme, /docs\/pilots\/openclaw\.md/);
+  assert.match(readme, /docs\/pilots\/SUMMARY\.md/);
+  assert.match(readme, /cursor/);
+  assert.match(readme, /codex/);
+  assert.match(readme, /openhands/);
+  assert.match(readme, /openclaw/);
+  assert.match(readme, /By default, `setup` handles repo initialization/);
+  assert.match(readme, /start_agent_native_loop/);
+  assert.match(readme, /finish_agent_native_loop/);
   assert.match(readme, /--review/);
   assert.match(readme, /--lang zh-CN/);
   assert.match(readme, /tested in CI on Windows, Linux, and macOS/);
@@ -58,6 +77,11 @@ export async function run() {
   assert.match(readme, /## Benchmarks/);
   assert.match(readme, /## Commercialization/);
   assert.match(readme, /\.agent-guardrails\/evidence\/current-task\.md/);
+  assert.ok(
+    readme.indexOf("## Setup-First Quick Start") !== -1 &&
+      readme.indexOf("## CLI Fallback Quick Start") !== -1 &&
+      readme.indexOf("## Setup-First Quick Start") < readme.indexOf("## CLI Fallback Quick Start")
+  );
   assert.match(zhReadme, /中文概览/);
   assert.match(zhStrategy, /产品策略/);
 
@@ -103,12 +127,22 @@ export async function run() {
   assert.match(templateWorkflow, /npx agent-guardrails check/);
 
   for (const content of adapterDocs) {
+    assert.match(content, /agent-guardrails setup --agent/);
+    assert.match(content, /start_agent_native_loop/);
+    assert.match(content, /finish_agent_native_loop/);
     assert.match(content, /check --json/);
-    assert.match(content, /AGENT_GUARDRAILS_COMMANDS_RUN/);
     assert.match(content, /agent-guardrails plan --task "<task>"/);
-    assert.match(content, /--review/);
-    assert.match(content, /\.agent-guardrails\/evidence\/current-task\.md/);
   }
+
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_TEMPLATE.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_SUMMARY_TEMPLATE.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "README.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "claude-code.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "cursor.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "codex.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openhands.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openclaw.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "SUMMARY.md")), true);
 
   assert.equal(fs.existsSync(path.join(repoRoot, "CONTRIBUTING.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "CHANGELOG.md")), true);

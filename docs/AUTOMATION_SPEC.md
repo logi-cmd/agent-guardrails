@@ -9,6 +9,12 @@ Make `agent-guardrails` feel like a product, not a checklist, by turning the exi
 The goal is not to hide the guardrails.
 The goal is to make them happen automatically while keeping the same quality bar.
 
+The product entry should now be conversation-first:
+
+- the user talks in an existing coding-agent chat
+- the agent calls the runtime through MCP
+- the CLI remains the bootstrap, debug, CI, and fallback layer
+
 ## Product principles
 
 - Keep the OSS merge gate strong enough to be genuinely useful on its own.
@@ -31,7 +37,7 @@ Today the runtime already provides:
 The first baseline Skill flow already exists through `plan` plus `check`, the first MCP MVP already exists through `agent-guardrails mcp`, and the first OSS agent-native loop now exists as runtime-backed MCP actions.
 
 The next implementation step is not more prompt text.
-It is deepening the same runtime-backed review surface with stronger security, dependency, performance, and understanding signals.
+It is making the MCP-first entry feel like the product through one setup-first path while keeping the same runtime-backed review surface underneath.
 
 ## Runtime model
 
@@ -103,7 +109,7 @@ The baseline Skill flow should keep doing one thing well:
 
 ## MCP
 
-The MCP server should remain a thin interface over the same runtime.
+The MCP server should remain a thin interface over the same runtime and the primary user-facing bridge for existing coding agents.
 
 ### Current methods
 
@@ -120,6 +126,28 @@ The MCP server should remain a thin interface over the same runtime.
 - keep machine-readable shapes stable
 - add semantic help without changing baseline merge-gate behavior
 - never duplicate prompt logic outside the runtime
+- prefer one canonical chat flow over many equally-promoted tool paths
+
+### Recommended chat flow
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. implement inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` remain useful lower-level tools, but they should not be the default first-run onboarding story.
+
+### Setup-first entry
+
+The first user-visible happy path should now be:
+
+1. install `agent-guardrails`
+2. run `agent-guardrails setup --agent <name>`
+3. let `setup` auto-initialize the repo if needed
+4. paste the generated MCP snippet into the existing agent
+5. ask for the task in chat
+
+The user should not need to hand-write task contracts, choose file paths, or memorize MCP method names to try the product.
 
 ## Agent-native loop
 
@@ -145,6 +173,7 @@ The user should not need to:
 - memorize workflow commands
 - choose evidence paths from scratch
 - understand detector names before getting value
+- replace task text and file paths manually on first contact just to try the product
 
 ## Continuity and risk dimensions
 
@@ -168,6 +197,8 @@ The continuity MVP now adds:
 
 Near-term follow-on work:
 
+- one setup-first path for all supported agents
+- one canonical copy-paste agent config path per agent
 - module history
 - preferred reuse hints
 - stronger security-sensitive path checks

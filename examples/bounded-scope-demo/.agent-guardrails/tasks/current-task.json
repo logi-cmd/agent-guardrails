@@ -1,0 +1,12 @@
+{
+  "task": "Add severity filter to buildAuditSummary",
+  "description": "Allow filtering events by severity level (critical, high, medium, low) without changing deployment notes",
+  "allowedPaths": ["src/", "tests/"],
+  "requiredCommands": ["npm test"],
+  "evidenceFile": ".agent-guardrails/evidence/current-task.md",
+  "constraints": [
+    "Keep changes inside src/ and tests/",
+    "Do not modify docs or infra",
+    "Add test coverage for new functionality"
+  ]
+}

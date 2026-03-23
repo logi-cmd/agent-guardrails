@@ -1,0 +1,13 @@
+---
+description: agent-guardrails workflow and scope checks
+alwaysApply: true
+---
+
+把 `agent-guardrails` 作为 repo-local guardrail 层。
+
+- 开始编辑前先阅读 `AGENTS.md`、`docs/PROJECT_STATE.md` 和 `README.md`。
+- 在较大代码改动前先运行 `agent-guardrails plan --task "<task>"`。只有在任务特别窄或风险更高时，再补更严格的参数。
+- 除非显式放宽 scope，否则要保持在任务契约范围内。
+- 如果行为变化了，补测试，并更新 `.agent-guardrails/evidence/current-task.md`，写清任务名、执行过的命令、关键结果和残余风险或 `none`。
+- 完成前运行 `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`。
+- `agent-guardrails check --json` 仅用于 CI 或自动化，不是主要的本地交互方式。

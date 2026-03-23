@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 - Draft
+
+Post-pilot minor focused on setup-first onboarding, conversation-first entry, and the last bit of MCP entry friction.
+
+- Added `agent-guardrails setup --agent <name>` as the setup-first entry that auto-initializes repos, generates MCP snippets, and prints a canonical first chat flow
+- Added pilot-ready onboarding and repo-local MCP write paths for Claude Code, Cursor, OpenHands, and OpenClaw, plus setup-first docs for Codex
+- Added ready-made pilot records and a summary template so setup friction, MCP paste friction, CLI fallback, and reviewer trust can be tracked consistently
+- Updated the README and adapter docs with English and Chinese setup-first guidance, including a "rough idea is enough" chat example
+- Validated the setup-first path with completed sandbox chats for Claude Code, Codex, and OpenClaw; Cursor and OpenHands remain setup-only validation at this stage
+- Kept the runtime, continuity guidance, and reviewer surface stable while making the first-run experience much easier to adopt
+
 ## 0.1.2 - 2026-03-23
 
 Minor release focused on the continuity layer MVP and runtime-backed review guidance.

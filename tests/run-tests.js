@@ -4,6 +4,10 @@ const testModules = [
     path: "./init.test.js"
   },
   {
+    name: "setup",
+    path: "./setup.test.js"
+  },
+  {
     name: "plan",
     path: "./plan.test.js"
   },

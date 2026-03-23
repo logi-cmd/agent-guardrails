@@ -11,10 +11,15 @@ Use `agent-guardrails` as the repo-local guardrail layer for this project.
 
 ## Working Flow
 
-1. Read repo state first, then run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
-2. Implement only within the task contract unless you update the scope first.
-3. If behavior changes, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
-4. Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime with the commands that actually ran.
+1. If Claude Code is connected to `agent-guardrails mcp`, prefer the canonical MCP flow:
+   - `read_repo_guardrails`
+   - `start_agent_native_loop`
+   - implement inside the declared scope
+   - `finish_agent_native_loop`
+2. If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
+3. Implement only within the task contract unless you update the scope first.
+4. If behavior changes, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
+5. Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime with the commands that actually ran.
 
 ## Rules
 

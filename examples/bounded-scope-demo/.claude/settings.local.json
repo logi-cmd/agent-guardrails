@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node ../../lib/cli.js plan --task \"Add severity filter to buildAuditSummary - allow filtering events by severity level \\(critical, high, medium, low\\) without changing deployment notes\")",
+      "Bash(npm test)",
+      "Bash(node tests/app.test.js)",
+      "mcp__serena__write_memory",
+      "Bash(node ../../lib/cli.js check --base-ref origin/main --commands-run \"node tests/app.test.js\" --review)",
+      "Bash(echo \"Check completed with exit code $?\")",
+      "Bash(node ../../lib/cli.js --help)",
+      "Bash(node ../../lib/cli.js check --contract-path .agent-guardrails/tasks/current-task.json --base-ref origin/main --commands-run \"node tests/app.test.js\" --review)",
+      "Bash(node ../../lib/cli.js check --contract-path .agent-guardrails/tasks/current-task.json --base-ref origin/main --commands-run \"node tests/app.test.js\" --json)"
+    ]
+  }
+}

@@ -1,39 +1,58 @@
 # Codex Adapter
 
-Codex already uses `AGENTS.md` as a repository instruction surface, so the core `agent-guardrails` setup is enough for Codex to work well.
+Codex does not need an extra repo-local adapter file. The main job is:
 
-## What to use
+1. run `agent-guardrails setup --agent codex`
+2. paste the generated MCP snippet into your Codex MCP config
+3. start chatting normally
 
-- `AGENTS.md` for repo instructions
-- `docs/PROJECT_STATE.md` for short-term project memory
-- `.agent-guardrails/task-contract.json` for per-task scope
-
-## Recommended flow
-
-1. Initialize the repo with `agent-guardrails`.
-2. Ask Codex to read `AGENTS.md` and project state first.
-3. Start with `agent-guardrails plan --task "<task>"` and let the runtime fill the common contract defaults.
-4. Implement within the task contract and keep `.agent-guardrails/evidence/current-task.md` updated with the task name, commands run, notable results, and residual risk or `none`.
-5. Finish with the `agent-guardrails check ... --review` command the runtime recommends.
-
-Example:
+## Setup
 
 ```bash
-agent-guardrails plan --task "Add refund status transitions"
-agent-guardrails check --base-ref origin/main --commands-run "npm test" --review
+agent-guardrails setup --agent codex
 ```
 
-Use `agent-guardrails check --json` when Codex is being orchestrated by automation or CI, not as the default local workflow.
+`setup` will:
 
-## Automation recipe
+- auto-initialize the repo if guardrail files are missing
+- print the MCP config snippet for Codex
+- tell you where to paste it
+- give you one recommended first chat message
 
-For GitHub Actions or another orchestrator, report the commands through `AGENT_GUARDRAILS_COMMANDS_RUN` and collect JSON output:
+## Recommended first chat
 
-```yaml
-- name: Run guardrails
-  env:
-    AGENT_GUARDRAILS_COMMANDS_RUN: npm test
-  run: agent-guardrails check --base-ref origin/${{ github.event.repository.default_branch }} --json > agent-guardrails-report.json
+Use the first chat prompt printed by `setup`, or start with:
+
+> Use agent-guardrails for this repo. Read the repo guardrails, start the agent-native loop, implement the smallest safe change for: `<your task>`, then finish the loop with a reviewer-friendly summary.
+
+## Canonical MCP flow
+
+Codex should prefer this flow:
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. implement inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` remain available as lower-level MCP tools, but they are not the default first-run path.
+
+## Pilot checklist
+
+When you run the broader external pilot pass, record the Codex result with [docs/pilots/codex.md](../../docs/pilots/codex.md).
+
+For Codex, the key questions are:
+
+- does the setup-first path still feel lighter than dropping straight to CLI
+- is the MCP config location clear enough without extra hand-holding
+- does the reviewer summary add enough value to keep the runtime in the loop
+
+## Fallback
+
+If you need to debug the runtime manually, fall back to:
+
+```bash
+agent-guardrails plan --task "<task>"
+agent-guardrails check --commands-run "npm test" --review
 ```
 
-Codex does not need a separate adapter file today because `AGENTS.md` is already the primary repo-level instruction file.
+Use `agent-guardrails check --json` for CI or automation, not as the main local chat workflow.

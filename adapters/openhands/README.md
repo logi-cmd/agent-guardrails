@@ -1,38 +1,63 @@
 # OpenHands Adapter
 
-OpenHands supports repository guidance through `.agents/skills`, so this adapter seeds a repo-level skill that tells OpenHands to use the `agent-guardrails` workflow.
+OpenHands works best when `agent-guardrails` handles the runtime guardrails in the background and the repo still exposes the right repo-local context.
 
-## Seeded file
+## Setup
+
+```bash
+agent-guardrails setup --agent openhands
+```
+
+`setup` will:
+
+- auto-initialize the repo if needed
+- seed `.agents/skills/agent-guardrails.md`
+- print the MCP config snippet for OpenHands
+- tell you where to paste it
+- give you one recommended first chat message
+
+If you use `--write-repo-config`, setup can also write `.openhands/mcp.json` directly so the remaining step becomes pointing OpenHands at the repo-local config and opening the chat.
+
+## Recommended first chat
+
+Use the first chat prompt printed by `setup`, or start with:
+
+> Use agent-guardrails for this repo. Read the repo guardrails, start the agent-native loop, implement the smallest safe change for: `<your task>`, then finish the loop with a reviewer-friendly summary.
+
+## Canonical MCP flow
+
+OpenHands should prefer:
+
+1. `read_repo_guardrails`
+2. `start_agent_native_loop`
+3. implement inside the declared scope
+4. `finish_agent_native_loop`
+
+`suggest_task_contract` and `run_guardrail_check` remain lower-level tools, not the main first-run chat flow.
+
+## Repo-local helper file
+
+`setup` seeds:
 
 - `.agents/skills/agent-guardrails.md`
 
-## Recommended flow
+## Pilot checklist
+
+When you run the broader external pilot pass, record the OpenHands result with [docs/pilots/openhands.md](../../docs/pilots/openhands.md).
+
+For OpenHands, the key questions are:
+
+- is the setup-first path still understandable for a less standard agent surface
+- does MCP config placement introduce unique friction compared with Claude Code or Cursor
+- does the runtime summary still feel trustworthy in this orchestration-heavy context
+
+## Fallback
+
+If you need to drive the runtime manually, use:
 
 ```bash
-agent-guardrails init . --preset node-service --adapter openhands
-```
-
-Then:
-
-1. Start OpenHands in the repo.
-2. Let it load the repo skill and `AGENTS.md`.
-3. Start with `agent-guardrails plan --task "<task>"` and let the runtime fill the common contract defaults.
-4. Update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`, then finish with the `agent-guardrails check ... --review` command the runtime recommends.
-
-Example:
-
-```bash
-agent-guardrails plan --task "Add refund status transitions"
-agent-guardrails check --base-ref origin/main --commands-run "npm test" --review
+agent-guardrails plan --task "<task>"
+agent-guardrails check --commands-run "npm test" --review
 ```
 
 Use `agent-guardrails check --json` for automation or CI orchestration, not as the main local workflow.
-
-## Automation recipe
-
-```yaml
-- name: Run guardrails
-  env:
-    AGENT_GUARDRAILS_COMMANDS_RUN: npm test
-  run: agent-guardrails check --base-ref origin/${{ github.event.repository.default_branch }} --json > agent-guardrails-report.json
-```

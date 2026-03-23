@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-23
+Last updated: 2026-03-24
 
 ## Goal
 
@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest while moving the product from a CLI workflow into a real runtime, then carry the same runtime from the CLI and Skill flow into MCP and agent-native entrypoints while surfacing security, dependency, performance, understanding, and continuity risk dimensions as first-class review hints.
+Keep the published OSS baseline honest after the final MCP paste-friction polish. The current focus is now the drafted `0.1.3` release material and whether it is ready to tag and publish as the post-pilot minor.
 
 ## Done recently
 
@@ -39,6 +39,10 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Extended `init` coverage to verify generated guidance and seeded adapter files mention required commands, evidence, and `--commands-run`
 - Added release-facing docs including `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/TROUBLESHOOTING.md`, and `docs/RELEASE_CHECKLIST.md`
 - Reworked the README around quick start, supported agents, local versus CI workflows, FAQ, and demo proof-of-value
+- Cleaned up the Chinese pilot instructions in the README and the Claude Code pilot record so the first-run guidance stays readable
+- Added a Chinese "rough idea is enough" chat example to the README and marked the Codex sandbox chat as completed in its pilot record
+- Completed the OpenClaw sandbox chat with scoped changes, passing tests, evidence, and a reviewer summary
+- Drafted the `0.1.3` release material around setup-first onboarding, repo-local MCP write paths, and the completed sandbox pilot evidence
 - Upgraded the maintainer CI workflow to run tests, demo, help smoke, pack dry-run, and install smoke
 - Added release validation coverage for README/package metadata/workflow quality and a tarball install smoke script
 - Verified release-grade checks locally, including `npm test`, demo run, help smoke, pack dry-run, and a real tarball install/init path
@@ -112,17 +116,39 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Added an OSS continuity detector that warns about broadened implementation surface, likely parallel abstractions, and continuity-sensitive structure changes without creating a second blocking path
 - Re-verified the continuity-layer milestone with `npm test` and `npm run benchmark`
 - Bumped the package to `0.1.2` and prepared the corresponding release notes for the continuity-layer milestone
+- Reframed the product entry around conversation-first usage so MCP becomes the primary user-facing bridge and CLI becomes the runtime/bootstrap fallback layer
+- Reworked the README, automation spec, commercialization language, and strategy docs so they consistently position `agent-guardrails` as a production-safety runtime for existing agent chats rather than a standalone coding agent
+- Added `agent-guardrails setup --agent <name>` as a new setup-first CLI entry that auto-initializes repos, generates MCP snippets, prints a first chat prompt, and points users at one canonical chat loop
+- Added a small onboarding subsystem for Codex, Claude Code, Cursor, OpenHands, and OpenClaw so all five agents now have explicit MCP-first setup guidance and stable structured setup output
+- Reworked the README and all five adapter docs so the first-run story is "setup, paste config, start chatting" instead of "manually init, plan, and check" 
+- Updated the seeded English adapter templates so repo-local helper files now reinforce the canonical MCP flow alongside the manual fallback path
+- Completed the bounded-scope sandbox setup for OpenHands and OpenClaw, including repo-local helper files and generated MCP snippets
+- Re-verified the setup-first onboarding milestone with `npm test` and `npm run benchmark`
+- Tightened the setup output so it now clearly separates what is already done from the one remaining manual step
+- Made Claude Code the explicit primary external pilot path in the README and adapter docs while keeping the same setup-first runtime entry for the other agents
+- Added `docs/PILOT_TEMPLATE.md` so setup friction, MCP paste friction, CLI fallback, and summary trust can be recorded consistently across individual pilots
+- Added `docs/PILOT_SUMMARY_TEMPLATE.md` so the five-entry pilot can be rolled up into one release-gating view instead of scattered notes
+- Updated the Cursor, Codex, OpenHands, and OpenClaw adapter docs so each one now points to the shared pilot recording path instead of implying only one entry matters
+- Added `docs/pilots/` with one ready-made pilot record per supported agent plus a ready-made rollup file, and taught `setup` to point users at those paths directly
+- Added an optional `setup --write-repo-config` path for clearly safe repo-local MCP targets (`claude-code`, `cursor`, `openhands`, and `openclaw`) so pilot users can get closer to "configure once, then chat"
+- Added Chinese setup guidance in README and turned the Claude Code pilot record into the first real pilot landing page
+- Verified the official Claude Code CLI help on this host, then completed repo-local setup with `--write-repo-config` on the bounded-scope demo sandbox
+- Completed the first real Claude Code sandbox chat and captured the reviewer summary for the bounded-scope demo
+- Completed the Cursor sandbox setup with `--write-repo-config` and prepared the pilot record for its first chat
+- Completed the Codex sandbox setup and finished the first Codex sandbox chat with a reviewer summary
 
 ## Blockers
 
 - Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
-- Proof-of-value now includes a documented source-repo pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
+- Proof-of-value now includes documented sandbox chats for Claude Code, Codex, and OpenClaw, plus sandbox setup completion for Cursor and OpenHands, and the remaining MCP paste friction has now been reduced with repo-local config support where possible
+- The pilot summary now shows three completed sandbox chats and two setup-only entries, which is enough to judge the setup-first release gate
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
-- Security, dependency, performance, and understanding risks are visible in the review surface, but they are still mostly hint-level rather than stronger semantic detectors
+- The first-run path is now setup-first, but the broader five-entry pilot still needs actual chat runs in supported interactive environments
+- Release tagging and publish sign-off for `0.1.3` are still pending
 
 ## Next step
 
-Deepen the risk-dimension layer by turning security-sensitive paths, dependency drift, performance-sensitive changes, and understanding risk into stronger runtime and detector signals on top of the new continuity summary.
+Review the drafted `0.1.3` release materials and decide whether to tag and publish the post-pilot minor or keep polishing before release.
 
 ## Handoff
 

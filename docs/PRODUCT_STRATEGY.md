@@ -25,6 +25,12 @@ The product wins when it reduces:
 - maintenance drift
 - manual workflow overhead
 
+The primary entry should be:
+
+- conversation-first
+- MCP-first for existing coding agents
+- CLI as infrastructure, fallback, CI, and debugging
+
 ## Product goal
 
 The durable goal is not perfect code generation.
@@ -126,6 +132,7 @@ Product answer:
 Keep the public command surface stable:
 
 - `init`
+- `setup`
 - `plan`
 - `check`
 - `check --review`
@@ -165,6 +172,12 @@ Internally, the product should keep converging on four layers:
 - MCP server
 - future agent-native loop
 - future IDE integrations
+
+The user-facing preference order should now be:
+
+1. existing agent chat through MCP
+2. agent-native loop on top of the same runtime
+3. CLI fallback for manual, CI, or debugging use
 
 The critical rule is:
 
