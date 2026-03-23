@@ -62,3 +62,8 @@ Then open your existing agent chat and paste the generated MCP snippet if the se
 This release keeps the runtime and reviewer surface stable.
 It does not change the core merge-gate model.
 It makes the first conversation much easier to start.
+
+## Release status
+
+The package is published to npm as `agent-guardrails@0.1.3`, and the `v0.1.3` tag is pushed to GitHub.
+If you want a GitHub release entry as well, create it manually and paste this release note there.
