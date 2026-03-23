@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.3 - Draft
+## 0.1.3 - 2026-03-24
 
 Post-pilot minor focused on setup-first onboarding, conversation-first entry, and the last bit of MCP entry friction.
 

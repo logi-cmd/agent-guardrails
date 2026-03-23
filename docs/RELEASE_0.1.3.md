@@ -2,7 +2,7 @@
 
 `agent-guardrails` is a production-safety runtime for AI coding workflows.
 
-This release draft focuses on the setup-first, conversation-first entry path. The goal is to make the first successful experience feel like:
+This release focuses on the setup-first, conversation-first entry path. The goal is to make the first successful experience feel like:
 
 1. install once
 2. run `setup`
