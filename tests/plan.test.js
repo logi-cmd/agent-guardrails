@@ -86,6 +86,12 @@ export async function run() {
   assert.match(output, /Validation profile: strict/);
   assert.match(output, /Required command: npm test/);
   assert.match(output, /Evidence path: docs[\\/]+checks\.txt/);
+  assert.match(output, /Risk dimensions/);
+  assert.match(output, /Security requirement:/);
+  assert.match(output, /Dependency requirement:/);
+  assert.match(output, /Performance requirement:/);
+  assert.match(output, /Understanding requirement:/);
+  assert.match(output, /Continuity requirement:/);
   assert.match(output, /Acceptance criterion: Refund status is persisted/);
   assert.match(output, /Production profile: high-throughput-api/);
   assert.match(output, /Non-functional requirement: performance/);
@@ -109,6 +115,11 @@ export async function run() {
   assert.equal(contract.validationProfile, "strict");
   assert.deepEqual(contract.requiredCommands, ["npm test", "npm run lint"]);
   assert.deepEqual(contract.evidencePaths, ["docs/checks.txt", ".agent-guardrails/evidence/task.txt"]);
+  assert.deepEqual(contract.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
+  assert.deepEqual(contract.dependencyRequirements, ["Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."]);
+  assert.deepEqual(contract.performanceRequirements, ["Mention latency, throughput, or hotspot validation in evidence."]);
+  assert.deepEqual(contract.understandingRequirements, ["Explain the main tradeoffs so future maintainers can follow the change."]);
+  assert.deepEqual(contract.continuityRequirements, ["Mention reuse targets and any deliberate continuity break in evidence."]);
   assert.deepEqual(contract.acknowledgedSkips, ["docs"]);
   assert.equal(contract.patternSummary, "Reuse the existing order service and state-transition helpers.");
   assert.equal(contract.smallestViableChange, "Touch the refund transition logic and its focused tests only.");
@@ -153,11 +164,26 @@ export async function run() {
   assert.deepEqual(autoContract.allowedPaths, config.workflow.planDefaults.allowedPaths);
   assert.deepEqual(autoContract.requiredCommands, config.workflow.planDefaults.requiredCommands);
   assert.deepEqual(autoContract.evidencePaths, config.workflow.planDefaults.evidencePaths);
-  assert.deepEqual(autoContract.autoFilledFields, ["allowed paths", "required commands", "evidence paths"]);
+  assert.deepEqual(autoContract.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
+  assert.deepEqual(autoContract.dependencyRequirements, ["Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."]);
+  assert.deepEqual(autoContract.performanceRequirements, ["Mention latency, throughput, or hotspot validation in evidence."]);
+  assert.deepEqual(autoContract.understandingRequirements, ["Explain the main tradeoffs so future maintainers can follow the change."]);
+  assert.deepEqual(autoContract.continuityRequirements, ["Mention reuse targets and any deliberate continuity break in evidence."]);
+  assert.deepEqual(autoContract.autoFilledFields, [
+    "allowed paths",
+    "required commands",
+    "evidence paths",
+    "security requirements",
+    "dependency requirements",
+    "performance requirements",
+    "understanding requirements",
+    "continuity requirements"
+  ]);
   assert.equal(typeof autoContract.session.sessionId, "string");
   assert.equal(autoContract.session.repoRoot, tempDir);
   assert.deepEqual(autoContract.session.requiredCommandsSuggested, config.workflow.planDefaults.requiredCommands);
   assert.equal(autoContract.session.evidencePathSuggested, config.workflow.planDefaults.evidencePaths[0]);
+  assert.deepEqual(autoContract.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
   assert.match(autoContract.session.finishCheckHints.join("\n"), /Finish with agent-guardrails check --review/i);
 
   const uninitializedDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-plan-no-init-"));

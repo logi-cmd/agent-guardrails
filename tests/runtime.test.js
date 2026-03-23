@@ -39,13 +39,22 @@ export async function run() {
   assert.equal(suggestion.contract.requiresReviewNotes, true);
   assert.deepEqual(suggestion.contract.intendedFiles, ["src/auth/service.js", "tests/auth.test.js"]);
   assert.deepEqual(suggestion.contract.allowedPaths, ["src/auth/", "tests/"]);
+  assert.deepEqual(suggestion.contract.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
+  assert.deepEqual(suggestion.contract.dependencyRequirements, ["Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."]);
+  assert.deepEqual(suggestion.contract.performanceRequirements, ["Mention latency, throughput, or hotspot validation in evidence."]);
+  assert.deepEqual(suggestion.contract.understandingRequirements, ["Explain the main tradeoffs so future maintainers can follow the change."]);
+  assert.deepEqual(suggestion.contract.continuityRequirements, ["Mention reuse targets and any deliberate continuity break in evidence."]);
   assert.equal(suggestion.contract.session.contractSource, "runtime-suggested");
   assert.equal(typeof suggestion.contract.session.sessionId, "string");
   assert.equal(suggestion.contract.session.repoRoot, tempDir);
   assert.deepEqual(suggestion.contract.session.requiredCommandsSuggested, ["npm test"]);
   assert.equal(suggestion.contract.session.evidencePathSuggested, ".agent-guardrails/evidence/current-task.md");
+  assert.deepEqual(suggestion.contract.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
+  assert.deepEqual(suggestion.contract.session.riskDimensions.dependencyRequirements, ["Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."]);
   assert.match(suggestion.contract.session.finishCheckHints.join("\n"), /Finish with agent-guardrails check --review/i);
+  assert.match(suggestion.contract.session.finishCheckHints.join("\n"), /security, dependency, performance, understanding, and continuity concerns/i);
   assert.match(suggestion.contract.session.nextActions.join("\n"), /Run required commands: npm test/);
+  assert.match(suggestion.contract.session.nextActions.join("\n"), /Keep security, dependency, performance, understanding, continuity concerns explicit/i);
 
   const bootstrap = bootstrapTaskSession({
     repoRoot: tempDir,
@@ -55,6 +64,8 @@ export async function run() {
   });
   assert.equal(bootstrap.session.taskRequest, "Refine auth flow internals");
   assert.equal(bootstrap.session.selectedFiles.includes("src/auth/service.js"), true);
+  assert.deepEqual(bootstrap.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
+  assert.match(bootstrap.session.nextActions.join("\n"), /security, dependency, performance, understanding, continuity concerns/i);
 
   const finishCheck = prepareFinishCheck({
     repoRoot: tempDir,
@@ -64,6 +75,7 @@ export async function run() {
   });
   assert.match(finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test"/);
   assert.match(finishCheck.nextActions.join("\n"), /Use this finish-time command/);
+  assert.match(finishCheck.nextActions.join("\n"), /security, dependency, performance, understanding, continuity concerns/i);
 
   fs.mkdirSync(path.join(tempDir, "src", "auth"), { recursive: true });
   fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
@@ -92,6 +104,7 @@ export async function run() {
     assert.match(result.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test"/);
     assert.match(result.runtime.nextActions.join("\n"), /before merge/i);
     assert.match(result.runtime.nextActions.join("\n"), /Prefer extending the declared intended files/i);
+    assert.match(result.runtime.nextActions.join("\n"), /security, dependency, performance, understanding, continuity concerns/i);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     delete process.env.AGENT_GUARDRAILS_COMMANDS_RUN;

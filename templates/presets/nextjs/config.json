@@ -83,8 +83,20 @@
     }
   },
   "nfrPolicies": {
+    "security": {
+      "evidenceHint": "Mention auth, secrets, permissions, and sensitive-data handling explicitly."
+    },
+    "dependency": {
+      "evidenceHint": "Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."
+    },
     "performance": {
       "evidenceHint": "Mention render, fetch, or route latency impact in evidence."
+    },
+    "understanding": {
+      "evidenceHint": "Explain the main tradeoffs so future maintainers can follow the change."
+    },
+    "continuity": {
+      "evidenceHint": "Mention reuse targets and any deliberate continuity break in evidence."
     },
     "observability": {
       "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."

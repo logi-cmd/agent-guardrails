@@ -1,12 +1,12 @@
 # Agent Guardrails 中文概览
 
-`agent-guardrails` 是一个零依赖 CLI，用来给 AI coding 工作流加上 repo-local 的生产护栏。
+`agent-guardrails` 是一个零依赖 CLI，用来给 AI coding 工作流加一层 repo-local 的生产护栏。
 
 它当前最核心的能力是：
 
-- 用 `init` 为仓库写入规则、模板和 adapter 文件
-- 用 `plan` 把任务收敛成明确的 task contract
-- 用 `check` 对范围、验证、风险和 review 信号做检查
+- 用 `init` 向仓库写入规则、模板和 adapter 文件
+- 用 `plan` 把自然语言任务收束成结构化 task contract
+- 用 `check` 检查范围、验证、风险和 review 信号
 
 它要解决的不是“AI 会不会写出能运行的代码”，而是：
 
@@ -20,14 +20,12 @@
 
 - repo-local guardrail layer
 - 多种 coding agent 的统一约束层
-- 本地与 CI 中的变更质量基线检查
-
-当前版本还没有完全做到：
-
-- 语义级接口漂移检测
-- 模块边界语义检测
-- 强语义 source-to-test impact
-- 大规模 benchmark 证明
+- 本地和 CI 里的变更质量基线检查
+- 公开可跑的语义 proof points：
+  - pattern drift
+  - interface drift
+  - boundary violation
+  - source-to-test relevance
 
 推荐起手流程：
 

@@ -334,7 +334,14 @@ async function checkPassesWhenTaskRequirementsAreSatisfied() {
     assert.match(result.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test, npm run lint"/);
     assert.match(output, /Task required commands: 2/);
     assert.match(output, /Missing evidence files: 0/);
+    assert.match(output, /Risk dimensions:/);
+    assert.match(output, /Security requirements:/);
+    assert.match(output, /Dependency requirements:/);
+    assert.match(output, /Performance requirements:/);
+    assert.match(output, /Understanding requirements:/);
+    assert.match(output, /Continuity requirements:/);
     assert.match(output, /Finish-time command:/);
+    assert.match(result.runtime.nextActions.join("\n"), /Keep security, dependency, performance, understanding, continuity concerns explicit/i);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -476,6 +483,7 @@ async function checkIgnoresTheGeneratedTaskContractFile() {
 
     assert.equal(result.ok, true);
     assert.match(output, /All baseline guardrail checks passed/);
+    assert.match(result.finishCheck.nextActions.join("\n"), /Keep security, dependency, performance, understanding, continuity concerns explicit/i);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;

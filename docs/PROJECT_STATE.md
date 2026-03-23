@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest while moving the product from a CLI workflow into a real runtime, then carry the same runtime from the CLI and Skill flow into MCP and agent-native entrypoints.
+Keep the published OSS baseline honest while moving the product from a CLI workflow into a real runtime, then carry the same runtime from the CLI and Skill flow into MCP and agent-native entrypoints while surfacing security, dependency, performance, understanding, and continuity risk dimensions as first-class review hints.
 
 ## Done recently
 
@@ -99,6 +99,9 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Added the first OSS MCP MVP as `agent-guardrails mcp`, exposing `read_repo_guardrails`, `suggest_task_contract`, `run_guardrail_check`, and `summarize_review_risks`
 - Added a stdio-framed MCP server that reuses the existing runtime and `executeCheck()` instead of creating a second judgment path
 - Added MCP integration coverage in `tests/mcp.test.js` and re-verified the suite with `npm test`
+- Extended the shared runtime, plan, check, presets, and docs so security, dependency, performance, understanding, and continuity now appear as first-class risk dimensions in task contracts, runtime hints, and reviewer output
+- Re-verified the full suite with `npm test` and `npm run benchmark` after adding the new risk-dimension surface
+- Completed the `zh-CN` localization for the new risk-dimension defaults, runtime hints, and review-facing text so the public OSS flow stays consistent across locales
 
 ## Blockers
 
