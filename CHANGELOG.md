@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 - 2026-03-23
+
+Minor release focused on the continuity layer MVP and runtime-backed review guidance.
+
+- Added the first continuity layer MVP so `check`, MCP, and the agent-native loop now surface reuse targets, new surface files, continuity breaks, future maintenance risks, and continuity-specific next actions
+- Added an OSS continuity detector for broadened implementation surface, likely parallel abstractions, and continuity-sensitive structure changes
+- Updated the runtime-backed review surface and public docs so the new continuity guidance is visible in both CLI and agent-native flows
+
 ## 0.1.1 - 2026-03-23
 
 Patch release focused on onboarding and cross-platform usability.

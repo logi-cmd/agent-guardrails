@@ -111,6 +111,7 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Added the first continuity layer MVP so `check`, MCP, and the agent-native loop now surface reuse targets, new surface files, continuity breaks, future maintenance risks, and continuity-specific next actions from the same OSS runtime
 - Added an OSS continuity detector that warns about broadened implementation surface, likely parallel abstractions, and continuity-sensitive structure changes without creating a second blocking path
 - Re-verified the continuity-layer milestone with `npm test` and `npm run benchmark`
+- Bumped the package to `0.1.2` and prepared the corresponding release notes for the continuity-layer milestone
 
 ## Blockers
 
