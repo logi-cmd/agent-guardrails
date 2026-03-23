@@ -207,8 +207,15 @@ The MCP MVP exposes the same runtime-backed judgment through these tools:
 
 - `read_repo_guardrails`
 - `suggest_task_contract`
+- `start_agent_native_loop`
+- `finish_agent_native_loop`
 - `run_guardrail_check`
 - `summarize_review_risks`
+
+The new loop tools are the first OSS agent-native slice:
+
+- `start_agent_native_loop` bootstraps a runtime-backed contract, writes it to the repo, and seeds the evidence note
+- `finish_agent_native_loop` updates evidence, runs `check`, and returns a reviewer-friendly summary from the same judgment path
 
 ## Production Baseline
 

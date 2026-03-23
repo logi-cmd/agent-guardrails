@@ -107,16 +107,17 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Bumped the package to `0.1.1` and created the local `v0.1.1` tag for the patch release
 - Pushed the `v0.1.1` patch release to GitHub after verifying the release regression suite and benchmark suite stayed green
 - Unified the strategy, automation, commercialization, market, and README messaging around one product truth: a repo-aware, stateful, agent-native production-safety runtime whose moat lives in runtime judgment, repo memory, semantic enforcement, continuity, and workflow integration rather than prompt packaging
+- Added the first OSS agent-native loop MVP on top of the shared runtime and MCP layer so an agent can bootstrap a task, seed evidence, run `check`, and return a reviewer-friendly summary without the user hand-driving each step
 
 ## Blockers
 
 - Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
 - Proof-of-value now includes a documented source-repo pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
-- Agent-native entrypoints are still not user-facing yet; the OSS runtime, Skill flow, and MCP server now exist but have not been carried into a full agent-native loop
+- Agent-native entrypoints now exist through the OSS MCP loop, but continuity and module-history guidance are still only hints rather than a stronger reuse-oriented layer
 
 ## Next step
 
-Build the first agent-native loop MVP on top of the shared runtime and MCP layer so an agent can bootstrap a task, run validation, and report the result without the user hand-driving each step.
+Build the continuity layer MVP so the runtime can point agents toward reuse targets, continuity breaks, and future maintainer risk instead of only surfacing broad continuity hints.
 
 ## Handoff
 

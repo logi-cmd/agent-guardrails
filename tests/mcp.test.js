@@ -154,6 +154,8 @@ export async function run() {
     assert.deepEqual(toolNames, [
       "read_repo_guardrails",
       "suggest_task_contract",
+      "start_agent_native_loop",
+      "finish_agent_native_loop",
       "run_guardrail_check",
       "summarize_review_risks"
     ]);
@@ -175,6 +177,34 @@ export async function run() {
     });
     assert.equal(suggestResponse.result.structuredContent.contract.task, "Refine refund flow");
     assert.equal(typeof suggestResponse.result.structuredContent.session.sessionId, "string");
+
+    const startLoopResponse = await client.request("tools/call", {
+      name: "start_agent_native_loop",
+      arguments: {
+        repoRoot: tempDir,
+        taskRequest: "Refine refund flow",
+        selectedFiles: ["src/orders/refund-service.js"],
+        changedFiles: ["src/orders/refund-service.js", "tests/refund-service.test.js"]
+      }
+    });
+    assert.equal(startLoopResponse.result.structuredContent.contract.task, "Refine refund flow");
+    assert.equal(startLoopResponse.result.structuredContent.evidenceFiles[0].path, ".agent-guardrails/evidence/current-task.md");
+    assert.match(startLoopResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
+
+    const finishLoopResponse = await client.request("tools/call", {
+      name: "finish_agent_native_loop",
+      arguments: {
+        repoRoot: tempDir,
+        commandsRun: ["npm test"],
+        evidence: {
+          notableResults: ["Refund tests passed after refining the flow."],
+          reviewNotes: ["Stayed inside the declared refund service and test files."],
+          residualRisk: "none"
+        }
+      }
+    });
+    assert.equal(finishLoopResponse.result.structuredContent.checkResult.ok, true);
+    assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.status, "pass");
 
     const checkResponse = await client.request("tools/call", {
       name: "run_guardrail_check",

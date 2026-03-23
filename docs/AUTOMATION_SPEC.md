@@ -26,11 +26,12 @@ Today the runtime already provides:
 - session bootstrap
 - finish-time check planning
 - review-risk summarization
+- agent-native loop bootstrap and finish helpers
 
-The first baseline Skill flow already exists through `plan` plus `check`, and the first MCP MVP already exists through `agent-guardrails mcp`.
+The first baseline Skill flow already exists through `plan` plus `check`, the first MCP MVP already exists through `agent-guardrails mcp`, and the first OSS agent-native loop now exists as runtime-backed MCP actions.
 
 The next implementation step is not more prompt text.
-It is carrying the same runtime into the first agent-native loop.
+It is strengthening continuity and future-maintainer guidance on top of the same loop.
 
 ## Runtime model
 
@@ -108,6 +109,8 @@ The MCP server should remain a thin interface over the same runtime.
 
 - `read_repo_guardrails`
 - `suggest_task_contract`
+- `start_agent_native_loop`
+- `finish_agent_native_loop`
 - `run_guardrail_check`
 - `summarize_review_risks`
 
@@ -120,17 +123,21 @@ The MCP server should remain a thin interface over the same runtime.
 
 ## Agent-native loop
 
-This is the next major implementation target.
+The first MVP is now in place through the runtime plus MCP.
 
-The first MVP should let an agent:
+The current loop lets an agent:
 
 1. read repo guardrails
-2. draft or update the task contract
-3. implement inside the declared scope
-4. run required commands
-5. update evidence
-6. run `check`
-7. return a short reviewer-friendly summary
+2. draft and write the task contract
+3. seed the evidence note
+4. implement inside the declared scope
+5. run required commands
+6. update evidence
+7. run `check`
+8. return a short reviewer-friendly summary
+
+The next loop milestone is not a second command path.
+It is adding stronger continuity and reuse guidance on top of the same runtime-backed loop.
 
 The user should not need to:
 

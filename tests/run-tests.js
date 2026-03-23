@@ -28,6 +28,10 @@ const testModules = [
     path: "./runtime.test.js"
   },
   {
+    name: "agent-loop",
+    path: "./agent-loop.test.js"
+  },
+  {
     name: "mcp",
     path: "./mcp.test.js"
   },
