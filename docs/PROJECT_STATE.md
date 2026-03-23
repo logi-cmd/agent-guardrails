@@ -108,16 +108,20 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Pushed the `v0.1.1` patch release to GitHub after verifying the release regression suite and benchmark suite stayed green
 - Unified the strategy, automation, commercialization, market, and README messaging around one product truth: a repo-aware, stateful, agent-native production-safety runtime whose moat lives in runtime judgment, repo memory, semantic enforcement, continuity, and workflow integration rather than prompt packaging
 - Added the first OSS agent-native loop MVP on top of the shared runtime and MCP layer so an agent can bootstrap a task, seed evidence, run `check`, and return a reviewer-friendly summary without the user hand-driving each step
+- Added the first continuity layer MVP so `check`, MCP, and the agent-native loop now surface reuse targets, new surface files, continuity breaks, future maintenance risks, and continuity-specific next actions from the same OSS runtime
+- Added an OSS continuity detector that warns about broadened implementation surface, likely parallel abstractions, and continuity-sensitive structure changes without creating a second blocking path
+- Re-verified the continuity-layer milestone with `npm test` and `npm run benchmark`
 
 ## Blockers
 
 - Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
 - Proof-of-value now includes a documented source-repo pilot, but broader external pilots are still missing for stronger claims beyond the current OSS release posture
-- Agent-native entrypoints now exist through the OSS MCP loop, but continuity and module-history guidance are still only hints rather than a stronger reuse-oriented layer
+- Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
+- Security, dependency, performance, and understanding risks are visible in the review surface, but they are still mostly hint-level rather than stronger semantic detectors
 
 ## Next step
 
-Build the continuity layer MVP so the runtime can point agents toward reuse targets, continuity breaks, and future maintainer risk instead of only surfacing broad continuity hints.
+Deepen the risk-dimension layer by turning security-sensitive paths, dependency drift, performance-sensitive changes, and understanding risk into stronger runtime and detector signals on top of the new continuity summary.
 
 ## Handoff
 

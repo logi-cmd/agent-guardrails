@@ -398,7 +398,8 @@ async function checkFailsWhenProtectedAreaNeedsRiskAndReviewNotes() {
     assert.equal(result.ok, false);
     assert.match(output, /Protected area touched without sufficient task risk level: auth flows/);
     assert.match(output, /High-risk area changed without review-oriented notes in evidence: auth flows/);
-    assert.equal(result.review.summary.riskConcerns, 3);
+    assert.equal(result.review.summary.riskConcerns, 4);
+    assert.equal(result.continuity.continuityBreaks.some((item) => item.code === "protected-structure-changed"), true);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -637,6 +638,63 @@ async function checkPrintsReviewOutput() {
   }
 }
 
+async function checkAddsContinuityGuidanceForParallelAbstraction() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-continuity-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src", "orders"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "orders", "service.js"), "export const order = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "orders", "helper.js"), "export const helper = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "orders.test.js"), "export const ok = true;\n", "utf8");
+
+  await withRepoCwd(tempDir, () =>
+    runPlan({
+      positional: [],
+      flags: {
+        task: "Refine order flow internals",
+        "allow-paths": "src/,tests/",
+        "intended-files": "src/orders/service.js,tests/orders.test.js"
+      },
+      locale: "en"
+    })
+  );
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = [
+    "src/orders/service.js",
+    "src/orders/helper.js",
+    "tests/orders.test.js"
+  ].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { review: true }, locale: "en" }))
+    );
+
+    assert.equal(result.ok, false);
+    assert.equal(result.findings.some((finding) => finding.code === "intended-file-violation"), true);
+    assert.equal(result.findings.some((finding) => finding.code === "continuity-parallel-abstraction"), true);
+    assert.equal(
+      result.findings.find((finding) => finding.code === "continuity-parallel-abstraction")?.severity,
+      "warning"
+    );
+    assert.deepEqual(result.continuity.reuseTargets.map((item) => item.value), ["src/orders/service.js", "tests/orders.test.js"]);
+    assert.deepEqual(result.continuity.newSurfaceFiles, ["src/orders/helper.js"]);
+    assert.equal(result.continuity.continuityBreaks.some((item) => item.code === "broadened-beyond-intended"), true);
+    assert.equal(result.continuity.continuityBreaks.some((item) => item.code === "parallel-abstraction-likely"), true);
+    assert.match(result.continuity.futureMaintenanceRisks.join("\n"), /parallel abstraction/i);
+    assert.match(output, /Continuity guidance:/);
+    assert.match(output, /Reuse targets:/);
+    assert.match(output, /Future maintenance risk:/);
+    assert.match(output, /src\/orders\/helper\.js/);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
 export async function run() {
   await checkFailsWithoutTests();
   await checkPassesWithTests();
@@ -655,4 +713,5 @@ export async function run() {
   await checkPrintsJsonOutput();
   await checkPrintsJsonFailures();
   await checkPrintsReviewOutput();
+  await checkAddsContinuityGuidanceForParallelAbstraction();
 }

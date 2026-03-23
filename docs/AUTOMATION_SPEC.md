@@ -31,7 +31,7 @@ Today the runtime already provides:
 The first baseline Skill flow already exists through `plan` plus `check`, the first MCP MVP already exists through `agent-guardrails mcp`, and the first OSS agent-native loop now exists as runtime-backed MCP actions.
 
 The next implementation step is not more prompt text.
-It is strengthening continuity and future-maintainer guidance on top of the same loop.
+It is deepening the same runtime-backed review surface with stronger security, dependency, performance, and understanding signals.
 
 ## Runtime model
 
@@ -51,7 +51,7 @@ The automation stack should remain four layers:
 - contract suggestion
 - finish-time command planning
 - next-action planning
-- continuity hints
+- continuity summary
 
 ### 3. Semantic Layer
 
@@ -137,7 +137,7 @@ The current loop lets an agent:
 8. return a short reviewer-friendly summary
 
 The next loop milestone is not a second command path.
-It is adding stronger continuity and reuse guidance on top of the same runtime-backed loop.
+It is carrying the same loop into stronger risk-dimension guidance without splitting the judgment path.
 
 The user should not need to:
 
@@ -150,7 +150,7 @@ The user should not need to:
 
 Automation should not stop at pass/fail.
 
-The runtime and reviewer surface should keep making these dimensions visible:
+The runtime and reviewer surface now make these dimensions visible:
 
 - security
 - dependency
@@ -158,12 +158,22 @@ The runtime and reviewer surface should keep making these dimensions visible:
 - understanding
 - continuity
 
+The continuity MVP now adds:
+
+- reuse targets
+- new surface files
+- continuity breaks
+- future maintenance risks
+- continuity-specific next actions
+
 Near-term follow-on work:
 
 - module history
 - preferred reuse hints
-- continuity break warnings
-- future maintainer risk
+- stronger security-sensitive path checks
+- dependency drift checks
+- performance-sensitive change checks
+- understanding and explainability risk checks
 
 ## Boundaries
 

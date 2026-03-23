@@ -189,6 +189,7 @@ export async function run() {
     });
     assert.equal(startLoopResponse.result.structuredContent.contract.task, "Refine refund flow");
     assert.equal(startLoopResponse.result.structuredContent.evidenceFiles[0].path, ".agent-guardrails/evidence/current-task.md");
+    assert.equal(Array.isArray(startLoopResponse.result.structuredContent.continuity.reuseTargets), true);
     assert.match(startLoopResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
 
     const finishLoopResponse = await client.request("tools/call", {
@@ -205,6 +206,7 @@ export async function run() {
     });
     assert.equal(finishLoopResponse.result.structuredContent.checkResult.ok, true);
     assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.status, "pass");
+    assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.futureMaintenanceRisks), true);
 
     const checkResponse = await client.request("tools/call", {
       name: "run_guardrail_check",
@@ -215,6 +217,7 @@ export async function run() {
       }
     });
     assert.equal(checkResponse.result.structuredContent.ok, true);
+    assert.equal(typeof checkResponse.result.structuredContent.continuity, "object");
     assert.match(checkResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
 
     const summaryResponse = await client.request("tools/call", {

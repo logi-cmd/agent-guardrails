@@ -36,6 +36,8 @@ export async function run() {
   assert.equal(typeof start.session.sessionId, "string");
   assert.equal(start.contractPath, ".agent-guardrails/task-contract.json");
   assert.equal(start.evidenceFiles[0].created, true);
+  assert.deepEqual(start.continuity.reuseTargets.map((item) => item.value), ["src/auth/service.js", "tests/auth.test.js"]);
+  assert.equal(Array.isArray(start.loop.reuseTargets), true);
   assert.match(start.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main/);
   assert.match(start.loop.nextActions.join("\n"), /Run required commands: npm test/);
 
@@ -59,6 +61,8 @@ export async function run() {
     assert.equal(finish.checkResult.ok, true);
     assert.equal(finish.reviewerSummary.status, "pass");
     assert.equal(finish.evidenceFiles[0].updated, true);
+    assert.equal(Array.isArray(finish.checkResult.continuity.reuseTargets), true);
+    assert.equal(Array.isArray(finish.reviewerSummary.futureMaintenanceRisks), true);
     assert.match(finish.reviewerSummary.nextActions.join("\n"), /before merge/i);
     assert.match(fs.readFileSync(evidenceFile, "utf8"), /Auth tests stayed green after the refactor\./);
   } finally {

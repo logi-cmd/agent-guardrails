@@ -217,6 +217,13 @@ The new loop tools are the first OSS agent-native slice:
 - `start_agent_native_loop` bootstraps a runtime-backed contract, writes it to the repo, and seeds the evidence note
 - `finish_agent_native_loop` updates evidence, runs `check`, and returns a reviewer-friendly summary from the same judgment path
 
+That reviewer-facing result now also carries continuity guidance from the same OSS runtime:
+
+- reuse targets to extend first
+- new surface files that broaden the maintenance surface
+- continuity breaks that look like parallel abstractions or structure drift
+- future maintenance risks and continuity-specific next actions
+
 ## Production Baseline
 
 The current product direction is a generic, repo-local production baseline for AI-written code:

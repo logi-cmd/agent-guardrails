@@ -101,6 +101,7 @@ export async function run() {
     const result = await executeCheck({ repoRoot: tempDir, locale: "en" });
     assert.equal(result.ok, true);
     assert.equal(result.runtime.status, "pass");
+    assert.equal(Array.isArray(result.continuity.reuseTargets), true);
     assert.match(result.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test"/);
     assert.match(result.runtime.nextActions.join("\n"), /before merge/i);
     assert.match(result.runtime.nextActions.join("\n"), /Prefer extending the declared intended files/i);
