@@ -52,6 +52,12 @@ agent-guardrails check --commands-run "npm test" --review
 
 If you do not want a global install, use `npx agent-guardrails ...` instead.
 
+Cross-platform note:
+
+- `agent-guardrails` is tested in CI on Windows, Linux, and macOS.
+- The examples in this README use shell-neutral commands unless a platform-specific workaround is being documented explicitly.
+- If a global install does not land on your `PATH`, use `npx agent-guardrails ...` instead of troubleshooting your shell first.
+
 By default, `plan` now fills in the preset's common allowed paths, required commands, and evidence path for you. Add extra flags only when you need a tighter contract.
 
 You do not need to hand-write the contract for a normal task. Start with plain task text, let `plan` bootstrap the session, then let `check` tell you the finish-time command and next steps.
@@ -348,6 +354,21 @@ Only when the task contract declares them. In the default docs-first workflow, t
 ### When should I use `--json`?
 
 Use `--json` for CI, hooks, or automation that needs machine-readable results. For normal local work, the human-readable output is the intended default.
+
+### Does this work on Windows, Linux, and macOS?
+
+Yes. The published CLI is exercised in CI on all three platforms, and the primary install and workflow commands are platform-neutral:
+
+- `npm install -g agent-guardrails`
+- `npx agent-guardrails init . --preset node-service`
+- `npx agent-guardrails plan --task "..."`
+- `npx agent-guardrails check --review`
+
+Platform-specific commands only appear in docs when a shell-specific workaround is required.
+
+### What if the global `agent-guardrails` command is not found?
+
+Use `npx agent-guardrails ...` first. That works across shells and avoids PATH differences between Windows, macOS, and Linux.
 
 ## Current Limits
 

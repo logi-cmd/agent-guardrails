@@ -1,5 +1,15 @@
 # Troubleshooting
 
+## `agent-guardrails` is not found after install
+
+If the global binary is not available in your shell yet, use `npx` first:
+
+```bash
+npx agent-guardrails help
+```
+
+This is the quickest cross-platform fallback on Windows, Linux, and macOS.
+
 ## `npm pack --dry-run` fails on Windows with a cache permission error
 
 If you see an `EPERM` error under the default npm cache path, point npm at a repo-local cache and run the command again.
@@ -12,6 +22,12 @@ npm pack --dry-run
 ```
 
 This is the same approach used by the maintainer CI and install smoke script.
+
+POSIX shells usually do not need this workaround, but if you want the same repo-local behavior you can run:
+
+```bash
+npm_config_cache="$PWD/.npm-cache" npm pack --dry-run
+```
 
 ## `check` fails outside a git repository
 
@@ -61,4 +77,15 @@ Then run:
 
 ```bash
 agent-guardrails check --base-ref origin/main --json
+```
+
+## My default branch is not `main`
+
+Use the branch that matches your repository instead of copying `origin/main` literally.
+
+Examples:
+
+```bash
+agent-guardrails check --base-ref origin/master --review
+agent-guardrails check --base-ref origin/develop --json
 ```

@@ -21,8 +21,8 @@ The release bar for the OSS launch was intentionally stronger than "the CLI inst
 These commands were run from the repo root during the pilot pass:
 
 ```bash
-cmd /c npm.cmd test
-cmd /c npm.cmd run benchmark
+npm test
+npm run benchmark
 node ./examples/boundary-violation-demo/scripts/run-demo.mjs all
 node ./examples/source-test-relevance-demo/scripts/run-demo.mjs all
 ```

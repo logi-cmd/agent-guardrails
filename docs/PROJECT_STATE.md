@@ -102,6 +102,7 @@ Keep the published OSS baseline honest while moving the product from a CLI workf
 - Extended the shared runtime, plan, check, presets, and docs so security, dependency, performance, understanding, and continuity now appear as first-class risk dimensions in task contracts, runtime hints, and reviewer output
 - Re-verified the full suite with `npm test` and `npm run benchmark` after adding the new risk-dimension surface
 - Completed the `zh-CN` localization for the new risk-dimension defaults, runtime hints, and review-facing text so the public OSS flow stays consistent across locales
+- Polished the public README, troubleshooting guide, and pilot doc so install and usage guidance stays shell-neutral across Windows, Linux, and macOS, with `npx` as the default fallback when global PATH setup differs by platform
 
 ## Blockers
 

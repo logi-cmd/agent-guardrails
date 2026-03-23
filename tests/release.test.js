@@ -18,6 +18,7 @@ export async function run() {
   const commercialization = read("docs/COMMERCIALIZATION.md");
   const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
   const pilot = read("docs/REAL_REPO_PILOT.md");
+  const troubleshooting = read("docs/TROUBLESHOOTING.md");
   const workflow = read(".github/workflows/guardrails.yml");
   const templateWorkflow = read("templates/base/workflows/agent-guardrails.yml");
   const zhReadme = read("docs/zh-CN/README.md");
@@ -49,6 +50,8 @@ export async function run() {
   assert.match(readme, /By default, `plan` now fills in/);
   assert.match(readme, /--review/);
   assert.match(readme, /--lang zh-CN/);
+  assert.match(readme, /tested in CI on Windows, Linux, and macOS/);
+  assert.match(readme, /npx agent-guardrails/);
   assert.match(readme, /## Chinese Docs/);
   assert.match(readme, /## Open Source vs Pro/);
   assert.match(readme, /npm run benchmark/);
@@ -80,6 +83,9 @@ export async function run() {
   assert.match(semanticArchitecture, /source-to-test relevance/i);
   assert.match(pilot, /boundary-violation-forbidden-import/);
   assert.match(pilot, /source-test-relevance-missed-expected-targets/);
+  assert.doesNotMatch(pilot, /cmd \/c npm\.cmd/);
+  assert.match(troubleshooting, /npx agent-guardrails help/);
+  assert.match(troubleshooting, /origin\/master/);
 
   assert.match(workflow, /npm test/);
   assert.match(workflow, /windows-latest/);
