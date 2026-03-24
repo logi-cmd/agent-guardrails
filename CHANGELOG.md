@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 - Draft
+
+Minor release focused on turning the OSS reviewer surface into a clearer production-readiness story, while shipping the first real Python/FastAPI proof slice.
+
+- Stabilized the shared OSS trust surface so `check`, `check --json`, MCP, and the agent-native loop now agree on `verdict`, `deployReadiness`, and `postDeployMaintenance`
+- Tightened deploy-readiness logic so real deploy blockers stay distinct from post-deploy watch items, instead of collapsing everything into `High-risk change`
+- Added the first Python/FastAPI baseline proof slice through a runnable sandbox demo under `examples/python-fastapi-demo`
+- Added the first Python/FastAPI OSS benchmark scenario, `python-fastapi-deploy-ready-pass`, so Python baseline credibility is now visible in the public benchmark suite
+- Updated the README, proof page, benchmark docs, roadmap, strategy, commercialization, and market docs so Python support is described honestly as baseline proof rather than semantic parity
+- Kept `plugin-python`, provider-specific deployment orchestration, and new top-level CLI commands out of scope for this release
+- Preserved the OSS versus Pro boundary: OSS owns deploy-readiness judgment and post-deploy maintenance visibility, while deployment orchestration remains a later automation layer
+- Re-verified the shipped path with `npm run demo:python-fastapi`, `npm test`, and `npm run benchmark`
+
 ## 0.1.3 - 2026-03-24
 
 Post-pilot minor focused on setup-first onboarding, conversation-first entry, and the last bit of MCP entry friction.
