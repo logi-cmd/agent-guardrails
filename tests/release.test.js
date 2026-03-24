@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,6 +9,27 @@ const repoRoot = path.resolve(path.dirname(__filename), "..");
 
 function read(relativePath) {
   return fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+}
+
+function runNpmPublishDryRun() {
+  const cacheDir = path.join(repoRoot, ".npm-cache-release-test");
+  fs.mkdirSync(cacheDir, { recursive: true });
+
+  try {
+    return execFileSync(
+      "cmd",
+      ["/c", "npm.cmd", "publish", "--dry-run", "--access", "public", "--cache", cacheDir],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"]
+      }
+    );
+  } catch (error) {
+    const stdout = typeof error.stdout === "string" ? error.stdout : "";
+    const stderr = typeof error.stderr === "string" ? error.stderr : "";
+    return `${stdout}\n${stderr}`;
+  }
 }
 
 export async function run() {
@@ -36,6 +58,7 @@ export async function run() {
   assert.doesNotMatch(packageJson.repository.url, /example/);
   assert.match(packageJson.homepage, /^https:\/\/github\.com\//);
   assert.match(packageJson.bugs.url, /^https:\/\/github\.com\//);
+  assert.equal(packageJson.bin["agent-guardrails"], "bin/agent-guardrails.js");
 
   assert.match(readme, /## Start Here \//);
   assert.match(readme, /## Quick Start \//);
@@ -167,4 +190,8 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "SUMMARY.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "plugins", "plugin-ts", "package.json")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "REAL_REPO_PILOT.md")), true);
+
+  const publishDryRun = runNpmPublishDryRun();
+  assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);
+  assert.doesNotMatch(publishDryRun, /bin\[agent-guardrails\].*invalid and removed/i);
 }

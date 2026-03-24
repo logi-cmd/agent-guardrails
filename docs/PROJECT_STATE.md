@@ -58,6 +58,8 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - Added the first Python/FastAPI baseline proof slice with a runnable sandbox demo plus an OSS benchmark scenario, without introducing `plugin-python` or claiming semantic parity with TS/JS
 - Narrowed the README again by removing duplicated language-support framing and compressing repeated setup-first guidance so the first-run path stays easier to scan
 - Split deeper usage material out of the README into `docs/WORKFLOWS.md` so the main README behaves more like a product homepage than a full manual
+- Generalized the README setup commands so the first-run path no longer reads as Claude-only, while keeping Claude Code as the most opinionated example path
+- Fixed the npm package `bin` metadata so `npm publish --dry-run` no longer auto-corrects and strips the CLI entry
 - Re-verified the full suite with `npm test` and `npm run benchmark` after the entry-compression changes
 - Upgraded the maintainer CI workflow to run tests, demo, help smoke, pack dry-run, and install smoke
 - Added release validation coverage for README/package metadata/workflow quality and a tarball install smoke script
@@ -161,11 +163,11 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
 - The first-run path is now setup-first, but the stronger proof story is still TS/JS-heavy and Python does not yet have an equally convincing proof slice
 - Production-profile, rollback, and observability fields now exist, but they still stop at review-time guidance rather than a fully explicit deploy-readiness or post-deploy maintenance surface
-- `0.2.0` is published, but `npm publish` emitted a package metadata warning that auto-corrected the `bin` entry during publish and should be cleaned up in a follow-up
+- The README is now more homepage-like and less Claude-specific, but the GitHub push path in this Codex shell is still fragile enough that the latest docs-only commit may require a transport-level workaround or a user-terminal push
 
 ## Next step
 
-Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, then clean up the npm `bin` publish warning as part of that follow-up.
+Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, then make sure the latest README/workflow cleanup commit is pushed cleanly through the stabilized SSH release path.
 
 ## Handoff
 

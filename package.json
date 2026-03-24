@@ -12,7 +12,7 @@
     "LICENSE"
   ],
   "bin": {
-    "agent-guardrails": "./bin/agent-guardrails.js"
+    "agent-guardrails": "bin/agent-guardrails.js"
   },
   "scripts": {
     "check": "node ./bin/agent-guardrails.js check",
