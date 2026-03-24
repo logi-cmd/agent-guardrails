@@ -7,17 +7,49 @@ Ship AI-written code with production guardrails.
 It is not trying to be another standalone coding agent or another PR review bot.
 It is trying to be the repo-aware runtime that existing agent chats call before code is trusted and merged.
 
-## Start Here
+For real repos, not one-off prototypes.
+
+## Start Here / 先看这里
+
+**English**
 
 If you are new, start with `setup`.
 
-The intended product entry is:
-
 1. install `agent-guardrails`
 2. run `agent-guardrails setup --agent claude-code` in your repo
-3. paste the generated MCP snippet into your existing coding agent
+3. connect your existing coding agent
 4. describe the task in plain language
-5. let the runtime bootstrap contract, evidence, and finish-time review automatically
+5. get a reviewer summary with scope, validation, and remaining risk
+
+What you should expect:
+
+- smaller changes
+- clearer validation
+- less scope drift
+- a reviewer-friendly finish output
+
+**中文**
+
+如果你是第一次用，先从 `setup` 开始。
+
+1. 安装 `agent-guardrails`
+2. 在仓库里运行 `agent-guardrails setup --agent claude-code`
+3. 把它接进你现有的 coding agent
+4. 直接用自然语言说任务
+5. 最后拿到 reviewer summary，看这次改了什么、有没有越界、还剩什么风险
+
+你应该得到的是：
+
+- 更小的改动范围
+- 更清楚的验证结果
+- 更少的越界和漂移
+- 更容易 review 的收尾输出
+
+Use website or code-generation tools to get something started.
+Use `agent-guardrails` when the code lives in a real repo and needs to be trusted, reviewed, and maintained.
+
+先用生成工具快速起一个 prototype、页面或 demo。
+当代码进入真实仓库、需要 review、merge 和长期维护时，再用 `agent-guardrails`。
 
 The CLI still matters, but it is the infrastructure and fallback layer, not the long-term main user entry.
 
@@ -26,6 +58,133 @@ If you want to see it working before using your own repo, run the demo first:
 ```bash
 npm run demo
 ```
+
+## Who This Is For / 适合谁
+
+- developers already using Claude Code, Cursor, Codex, OpenHands, or OpenClaw inside real repos
+- teams and solo builders who have already been burned by scope drift, skipped validation, or AI-shaped maintenance debt
+- users who want smaller AI changes, clearer validation, and reviewer-facing output before merge
+
+- 已经在真实仓库里使用 Claude Code、Cursor、Codex、OpenHands 或 OpenClaw 的开发者
+- 已经被越界改动、漏测试或维护漂移坑过的个人开发者和小团队
+- 希望在 merge 前看到更小改动、更清楚验证结果和 reviewer 输出的人
+
+## Who This Is Not For / 不适合谁
+
+- people who only want a one-shot landing page, mockup, or prototype
+- users who do not care about repo rules, review trust, or long-term maintenance
+- teams looking for a generic static-analysis replacement
+
+- 只想快速做一个 landing page、mockup 或 demo 的人
+- 不在意仓库规则、review 信任和后续维护的人
+- 想找一个通用静态分析替代品的团队
+
+## Why This Is Different / 为什么它不是另一种生成工具
+
+`agent-guardrails` is not trying to win on the first wow moment.
+It is trying to make AI-written changes easier to trust after the first prompt.
+
+- smaller AI changes
+- clearer validation
+- lower review anxiety
+- lower maintenance drift
+
+它不是靠“第一次生成多爽”取胜。
+它要解决的是第一轮生成之后，代码还能不能继续信、继续 review、继续维护。
+
+- 更小的 AI 改动
+- 更清楚的验证结果
+- 更低的 review 焦虑
+- 更低的长期维护漂移
+
+## Quick Start / 最短路径
+
+Install once:
+
+```bash
+npm install -g agent-guardrails
+```
+
+In your repo, run:
+
+```bash
+agent-guardrails setup --agent claude-code
+```
+
+If your agent supports a clearly safe repo-local config path, use:
+
+```bash
+agent-guardrails setup --agent claude-code --write-repo-config
+```
+
+Then open your existing agent and start chatting.
+
+如果你只知道一个大概方向，也可以直接这样说：
+
+- `先帮我看看这个仓库最小能改哪里，尽量别扩大范围，最后告诉我还有什么风险。`
+- `帮我修这个问题，先读仓库规则，小范围改动，跑完测试后给我 reviewer summary。`
+- `I only have a rough idea. Please read the repo rules, find the smallest safe change, and finish with a reviewer summary.`
+
+Proof in one page:
+
+- [What this catches that normal AI coding workflows miss](./docs/PROOF.md)
+- [Python/FastAPI baseline proof demo](./examples/python-fastapi-demo/README.md)
+
+## Current Language Support / 当前语言支持
+
+**English**
+
+- **Deepest support today:** JavaScript / TypeScript
+- **Baseline runtime support today:** Next.js, Python/FastAPI, monorepos
+- **Actively expanding:** deeper Python semantic support and broader framework-aware analysis
+
+This means the runtime, setup-first flow, contracts, evidence, and reviewer summary already work outside plain JS/TS repos, but the strongest semantic depth today is still in the TS/JS path.
+
+**中文**
+
+- **当前最深支持：** JavaScript / TypeScript
+- **当前基础运行时支持：** Next.js、Python/FastAPI、monorepo
+- **正在继续补强：** Python 更深的语义能力，以及更广的框架级分析
+
+这意味着现在的 setup、contract、evidence、reviewer summary 已经不只适用于 JS/TS，但真正最强的语义深度仍然在 TS/JS 这条线上。
+
+## Current Language Support / 当前语言支持
+
+**Today / 当前**
+
+- **Deepest support:** JavaScript / TypeScript
+- **Baseline runtime support:** Next.js, Python/FastAPI, monorepos
+- **Still expanding:** deeper Python semantic support and broader framework-aware analysis
+
+**What that means / 这代表什么**
+
+- JavaScript / TypeScript currently has the strongest semantic proof points through the public `plugin-ts` path and the shipped demos
+- Python works today through the same setup, contract, evidence, and review loop, but it does not yet have semantic-depth parity with TypeScript / JavaScript
+- Monorepo support is a repo shape, not a separate language claim
+
+- JavaScript / TypeScript 目前有最强的语义 proof 和 demo 支撑
+- Python 现在已经能走 setup、contract、evidence、review 这一整条 baseline 流程，但还没有达到 TS/JS 的语义深度
+- monorepo 是仓库形态支持，不是一门单独语言
+
+Language expansion is now an active product priority, with Python as the next language to deepen.
+
+语言支持扩展现在已经是正式产品优先项，下一门重点加深的语言是 Python。
+
+If you want the first Python/FastAPI proof path, use the sandbox in [examples/python-fastapi-demo](./examples/python-fastapi-demo). It proves the baseline runtime, deploy-readiness, and post-deploy maintenance surface in a Python repo without claiming semantic-depth parity with TS/JS.
+
+如果你想看第一条 Python/FastAPI proof 路径，可以直接跑 [examples/python-fastapi-demo](./examples/python-fastapi-demo)。这条路径证明的是 Python 仓库里的 baseline runtime、deploy-readiness 和 post-deploy maintenance，而不是宣称它已经达到 TS/JS 的语义深度。
+
+## What This Catches / 这能多抓住什么
+
+- bounded-scope failure versus bounded-scope pass
+- semantic drift catches beyond the basic OSS baseline
+- reviewer summaries that explain changed files, validation, and remaining risk
+
+- bounded-scope 的失败与修复对比
+- 超过基础 OSS baseline 的语义漂移捕捉
+- 能告诉你改了什么、做了哪些验证、还剩什么风险的 reviewer summary
+
+See the full proof in [docs/PROOF.md](./docs/PROOF.md).
 
 ## Why this exists
 
@@ -53,7 +212,7 @@ The moat is the combination of repo-local contracts, runtime judgment, semantic 
 
 ## Setup-First Quick Start
 
-If you want the intended product entry, install the package and let `setup` prepare the repo plus the MCP snippet you need:
+If you want the intended product entry, install the package and let `setup` prepare the repo plus the agent config you need:
 
 ```bash
 npm install -g agent-guardrails
@@ -79,7 +238,7 @@ The runtime is tested in CI on Windows, Linux, and macOS, and the README example
 - auto-initializes the repo if `.agent-guardrails/config.json` is missing
 - defaults to the `node-service` preset unless you override it with `--preset`
 - writes safe repo-local helper files such as `CLAUDE.md`, `.cursor/rules/agent-guardrails.mdc`, `.agents/skills/agent-guardrails.md`, or `OPENCLAW.md` when the chosen agent needs them
-- prints the MCP config snippet and tells you exactly where to paste it
+- prints the agent config snippet and tells you exactly where to put it
 - gives you one first chat message and one canonical MCP loop
 
 Example:
@@ -112,7 +271,7 @@ For broader pilot coverage, validate the same setup-first path across:
 - `cursor` and `codex` as secondary paths
 - `openhands` and `openclaw` as supplementary paths
 
-Once you paste the generated snippet into your agent, the happy path should feel like normal chat:
+Once you connect the generated config to your agent, the happy path should feel like normal chat:
 
 - You: `Add refund status transitions to the order service.`
 - Agent: bootstraps the task contract through `start_agent_native_loop`
@@ -229,6 +388,7 @@ The flagship examples are:
 - the interface-drift demo in [examples/interface-drift-demo](./examples/interface-drift-demo)
 - the boundary-violation demo in [examples/boundary-violation-demo](./examples/boundary-violation-demo)
 - the source-test-relevance demo in [examples/source-test-relevance-demo](./examples/source-test-relevance-demo)
+- the unified proof page in [docs/PROOF.md](./docs/PROOF.md)
 - the pilot write-up in [docs/REAL_REPO_PILOT.md](./docs/REAL_REPO_PILOT.md)
 
 Together they show:
@@ -240,11 +400,18 @@ Together they show:
 - the semantic layer can block a controller that crosses a declared module boundary even when the task contract still looks narrow
 - the semantic layer can tell the difference between "a test changed" and "the right test changed"
 - the same public CLI can surface deeper enforcement without splitting into a second product
+- the same OSS runtime can produce deploy-readiness and post-deploy maintenance output in a Python/FastAPI repo before any Python semantic pack ships
 
 Run it with:
 
 ```bash
 node ./examples/bounded-scope-demo/scripts/run-demo.mjs all
+```
+
+Then run the Python/FastAPI baseline proof demo:
+
+```bash
+npm run demo:python-fastapi
 ```
 
 Then run the OSS benchmark suite:
@@ -364,6 +531,7 @@ The current product direction is a generic, repo-local production baseline for A
 - `check` enforces small-scope, test-aware, evidence-backed, reviewable changes
 - `check --review` turns the same findings into a concise reviewer-oriented report
 - MCP and agent-native loop consumers reuse the same judgment path instead of re-implementing prompts
+- the next production layer is deploy-readiness judgment plus post-deploy maintenance surface, not a separate deployment product
 
 This is intentionally generic-first. It relies on file-shape heuristics, repo policy, task contracts, and command/evidence enforcement rather than framework-specific AST logic.
 
@@ -396,10 +564,20 @@ The next technical step is conversation-first onboarding and stronger runtime-ba
 
 Paid tiers should extend the baseline rather than replace it:
 
-- `Pro Local`: semantic packs, auto task generation, richer local review, and maintenance-aware workflows
-- `Pro Cloud`: hosted review, shared policies, trend dashboards, and centralized governance
+- `Pro Local`: semantic packs, auto task generation, richer local review, maintenance-aware workflows, and lower-touch deployment orchestration
+- `Pro Cloud`: hosted review, shared policies, trend dashboards, deployment governance, and centralized orchestration
 
 Baseline merge-gate features stay open source.
+
+That means the OSS core should keep owning the production-readiness gate:
+
+- trust verdicts
+- recovery / secrets-safe / cost-aware guidance
+- deploy-readiness judgment
+- release and deploy checklist visibility
+- post-deploy maintenance summaries
+
+Deployment orchestration itself remains a later automation layer on top of the same runtime, not a second product that bypasses it.
 
 The first semantic pack lives publicly in this repo today as an early semantic milestone. It is positioned as the future `Pro Local` direction, not as a separate closed-source runtime.
 
@@ -573,6 +751,7 @@ See [docs/PRODUCT_STRATEGY.md](./docs/PRODUCT_STRATEGY.md) for the current seman
 
 ## More Docs
 
+- [Proof](./docs/PROOF.md)
 - [Automation Spec](./docs/AUTOMATION_SPEC.md)
 - [Market Research](./docs/MARKET_RESEARCH.md)
 - [Strategy](./docs/PRODUCT_STRATEGY.md)

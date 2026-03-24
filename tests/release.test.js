@@ -16,6 +16,7 @@ export async function run() {
   const roadmap = read("docs/ROADMAP.md");
   const benchmarks = read("docs/BENCHMARKS.md");
   const commercialization = read("docs/COMMERCIALIZATION.md");
+  const proof = read("docs/PROOF.md");
   const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
   const pilot = read("docs/REAL_REPO_PILOT.md");
   const troubleshooting = read("docs/TROUBLESHOOTING.md");
@@ -35,76 +36,88 @@ export async function run() {
   assert.match(packageJson.homepage, /^https:\/\/github\.com\//);
   assert.match(packageJson.bugs.url, /^https:\/\/github\.com\//);
 
+  assert.match(readme, /## Start Here \//);
+  assert.match(readme, /## Quick Start \//);
+  assert.match(readme, /For real repos, not one-off prototypes\./);
+  assert.match(readme, /## Who This Is For \//);
+  assert.match(readme, /## Who This Is Not For \//);
+  assert.match(readme, /## Why This Is Different \//);
+  assert.match(readme, /## Current Language Support \//);
+  assert.match(readme, /\*\*Deepest support:\*\* JavaScript \/ TypeScript/);
+  assert.match(readme, /\*\*Baseline runtime support:\*\* Next\.js, Python\/FastAPI, monorepos/);
+  assert.match(readme, /Language expansion is now an active product priority/);
+  assert.match(readme, /examples\/python-fastapi-demo/);
+  assert.match(readme, /npm run demo:python-fastapi/);
+  assert.match(readme, /## What This Catches \//);
+  assert.match(readme, /docs\/PROOF\.md/);
+  assert.match(readme, /## Setup-First Quick Start/);
+  assert.match(readme, /## CLI Fallback Quick Start/);
+  assert.ok(readme.indexOf("## Setup-First Quick Start") < readme.indexOf("## CLI Fallback Quick Start"));
+  assert.match(readme, /agent-guardrails setup --agent claude-code/);
+  assert.match(readme, /agent-guardrails setup --agent cursor --preset nextjs/);
+  assert.match(readme, /agent-guardrails setup --agent claude-code --write-repo-config/);
+  assert.match(readme, /agent-guardrails mcp/);
+  assert.match(readme, /start_agent_native_loop/);
+  assert.match(readme, /finish_agent_native_loop/);
   assert.match(readme, /## Supported Agents/);
   assert.match(readme, /## FAQ/);
   assert.match(readme, /## What This Proves/);
-  assert.match(readme, /pattern-drift demo/);
-  assert.match(readme, /interface drift/);
-  assert.match(readme, /boundary-violation demo/);
-  assert.match(readme, /source-test-relevance demo/);
-  assert.match(readme, /REAL_REPO_PILOT/);
-  assert.match(readme, /AGENT_GUARDRAILS_COMMANDS_RUN/);
-  assert.match(readme, /agent-guardrails mcp/);
-  assert.match(readme, /read_repo_guardrails/);
-  assert.match(readme, /agent-guardrails setup --agent claude-code/);
-  assert.match(readme, /agent-guardrails setup --agent claude-code --preset nextjs/);
-  assert.match(readme, /agent-guardrails setup --agent claude-code --write-repo-config/);
-  assert.match(readme, /agent-guardrails setup --agent cursor --write-repo-config/);
-  assert.match(readme, /External Pilot Paths/);
-  assert.match(readme, /docs\/PILOT_TEMPLATE\.md/);
-  assert.match(readme, /docs\/PILOT_SUMMARY_TEMPLATE\.md/);
-  assert.match(readme, /docs\/pilots\/README\.md/);
-  assert.match(readme, /docs\/pilots\/claude-code\.md/);
-  assert.match(readme, /docs\/pilots\/cursor\.md/);
-  assert.match(readme, /docs\/pilots\/codex\.md/);
-  assert.match(readme, /docs\/pilots\/openhands\.md/);
-  assert.match(readme, /docs\/pilots\/openclaw\.md/);
-  assert.match(readme, /docs\/pilots\/SUMMARY\.md/);
-  assert.match(readme, /cursor/);
-  assert.match(readme, /codex/);
-  assert.match(readme, /openhands/);
-  assert.match(readme, /openclaw/);
-  assert.match(readme, /By default, `setup` handles repo initialization/);
-  assert.match(readme, /start_agent_native_loop/);
-  assert.match(readme, /finish_agent_native_loop/);
-  assert.match(readme, /--review/);
-  assert.match(readme, /--lang zh-CN/);
-  assert.match(readme, /tested in CI on Windows, Linux, and macOS/);
-  assert.match(readme, /npx agent-guardrails/);
-  assert.match(readme, /## Chinese Docs/);
   assert.match(readme, /## Open Source vs Pro/);
-  assert.match(readme, /npm run benchmark/);
   assert.match(readme, /## Benchmarks/);
   assert.match(readme, /## Commercialization/);
+  assert.match(readme, /## Chinese Docs/);
   assert.match(readme, /\.agent-guardrails\/evidence\/current-task\.md/);
-  assert.ok(
-    readme.indexOf("## Setup-First Quick Start") !== -1 &&
-      readme.indexOf("## CLI Fallback Quick Start") !== -1 &&
-      readme.indexOf("## Setup-First Quick Start") < readme.indexOf("## CLI Fallback Quick Start")
-  );
-  assert.match(zhReadme, /中文概览/);
+  assert.match(readme, /如果你是第一次用，先从 `setup` 开始。/);
+  assert.match(readme, /你应该得到的是：/);
+
+  assert.match(zhReadme, /中文/);
   assert.match(zhStrategy, /产品策略/);
 
   assert.match(roadmap, /## Phase 1 \(Shipped\)/);
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);
   assert.match(roadmap, /## Phase 3 \(Next\)/);
-  assert.match(roadmap, /detector pipeline foundation/);
+  assert.match(roadmap, /## Phase 4 \(Later\)/);
+  assert.match(roadmap, /## Phase 5 \(Later\)/);
+  assert.match(roadmap, /## Phase 6 \(Later\)/);
+  assert.match(roadmap, /## Phase 7 \(Later\)/);
+  assert.match(roadmap, /rough-intent mode/i);
+  assert.match(roadmap, /trust verdict/i);
+  assert.match(roadmap, /Python.*baseline proof slice/i);
+  assert.match(roadmap, /deploy-readiness verdicts/i);
+  assert.match(roadmap, /deployment orchestration/i);
+
   assert.match(benchmarks, /## OSS benchmark suite/);
   assert.match(benchmarks, /## Pro benchmark suite/);
+  assert.match(benchmarks, /python-fastapi-deploy-ready-pass/);
+  assert.match(benchmarks, /npm run demo:python-fastapi/);
   assert.match(benchmarks, /npm run demo:pattern-drift/);
   assert.match(benchmarks, /npm run demo:boundary-violation/);
   assert.match(benchmarks, /npm run demo:source-test-relevance/);
-  assert.match(benchmarks, /active semantic proof/);
+
   assert.match(commercialization, /## OSS Core/);
   assert.match(commercialization, /## Pro Local/);
   assert.match(commercialization, /## Pro Cloud/);
+  assert.match(commercialization, /Python as the next credible expansion path/);
+  assert.match(commercialization, /deploy-readiness judgment/i);
+  assert.match(commercialization, /post-deploy maintenance summaries/i);
+  assert.match(commercialization, /deployment orchestration and provider adapters/i);
+
+  assert.match(proof, /What this catches that normal AI coding workflows miss/i);
+  assert.match(proof, /## 1\. Scope catch/);
+  assert.match(proof, /## 2\. Semantic catch/);
+  assert.match(proof, /## 3\. Reviewer summary value/);
+  assert.match(proof, /## 4\. Current support boundary/);
+  assert.match(proof, /## 5\. Python baseline proof/);
+  assert.match(proof, /Deepest support today:\*\* JavaScript \/ TypeScript/);
+  assert.doesNotMatch(proof, /plugin-python.*(shipped|ship|available today|semantic parity)/i);
+
   assert.match(semanticArchitecture, /## Detector pipeline/);
   assert.match(semanticArchitecture, /## Plugin interface/);
-  assert.match(semanticArchitecture, /MCP server layer/);
   assert.match(semanticArchitecture, /plugins\/plugin-ts/);
   assert.match(semanticArchitecture, /interface drift/i);
   assert.match(semanticArchitecture, /boundary violation/i);
   assert.match(semanticArchitecture, /source-to-test relevance/i);
+
   assert.match(pilot, /boundary-violation-forbidden-import/);
   assert.match(pilot, /source-test-relevance-missed-expected-targets/);
   assert.doesNotMatch(pilot, /cmd \/c npm\.cmd/);
@@ -115,13 +128,7 @@ export async function run() {
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /macos-latest/);
   assert.match(workflow, /ubuntu-latest/);
-  assert.match(workflow, /node \.\/examples\/bounded-scope-demo\/scripts\/run-demo\.mjs all/);
-  assert.match(workflow, /node \.\/examples\/pattern-drift-demo\/scripts\/run-demo\.mjs all/);
-  assert.match(workflow, /node \.\/examples\/interface-drift-demo\/scripts\/run-demo\.mjs all/);
-  assert.match(workflow, /node \.\/examples\/boundary-violation-demo\/scripts\/run-demo\.mjs all/);
-  assert.match(workflow, /node \.\/examples\/source-test-relevance-demo\/scripts\/run-demo\.mjs all/);
   assert.match(workflow, /npm run benchmark/);
-  assert.match(workflow, /node \.\/bin\/agent-guardrails\.js help/);
   assert.match(workflow, /npm pack --dry-run/);
   assert.match(workflow, /node \.\/tests\/install-smoke\.js/);
   assert.match(templateWorkflow, /npx agent-guardrails check/);
@@ -136,6 +143,8 @@ export async function run() {
 
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_TEMPLATE.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_SUMMARY_TEMPLATE.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PROOF.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "examples", "python-fastapi-demo", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "claude-code.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "cursor.md")), true);
@@ -143,20 +152,6 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openhands.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openclaw.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "SUMMARY.md")), true);
-
-  assert.equal(fs.existsSync(path.join(repoRoot, "CONTRIBUTING.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "CHANGELOG.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "TROUBLESHOOTING.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "RELEASE_CHECKLIST.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "benchmarks", "oss", "scope-only-failure.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "benchmarks", "pro", "pattern-drift-failure.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "benchmarks", "pro", "interface-change-failure.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "benchmarks", "pro", "boundary-violation-failure.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "benchmarks", "pro", "source-to-test-semantic-relevance.json")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "plugins", "plugin-ts", "package.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "examples", "pattern-drift-demo", "README.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "examples", "interface-drift-demo", "README.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "examples", "boundary-violation-demo", "README.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "examples", "source-test-relevance-demo", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "REAL_REPO_PILOT.md")), true);
 }

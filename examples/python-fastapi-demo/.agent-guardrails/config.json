@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "preset": "python-fastapi",
+  "workflow": {
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md",
+      "app",
+      "tests"
+    ],
+    "constraints": [
+      "Keep FastAPI-style endpoint changes inside app/ and tests/.",
+      "Prefer extending the existing endpoint and test layout over creating new modules.",
+      "Keep production-shaped evidence explicit about observability, rollback, and residual risk."
+    ],
+    "definitionOfDone": [
+      "The fail scenario blocks deploy-readiness when production notes are incomplete.",
+      "The pass scenario reaches a deploy-ready reviewer surface.",
+      "The Python demo remains a baseline runtime proof, not a semantic-depth claim."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 8,
+    "requireTestsWithSourceChanges": true,
+    "allowedPaths": [
+      "AGENTS.md",
+      "README.md",
+      "package.json",
+      "docs/",
+      "app/",
+      "tests/",
+      "scripts/",
+      "scenarios/",
+      ".agent-guardrails/"
+    ],
+    "sourceRoots": [
+      "app"
+    ],
+    "sourceExtensions": [
+      ".py"
+    ],
+    "testRoots": [
+      "tests"
+    ],
+    "testExtensions": [
+      ".py"
+    ],
+    "testFileSignals": [
+      "test_",
+      "_test.py"
+    ]
+  },
+  "protectedAreas": [
+    {
+      "path": "app/api/",
+      "label": "API handlers",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-api": {
+      "focus": [
+        "correctness",
+        "reliability",
+        "observability"
+      ],
+      "validationProfile": "standard"
+    },
+    "high-throughput-api": {
+      "focus": [
+        "performance",
+        "concurrency",
+        "reliability",
+        "observability"
+      ],
+      "validationProfile": "strict"
+    }
+  },
+  "nfrPolicies": {
+    "security": {
+      "evidenceHint": "Mention auth, secrets, permissions, and sensitive-data handling explicitly."
+    },
+    "dependency": {
+      "evidenceHint": "Mention new or upgraded packages and dependency impact explicitly."
+    },
+    "performance": {
+      "evidenceHint": "Mention endpoint latency, query cost, or load-sensitive behavior in evidence."
+    },
+    "understanding": {
+      "evidenceHint": "Explain the main tradeoffs so future maintainers can follow the change."
+    },
+    "continuity": {
+      "evidenceHint": "Mention reuse targets and any deliberate continuity break in evidence."
+    },
+    "observability": {
+      "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
+    }
+  },
+  "criticalPaths": [
+    "app/api/"
+  ],
+  "runtimeSurfaces": [
+    "app/"
+  ],
+  "performanceSensitiveAreas": [
+    "app/api/"
+  ],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

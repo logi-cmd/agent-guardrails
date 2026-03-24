@@ -20,6 +20,7 @@
     "test": "node ./tests/run-tests.js",
     "benchmark": "node ./scripts/run-benchmarks.js",
     "demo": "node ./examples/bounded-scope-demo/scripts/run-demo.mjs all",
+    "demo:python-fastapi": "node ./examples/python-fastapi-demo/scripts/run-demo.mjs all",
     "demo:pattern-drift": "node ./examples/pattern-drift-demo/scripts/run-demo.mjs all",
     "demo:interface-drift": "node ./examples/interface-drift-demo/scripts/run-demo.mjs all",
     "demo:boundary-violation": "node ./examples/boundary-violation-demo/scripts/run-demo.mjs all",

@@ -27,19 +27,23 @@ export async function run() {
 
   const start = startAgentNativeLoop({
     repoRoot: tempDir,
-    taskRequest: "Refine auth flow internals",
+    taskRequest: "I only have a rough idea. Please find the smallest safe change.",
     selectedFiles: ["src/auth/service.js"],
     changedFiles: ["src/auth/service.js", "tests/auth.test.js"]
   });
 
-  assert.equal(start.contract.task, "Refine auth flow internals");
+  assert.equal(start.contract.task, "I only have a rough idea. Please find the smallest safe change.");
   assert.equal(typeof start.session.sessionId, "string");
   assert.equal(start.contractPath, ".agent-guardrails/task-contract.json");
   assert.equal(start.evidenceFiles[0].created, true);
   assert.deepEqual(start.continuity.reuseTargets.map((item) => item.value), ["src/auth/service.js", "tests/auth.test.js"]);
   assert.equal(Array.isArray(start.loop.reuseTargets), true);
+  assert.equal(start.session.roughIntent.detected, true);
+  assert.equal(start.contract.roughIntent.detected, true);
+  assert.equal(start.contract.roughIntent.suggestions.length, 3);
   assert.match(start.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main/);
   assert.match(start.loop.nextActions.join("\n"), /Run required commands: npm test/);
+  assert.match(start.loop.nextActions.join("\n"), /recommended smallest-safe task/i);
 
   const evidenceFile = path.join(tempDir, ".agent-guardrails", "evidence", "current-task.md");
   assert.equal(fs.existsSync(evidenceFile), true);
@@ -60,6 +64,7 @@ export async function run() {
 
     assert.equal(finish.checkResult.ok, true);
     assert.equal(finish.reviewerSummary.status, "pass");
+    assert.equal(finish.reviewerSummary.verdict, "High-risk change");
     assert.equal(finish.evidenceFiles[0].updated, true);
     assert.equal(Array.isArray(finish.checkResult.continuity.reuseTargets), true);
     assert.equal(Array.isArray(finish.reviewerSummary.futureMaintenanceRisks), true);
