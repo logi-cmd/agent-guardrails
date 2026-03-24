@@ -67,6 +67,19 @@ export async function run() {
   assert.deepEqual(bootstrap.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
   assert.match(bootstrap.session.nextActions.join("\n"), /security, dependency, performance, understanding, continuity concerns/i);
 
+  const roughBootstrap = bootstrapTaskSession({
+    repoRoot: tempDir,
+    flags: { task: "I only have a rough idea. Please find the smallest safe change." },
+    selectedFiles: ["src/auth/service.js"],
+    changedFiles: ["src/auth/service.js", "tests/auth.test.js"]
+  });
+  assert.equal(roughBootstrap.session.roughIntent.detected, true);
+  assert.equal(roughBootstrap.suggestions.roughIntent.detected, true);
+  assert.equal(roughBootstrap.session.roughIntent.suggestions.length, 3);
+  assert.match(roughBootstrap.session.roughIntent.recommendedTask, /smallest safe behavior change/i);
+  assert.match(roughBootstrap.session.nextActions[0], /recommended smallest-safe task/i);
+  assert.match(roughBootstrap.contract.roughIntent.suggestions[0].title, /Refine the existing target first/i);
+
   const finishCheck = prepareFinishCheck({
     repoRoot: tempDir,
     session: suggestion.contract.session,
@@ -101,6 +114,9 @@ export async function run() {
     const result = await executeCheck({ repoRoot: tempDir, locale: "en" });
     assert.equal(result.ok, true);
     assert.equal(result.runtime.status, "pass");
+    assert.equal(result.verdict, "High-risk change");
+    assert.equal(result.deployReadiness.status, "not-applicable");
+    assert.equal(result.runtime.verdict, "High-risk change");
     assert.equal(Array.isArray(result.continuity.reuseTargets), true);
     assert.match(result.finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test"/);
     assert.match(result.runtime.nextActions.join("\n"), /before merge/i);

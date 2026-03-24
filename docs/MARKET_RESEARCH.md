@@ -1,6 +1,6 @@
 # Market Research
 
-Last updated: 2026-03-22
+Last updated: 2026-03-24
 
 ## Summary
 
@@ -23,6 +23,9 @@ The best-fit early audience is:
 - agencies and freelancers
 - small AI-heavy product teams
 - heavy users of Cursor, Copilot, Claude Code, and agent loops
+
+Use generation tools to get something started.
+Use `agent-guardrails` when the code is in a real repo and needs to be trusted, reviewed, and maintained.
 
 ## Market categories
 
@@ -114,6 +117,11 @@ The strongest pains are:
 - AI changes behavior without strong validation
 - AI creates future maintenance debt even when the current diff "works"
 - users must manually write tasks, remember commands, and interpret risks
+- users often do not know how to phrase the task in the first place
+- users do not want to think about config locations or MCP details
+- users still need a fast answer to "is this safe enough to review?"
+- users need clearer recovery, secrets, privacy, and audit boundaries
+- users in non-JS ecosystems assume the product is not for them unless language support is stated clearly
 
 The strongest purchase triggers are:
 
@@ -121,6 +129,9 @@ The strongest purchase triggers are:
 - lower merge anxiety
 - lower review burden
 - lower maintenance drift over time
+- faster trust calibration
+- less configuration thinking before first use
+- confidence that the product is not locked to only one language ecosystem
 
 ## White-space opportunity
 
@@ -155,6 +166,12 @@ The best differentiation is not "better AI." It is the combination of:
 - users should gain repo-local memory, review structure, and continuity signals over time
 - replacement should mean rebuilding a workflow system, not copying a checklist
 
+### 6. Language expansion with honest support boundaries
+
+- strongest support today should be stated clearly instead of implied
+- baseline support should still feel real and runnable
+- planned deeper support should feel concrete rather than vague futureware
+
 ## Positioning recommendation
 
 Recommended public positioning:
@@ -164,6 +181,11 @@ Recommended public positioning:
 Recommended short value line:
 
 > Smaller changes, clearer risks, lower maintenance cost for AI-written code.
+
+Recommended category contrast:
+
+> Use generation tools to get something started.  
+> Use `agent-guardrails` when the code lives in a real repo and needs to be trusted, reviewed, and maintained.
 
 Positioning to avoid:
 
@@ -188,6 +210,20 @@ That implies:
 - OSS should own the baseline merge gate
 - Pro Local should own deeper automation and higher-confidence semantic value
 - Pro Cloud should own team workflows, history, dashboards, and governance
+
+## Distribution and language expansion note
+
+Low GitHub traffic at this stage is not strong evidence that the product is weak.
+It is better explained as a proof and distribution gap:
+
+- the repo still needs a sharper "why this, not a website generator or generic AI coding loop?" proof surface
+- the strongest technical proof is still concentrated in TS/JS
+- Python users can see baseline support, but not yet a deep enough proof story to feel specifically included
+
+That makes the next go-to-market priority twofold:
+
+- publish one strong proof asset around real-repo failure modes
+- expand Python from "present in presets" to a believable next language-support story with a runnable FastAPI baseline proof
 
 ## Strategic conclusion
 

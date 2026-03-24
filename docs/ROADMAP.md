@@ -25,7 +25,47 @@ The open-source baseline now has clearer layering and first semantic proof point
 
 ## Phase 3 (Next)
 
-Once the default workflow is stable, the project can move into deeper enforcement.
+The next sequence is about lowering cognitive load before adding more detector breadth.
+
+- bilingual README first screen with one obvious setup-first happy path
+- sharper category contrast so users understand this is for real repos, not one-off prototypes
+- setup output compression into "already done / do this now / say this / you will get"
+- rough-intent mode so users can start from a vague request
+- short trust verdict above the reviewer summary
+- recovery guidance, secrets-safe guidance, and cost-awareness hints
+
+## Phase 4 (Later)
+
+Once entry, trust, and recovery are stronger, the project should widen support and proof before going deeper on enforcement.
+
+- clearer current language-support packaging in the docs and proof surface
+- Python as the next deeper ecosystem
+- ship a Python/FastAPI baseline proof slice before semantic-depth claims
+- a single proof asset for "what this catches that normal AI coding workflows miss"
+- early distribution through one proof page plus one sandbox-first trial path
+
+## Phase 5 (Later)
+
+After entry, trust, recovery, language support, and proof are clearer, the project should first add production-readiness and post-deploy maintenance surface to the same runtime path.
+
+- deploy-readiness verdicts
+- release and deploy checklist visibility
+- rollback and recovery guidance in production-shaped outputs
+- post-deploy maintenance summaries with operator next actions
+
+## Phase 6 (Later)
+
+Only after the runtime can judge production-readiness clearly should the project add real deployment orchestration.
+
+- script / CI deployment orchestration
+- provider adapter interface
+- first provider reference implementation
+- post-deploy verification hooks
+- rollback / redeploy orchestration
+
+## Phase 7 (Later)
+
+After entry, trust, recovery, language support, proof, and deployment layering are clearer, the project can move back into deeper enforcement and team-scale layers.
 
 - Python semantic pack
 - protected-area semantic escalation
@@ -33,6 +73,8 @@ Once the default workflow is stable, the project can move into deeper enforcemen
 - stronger policy composition
 - external benchmark repos and before/after comparisons
 - optional framework-aware detectors where generic heuristics are not enough
+- module history and repo-learned continuity
+- shared policies, approvals, audit trails, and ROI instrumentation
 
 ## Proof of value
 

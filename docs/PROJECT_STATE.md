@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest after the final MCP paste-friction polish. The current focus is now post-release verification for `0.1.3` and deciding whether the next step should return to deeper runtime signals.
+Keep the published OSS baseline honest after `0.1.3`, but shift the next iteration from detector breadth to lower-cognitive-load entry, clearer category contrast, and sharper proof. The bilingual first screen, support-boundary clarity, proof entrypoint, rough-intent runtime prototype, the first trust-verdict/deploy-readiness/post-deploy-maintenance surface, and the first Python/FastAPI baseline proof slice are now in place; the next focus is to decide whether to deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface before any real deployment orchestration.
 
 ## Done recently
 
@@ -45,6 +45,18 @@ Keep the published OSS baseline honest after the final MCP paste-friction polish
 - Drafted the `0.1.3` release material around setup-first onboarding, repo-local MCP write paths, and the completed sandbox pilot evidence
 - Bumped the package to `0.1.3` and turned the release draft into a final release candidate with validated test and benchmark runs
 - Tagged and pushed `v0.1.3` to GitHub
+- Reframed the next product step around a fuller Vibe Coding pain model instead of only deeper detector work
+- Shipped a bilingual README first screen with a shorter setup-first happy path and rough-idea examples
+- Compressed `setup` output toward four user-facing cards: already done, do this now, say this, and you will get
+- Updated strategy, market research, automation spec, and roadmap to include rough intent, trust verdicts, recovery, secrets/privacy, cost awareness, and team trust as first-class product concerns
+- Added sharper README positioning around real repos versus one-off generation, plus a clearer language-support boundary for JS/TS, Python/FastAPI, and monorepos
+- Added a single proof entrypoint at `docs/PROOF.md` so product proof and trial guidance are no longer scattered
+- Added the first rough-intent runtime prototype so vague task requests now return 2 to 3 smallest-safe task suggestions through the shared runtime, MCP surface, and agent-native loop
+- Re-aligned the strategy, roadmap, commercialization split, README, and workspace state so deploy-readiness judgment and post-deploy maintenance stay in OSS while real deployment orchestration remains a later automation layer
+- Added a shared trust verdict layer across `check`, `check --json`, MCP, and the agent-native loop, with the first OSS deploy-readiness and post-deploy maintenance summary fields
+- Tightened the production-profile verdict logic so deploy blockers stay distinct from post-deploy watch items, and fixed evidence parsing so production review notes survive into the detector pipeline
+- Added the first Python/FastAPI baseline proof slice with a runnable sandbox demo plus an OSS benchmark scenario, without introducing `plugin-python` or claiming semantic parity with TS/JS
+- Re-verified the full suite with `npm test` and `npm run benchmark` after the entry-compression changes
 - Upgraded the maintainer CI workflow to run tests, demo, help smoke, pack dry-run, and install smoke
 - Added release validation coverage for README/package metadata/workflow quality and a tarball install smoke script
 - Verified release-grade checks locally, including `npm test`, demo run, help smoke, pack dry-run, and a real tarball install/init path
@@ -145,16 +157,17 @@ Keep the published OSS baseline honest after the final MCP paste-friction polish
 - Proof-of-value now includes documented sandbox chats for Claude Code, Codex, and OpenClaw, plus sandbox setup completion for Cursor and OpenHands, and the remaining MCP paste friction has now been reduced with repo-local config support where possible
 - The pilot summary now shows three completed sandbox chats and two setup-only entries, which is enough to judge the setup-first release gate
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
-- The first-run path is now setup-first, but the broader five-entry pilot still needs actual chat runs in supported interactive environments
+- The first-run path is now setup-first, but the stronger proof story is still TS/JS-heavy and Python does not yet have an equally convincing proof slice
+- Production-profile, rollback, and observability fields now exist, but they still stop at review-time guidance rather than a fully explicit deploy-readiness or post-deploy maintenance surface
 - Release tagging and publish sign-off for `0.1.3` are complete
 
 ## Next step
 
-Decide whether the next step should return to deeper runtime signals after the `0.1.3` release.
+Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, while keeping deployment orchestration deferred.
 
 ## Handoff
 
-When a meaningful milestone lands, end the project-thread update with:
+Default rule: when a meaningful milestone lands, end the project-thread update with:
 
 - `What changed`: one sentence
 - `Revenue Path`: the next missing link before paid

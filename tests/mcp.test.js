@@ -170,26 +170,30 @@ export async function run() {
       name: "suggest_task_contract",
       arguments: {
         repoRoot: tempDir,
-        taskRequest: "Refine refund flow",
+        taskRequest: "I only have a rough idea. Please find the smallest safe change.",
         selectedFiles: ["src/orders/refund-service.js"],
         changedFiles: ["src/orders/refund-service.js", "tests/refund-service.test.js"]
       }
     });
-    assert.equal(suggestResponse.result.structuredContent.contract.task, "Refine refund flow");
+    assert.equal(suggestResponse.result.structuredContent.contract.task, "I only have a rough idea. Please find the smallest safe change.");
     assert.equal(typeof suggestResponse.result.structuredContent.session.sessionId, "string");
+    assert.equal(suggestResponse.result.structuredContent.session.roughIntent.detected, true);
+    assert.equal(suggestResponse.result.structuredContent.suggestions.roughIntent.detected, true);
+    assert.equal(suggestResponse.result.structuredContent.suggestions.roughIntent.suggestions.length, 3);
 
     const startLoopResponse = await client.request("tools/call", {
       name: "start_agent_native_loop",
       arguments: {
         repoRoot: tempDir,
-        taskRequest: "Refine refund flow",
+        taskRequest: "I only have a rough idea. Please find the smallest safe change.",
         selectedFiles: ["src/orders/refund-service.js"],
         changedFiles: ["src/orders/refund-service.js", "tests/refund-service.test.js"]
       }
     });
-    assert.equal(startLoopResponse.result.structuredContent.contract.task, "Refine refund flow");
+    assert.equal(startLoopResponse.result.structuredContent.contract.task, "I only have a rough idea. Please find the smallest safe change.");
     assert.equal(startLoopResponse.result.structuredContent.evidenceFiles[0].path, ".agent-guardrails/evidence/current-task.md");
     assert.equal(Array.isArray(startLoopResponse.result.structuredContent.continuity.reuseTargets), true);
+    assert.equal(startLoopResponse.result.structuredContent.session.roughIntent.detected, true);
     assert.match(startLoopResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
 
     const finishLoopResponse = await client.request("tools/call", {
@@ -206,6 +210,7 @@ export async function run() {
     });
     assert.equal(finishLoopResponse.result.structuredContent.checkResult.ok, true);
     assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.status, "pass");
+    assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.verdict, "Safe to review");
     assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.futureMaintenanceRisks), true);
 
     const checkResponse = await client.request("tools/call", {
@@ -217,6 +222,7 @@ export async function run() {
       }
     });
     assert.equal(checkResponse.result.structuredContent.ok, true);
+    assert.equal(checkResponse.result.structuredContent.verdict, "Safe to review");
     assert.equal(typeof checkResponse.result.structuredContent.continuity, "object");
     assert.match(checkResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
 
@@ -227,6 +233,7 @@ export async function run() {
       }
     });
     assert.equal(summaryResponse.result.structuredContent.status, "pass");
+    assert.equal(summaryResponse.result.structuredContent.verdict, "Safe to review");
     assert.equal(Array.isArray(summaryResponse.result.structuredContent.nextActions), true);
   } finally {
     input.end();

@@ -43,10 +43,12 @@ export async function run() {
     assert.equal(result.initialization.preset, "node-service");
     assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "config.json")), true);
     assert.match(output, /Agent Guardrails Setup/);
-    assert.match(output, /Already completed/);
+    assert.match(output, /Already done/);
+    assert.match(output, /Do this now/);
     assert.match(output, /Canonical MCP chat flow/);
-    assert.match(output, /Recommended first chat message/);
-    assert.match(output, /Only remaining step/);
+    assert.match(output, /First chat message/);
+    assert.match(output, /You will get/);
+    assert.match(output, /Next step/);
     assert.match(output, /Pilot record file/);
     assert.match(output, /Cross-entry pilot summary/);
     assert.match(output, /start_agent_native_loop/);
@@ -87,8 +89,8 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(writeDir, ".mcp.json")), true);
   assert.equal(writeResult.mcp.repoConfigWrite.wrote, true);
   assert.equal(writeResult.mcp.repoConfigWrite.configPath, ".mcp.json");
-  assert.match(writeOutput, /Repo-local MCP config written: \.mcp\.json/);
-  assert.match(writeOutput, /Only remaining step/);
+  assert.match(writeOutput, /Repo-local agent config written: \.mcp\.json/);
+  assert.match(writeOutput, /Do this now/);
   assert.ok(writeResult.remainingManualStep.includes("send the first chat message"));
   assert.ok(!writeResult.remainingManualStep.includes("paste the MCP snippet"));
 
@@ -103,8 +105,8 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(openhandsWriteDir, ".openhands", "mcp.json")), true);
   assert.equal(openhandsWriteResult.mcp.repoConfigWrite.wrote, true);
   assert.equal(openhandsWriteResult.mcp.repoConfigWrite.configPath, ".openhands/mcp.json");
-  assert.match(openhandsWriteOutput, /Repo-local MCP config written: \.openhands\/mcp\.json/);
-  assert.match(openhandsWriteOutput, /Only remaining step/);
+  assert.match(openhandsWriteOutput, /Repo-local agent config written: \.openhands\/mcp\.json/);
+  assert.match(openhandsWriteOutput, /Do this now/);
   assert.ok(openhandsWriteResult.remainingManualStep.includes("point it at .openhands/mcp.json"));
 
   const openclawWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-openclaw-"));
@@ -118,8 +120,8 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(openclawWriteDir, ".openclaw", "mcp.json")), true);
   assert.equal(openclawWriteResult.mcp.repoConfigWrite.wrote, true);
   assert.equal(openclawWriteResult.mcp.repoConfigWrite.configPath, ".openclaw/mcp.json");
-  assert.match(openclawWriteOutput, /Repo-local MCP config written: \.openclaw\/mcp\.json/);
-  assert.match(openclawWriteOutput, /Only remaining step/);
+  assert.match(openclawWriteOutput, /Repo-local agent config written: \.openclaw\/mcp\.json/);
+  assert.match(openclawWriteOutput, /Do this now/);
   assert.ok(openclawWriteResult.remainingManualStep.includes("point it at .openclaw/mcp.json"));
 
   const unsupportedWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-unsupported-"));
@@ -132,7 +134,7 @@ export async function run() {
   );
   assert.equal(unsupportedWriteResult.mcp.repoConfigWrite.wrote, false);
   assert.equal(unsupportedWriteResult.mcp.repoConfigWrite.supported, false);
-  assert.match(unsupportedWriteOutput, /manual MCP paste/);
+  assert.match(unsupportedWriteOutput, /manual config paste/);
 
   const jsonDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-json-"));
   const { output: jsonOutput } = await captureLogs(() =>

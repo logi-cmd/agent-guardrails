@@ -1,6 +1,6 @@
 # Benchmarks
 
-Last updated: 2026-03-22
+Last updated: 2026-03-24
 
 ## Purpose
 
@@ -21,12 +21,22 @@ They currently cover:
 - missing-tests failure
 - protected-path failure
 - clean narrow change pass
+- Python/FastAPI deploy-ready pass
+  - scenario id: `python-fastapi-deploy-ready-pass`
 
 Run them with:
 
 ```bash
 npm run benchmark
 ```
+
+If you want the matching sandbox proof path instead of the whole suite, run:
+
+```bash
+npm run demo:python-fastapi
+```
+
+That Python slice proves baseline runtime credibility and production-readiness judgment in a FastAPI-shaped repo. It does **not** claim Python semantic-pack depth or parity with the TS/JS proof path.
 
 The OSS suite should stay public and CI-visible.
 

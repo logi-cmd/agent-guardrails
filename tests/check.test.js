@@ -628,10 +628,75 @@ async function checkPrintsReviewOutput() {
     );
 
     assert.equal(result.ok, false);
+    assert.equal(result.verdict, "Validation incomplete");
     assert.match(output, /Review summary:/);
+    assert.match(output, /Verdict: Validation incomplete/);
     assert.match(output, /Missing validation:/);
     assert.match(output, /\[error\] Source files changed without any accompanying test changes/);
     assert.match(output, /Finish-time command:/);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkMarksProductionReadyChangesAsSafeToDeploy() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-deploy-ready-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/", ".agent-guardrails/"]);
+  updateConfig(tempDir, (config) => {
+    config.criticalPaths = ["src/orders/"];
+    config.performanceSensitiveAreas = ["src/orders/"];
+  });
+
+  fs.mkdirSync(path.join(tempDir, "src", "orders"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, ".agent-guardrails", "evidence"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "orders", "refund.js"), "export const refund = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "refund.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(
+    path.join(tempDir, ".agent-guardrails", "evidence", "current-task.md"),
+    "# Task Evidence\n\n- Task: Refine refund flow\n- Commands run: npm test\n- Notable results: Refund tests passed, performance stayed stable, and reliability under concurrency did not change.\n- Review notes: Structured refund log remains intact, monitoring still covers the path, and concurrency validation stayed within the expected load-sensitive path.\n- Residual risk: none\n",
+    "utf8"
+  );
+
+  await withRepoCwd(tempDir, () =>
+    runPlan({
+      positional: [],
+      flags: {
+        task: "Refine refund flow",
+        "allow-paths": "src/,tests/",
+        "intended-files": "src/orders/refund.js,tests/refund.test.js",
+        "required-commands": "npm test",
+        evidence: ".agent-guardrails/evidence/current-task.md",
+        "production-profile": "high-throughput-api",
+        "nfr-requirements": "performance,reliability",
+        "expected-load-sensitive-paths": "src/orders/refund.js",
+        "expected-concurrency-impact": "No shared mutable state should be introduced",
+        "observability-requirements": "Structured refund log remains intact",
+        "rollback-notes": "Revert refund transition patch only"
+      },
+      locale: "en"
+    })
+  );
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = ["src/orders/refund.js", "tests/refund.test.js"].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { review: true, "commands-run": "npm test" }, locale: "en" }))
+    );
+
+    assert.equal(result.ok, true);
+    assert.equal(result.verdict, "Safe to deploy");
+    assert.equal(result.deployReadiness.status, "ready");
+    assert.equal(result.postDeployMaintenance.observabilityStatus, "covered");
+    assert.match(result.deployReadiness.checklist.join("\n"), /Rollback path recorded/i);
+    assert.match(result.postDeployMaintenance.operatorNextActions.join("\n"), /rollback path/i);
+    assert.match(output, /Verdict: Safe to deploy/);
+    assert.match(output, /Deploy readiness:/);
+    assert.match(output, /Post-deploy maintenance:/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -713,5 +778,6 @@ export async function run() {
   await checkPrintsJsonOutput();
   await checkPrintsJsonFailures();
   await checkPrintsReviewOutput();
+  await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
 }

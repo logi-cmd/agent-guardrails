@@ -1,0 +1,60 @@
+{
+  "name": "python-fastapi-deploy-ready-pass",
+  "tier": "oss",
+  "status": "active",
+  "goal": "Show that the python-fastapi preset already supports a bounded, production-shaped deploy-readiness pass in the OSS runtime.",
+  "preset": "python-fastapi",
+  "configPatch": {
+    "checks": {
+      "allowedPaths": [
+        "app/",
+        "tests/",
+        ".agent-guardrails/"
+      ]
+    },
+    "criticalPaths": [
+      "app/api/"
+    ],
+    "performanceSensitiveAreas": [
+      "app/api/"
+    ]
+  },
+  "planFlags": {
+    "task": "Refine the refund approval endpoint without expanding beyond the FastAPI handler and its matching test",
+    "allow-paths": "app/,tests/",
+    "intended-files": "app/api/refunds.py,tests/test_refunds.py",
+    "allowed-change-types": "interface-changing",
+    "required-commands": "pytest -q",
+    "evidence": ".agent-guardrails/evidence/current-task.md",
+    "production-profile": "high-throughput-api",
+    "nfr-requirements": "performance,reliability",
+    "expected-load-sensitive-paths": "app/api/refunds.py",
+    "expected-concurrency-impact": "No shared mutable state should be introduced in the approval path",
+    "observability-requirements": "Structured refund log remains intact",
+    "rollback-notes": "Revert the refund approval handler patch only"
+  },
+  "files": {
+    "app/api/refunds.py": "from fastapi import APIRouter\n\nrouter = APIRouter()\n\n\n@router.post(\"/refunds/{refund_id}/approve\")\ndef approve_refund(refund_id: str) -> dict[str, str]:\n    return {\"refund_id\": refund_id, \"status\": \"approved\"}\n",
+    "tests/test_refunds.py": "def test_refund_route_contract() -> None:\n    assert True\n",
+    ".agent-guardrails/evidence/current-task.md": "# Task Evidence\n\n- Task: Refine the refund approval endpoint without expanding beyond the FastAPI handler and its matching test.\n- Commands run: pytest -q\n- Notable results: The refund endpoint tests passed, performance stayed stable, and reliability under concurrency did not change.\n- Review notes: Structured refund log remains intact, monitoring still covers the endpoint, and rollback stays limited to the refund approval handler patch.\n- Residual risk: none\n"
+  },
+  "changedFiles": [
+    "app/api/refunds.py",
+    "tests/test_refunds.py"
+  ],
+  "commandsRun": [
+    "pytest -q"
+  ],
+  "expected": {
+    "ok": true,
+    "verdict": "Safe to deploy",
+    "deployReadinessStatus": "ready",
+    "findingCodes": [],
+    "minimumReviewSummary": {
+      "scopeIssues": 0,
+      "validationIssues": 0,
+      "consistencyConcerns": 0,
+      "riskConcerns": 0
+    }
+  }
+}

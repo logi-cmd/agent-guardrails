@@ -1,6 +1,6 @@
 # Automation Spec
 
-Last updated: 2026-03-23
+Last updated: 2026-03-24
 
 ## Goal
 
@@ -37,7 +37,7 @@ Today the runtime already provides:
 The first baseline Skill flow already exists through `plan` plus `check`, the first MCP MVP already exists through `agent-guardrails mcp`, and the first OSS agent-native loop now exists as runtime-backed MCP actions.
 
 The next implementation step is not more prompt text.
-It is making the MCP-first entry feel like the product through one setup-first path while keeping the same runtime-backed review surface underneath.
+It is lowering the cognitive load of the setup-first path, clarifying the product category for real-repo users, then letting rough intent become a first-class input while keeping the same runtime-backed review surface underneath.
 
 ## Runtime model
 
@@ -197,8 +197,16 @@ The continuity MVP now adds:
 
 Near-term follow-on work:
 
-- one setup-first path for all supported agents
-- one canonical copy-paste agent config path per agent
+- bilingual first-screen onboarding with one obvious happy path
+- clearer "real repo runtime, not one-off generation tool" positioning
+- a rough-intent mode for users who cannot yet state the task cleanly
+- a short trust verdict above the reviewer summary
+- recovery, secrets-safe guidance, and cost-awareness hints
+- explicit language-support packaging, with Python as the next deeper support priority
+- a single proof asset that demonstrates scope catch, semantic catch, and reviewer-summary value
+- a deploy-readiness verdict plus release/deploy checklist surface in the OSS runtime
+- post-deploy maintenance summaries with rollback, observability, and operator next actions
+- deployment orchestration only after the runtime can judge readiness clearly, with script or CI hooks first and provider adapters later
 - module history
 - preferred reuse hints
 - stronger security-sensitive path checks
@@ -212,3 +220,4 @@ Near-term follow-on work:
 - Do not create a separate automation path that disagrees with the CLI.
 - Do not let automation weaken validation, evidence, or risk escalation.
 - Do not treat prompts as the product; the runtime is the product.
+- Do not let deployment orchestration outrun trust verdicts, recovery guidance, or the OSS deploy-readiness gate.

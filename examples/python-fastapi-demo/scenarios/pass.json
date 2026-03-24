@@ -1,0 +1,30 @@
+{
+  "name": "pass",
+  "description": "The same bounded Python/FastAPI task becomes deploy-ready once the evidence explicitly covers validation, observability, and rollback guidance.",
+  "task": "Tighten the refund approval response handling without expanding beyond the FastAPI endpoint and its matching test.",
+  "allowedPaths": [
+    "app/",
+    "tests/"
+  ],
+  "intendedFiles": [
+    "app/api/refunds.py",
+    "tests/test_refunds.py"
+  ],
+  "requiredCommands": [
+    "pytest -q"
+  ],
+  "allowedChangeTypes": [
+    "interface-changing"
+  ],
+  "evidencePaths": [
+    ".agent-guardrails/evidence/current-task.md"
+  ],
+  "evidenceContent": "# Task Evidence\n\n- Task: Tighten the refund approval response handling without expanding beyond the FastAPI endpoint and its matching test.\n- Commands run: pytest -q\n- Notable results: The refund endpoint tests passed, performance stayed stable, and reliability under concurrency did not change.\n- Review notes: Structured refund log remains intact, monitoring still covers the endpoint, and rollback stays limited to the refund approval handler patch.\n- Residual risk: none\n",
+  "commandsRun": [
+    "pytest -q"
+  ],
+  "changedFiles": [
+    "app/api/refunds.py",
+    "tests/test_refunds.py"
+  ]
+}

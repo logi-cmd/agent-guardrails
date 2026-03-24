@@ -1,6 +1,6 @@
 # Commercialization
 
-Last updated: 2026-03-22
+Last updated: 2026-03-24
 
 ## Product boundary
 
@@ -26,6 +26,7 @@ The go-to-market shape should also stay clear:
 - do not pitch a new standalone coding agent
 - pitch a production-safety runtime that plugs into existing agent chats
 - keep the wrapper cheap and the runtime compounding
+- do not position against one-off generation tools on raw speed; position around real-repo trust, review, and maintenance
 
 The product moat should not be described as "we have better prompts."
 
@@ -59,6 +60,11 @@ The open-source core stays free and production-relevant:
 - basic integration surfaces for agent-native adoption
 - a baseline skill workflow
 - a baseline MCP service layer
+- trust verdicts
+- recovery, secrets-safe, and cost-awareness guidance
+- deploy-readiness judgment
+- release and deploy checklist visibility
+- post-deploy maintenance summaries
 
 If the feature is required for a repo to use `agent-guardrails` as a real merge gate, it belongs in OSS.
 
@@ -68,6 +74,8 @@ That means OSS should continue to own:
 - baseline automation surfaces
 - baseline reviewer output
 - baseline risk dimensions for security, dependency, performance, understanding, and continuity
+- baseline production-readiness gate
+- baseline maintenance and recovery surface after production-shaped changes
 
 ## Pro Local
 
@@ -87,6 +95,9 @@ It should sell higher-signal semantic analysis, not basic usability:
 - richer local IDE review surface
 - maintenance continuity insights
 - local agent-native orchestration
+- script / CI deployment orchestration
+- local post-deploy verify and rollback assistance
+- provider adapter support
 - BYO model key
 
 The first semantic pack in `plugins/plugin-ts/` is public in this repository as an early semantic milestone. That does not change the product boundary:
@@ -109,8 +120,23 @@ The strongest paid promise for Pro Local should be:
 - less manual setup
 - lower review effort
 - lower maintenance drift over time
+- lower operator effort around deploy, verify, and rollback
 - stronger repo-specific memory and reuse guidance
 - better results inside the agent workflows users already have
+
+Near-term growth should also stay honest:
+
+- do not pretend all languages are equally strong today
+- keep saying JS/TS is the deepest public path right now
+- treat Python as the next credible expansion path
+- prove Python through a baseline FastAPI demo and OSS benchmark before claiming deeper semantic support
+- use clearer support boundaries to attract the right early users instead of broader but mismatched traffic
+
+Support boundary note:
+
+- JS/TS is still the deepest technical proof path today
+- Python/FastAPI already has baseline runtime support and should become the next believable expansion path through a demo-plus-benchmark proof slice
+- commercialization should not imply equal semantic depth across ecosystems before that work is shipped
 
 Suggested starting price range:
 
@@ -127,6 +153,10 @@ Suggested starting price range:
 - centralized benchmark dashboards
 - org-wide workflow orchestration
 - centralized MCP or automation services
+- hosted deployment orchestration
+- approvals and release gates
+- audit trails
+- rollout visibility and post-deploy monitoring views
 - included compute
 
 Suggested starting price range:
@@ -151,4 +181,6 @@ Paid tiers may only add:
 - lower manual triage cost
 - lower manual workflow overhead
 - stronger maintenance continuity
+- deployment orchestration and provider adapters
+- richer post-deploy verification and rollback assistance
 - stronger team and org workflows

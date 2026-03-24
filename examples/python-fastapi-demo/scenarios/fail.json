@@ -1,0 +1,30 @@
+{
+  "name": "fail",
+  "description": "A production-shaped Python/FastAPI task keeps scope tight but still blocks deploy-readiness when observability and rollback coverage are missing from the evidence note.",
+  "task": "Tighten the refund approval response handling without expanding beyond the FastAPI endpoint and its matching test.",
+  "allowedPaths": [
+    "app/",
+    "tests/"
+  ],
+  "intendedFiles": [
+    "app/api/refunds.py",
+    "tests/test_refunds.py"
+  ],
+  "requiredCommands": [
+    "pytest -q"
+  ],
+  "allowedChangeTypes": [
+    "interface-changing"
+  ],
+  "evidencePaths": [
+    ".agent-guardrails/evidence/current-task.md"
+  ],
+  "evidenceContent": "# Task Evidence\n\n- Task: Tighten the refund approval response handling without expanding beyond the FastAPI endpoint and its matching test.\n- Commands run: pytest -q\n- Notable results: The refund endpoint tests still pass and the route stayed inside app/api/ plus tests/.\n- Residual risk: none\n",
+  "commandsRun": [
+    "pytest -q"
+  ],
+  "changedFiles": [
+    "app/api/refunds.py",
+    "tests/test_refunds.py"
+  ]
+}

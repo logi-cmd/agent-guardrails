@@ -1,6 +1,6 @@
 # Product Strategy
 
-Last updated: 2026-03-23
+Last updated: 2026-03-24
 
 ## Product truth
 
@@ -46,9 +46,15 @@ The durable goal is:
 
 Operationally, the product is successful when AI-written code can enter a normal PR flow with materially lower review cost and rollback risk.
 
+The support boundary should stay honest:
+
+- deepest support today is JavaScript / TypeScript
+- baseline runtime support today exists for Next.js, Python/FastAPI, and monorepos
+- Python is the next language to deepen after TS/JS
+
 ## Pain model
 
-The core Vibe Coding pains to solve are:
+The core Vibe Coding pains to solve are now modeled as ten categories, not just scope and tests.
 
 ### 1. Context does not fit
 
@@ -127,6 +133,48 @@ Product answer:
 - reviewer output sections
 - future semantic detectors for higher-signal coverage
 
+### 7. The user does not know how to ask
+
+- many users only have a rough idea
+- they do not want to pre-write a clean task, scope, or acceptance criteria
+
+Product answer:
+
+- setup-first entry
+- rough-intent examples
+- future rough-intent mode that turns vague requests into the smallest safe task
+
+### 8. Failure and recovery stay fuzzy
+
+- users can see risk but still do not know how to recover cleanly
+- bad AI changes need a clear narrowing or rollback path
+
+Product answer:
+
+- finish-time next actions
+- continuity guidance
+- future recovery guidance with contract narrowing and rollback hints
+
+### 9. Secrets, privacy, and auditability are easy to get wrong
+
+- users worry about leaking config, secrets, internal paths, or sensitive surfaces
+- teams need clearer boundaries around what is safe to store repo-locally versus user-globally
+
+Product answer:
+
+- explicit setup guidance for safe repo-local config targets
+- future secrets-safe setup rules, redaction guidance, and stronger policy/audit layers
+
+### 10. Teams need shared trust, not only solo confidence
+
+- team adoption depends on approvals, shared policy, and review trust
+- ROI must eventually be visible across multiple users and repos
+
+Product answer:
+
+- reviewer-facing outputs that are easy to forward and trust
+- future shared policies, audit trails, approval flows, and ROI instrumentation
+
 ## Product architecture
 
 Keep the public command surface stable:
@@ -185,6 +233,21 @@ The critical rule is:
 
 The product should never split into multiple risk systems that disagree.
 
+## Current execution order
+
+The next sequence should be:
+
+1. entry compression plus category clarity so users understand this is for real repos, not one-off prototypes
+2. rough-intent mode for users who cannot state the task cleanly yet
+3. a short trust verdict layer above the reviewer summary
+4. recovery, secrets-safe guidance, and cost-awareness hints
+5. language support expansion, with Python as the next deeper ecosystem
+6. proof asset plus early distribution around real failure modes
+7. production-readiness and post-deploy maintenance surface
+8. deployment orchestration as a later automation layer
+9. deeper runtime signals and higher-confidence detectors
+10. team and Pro wedges such as shared policy, approvals, auditability, and ROI instrumentation
+
 ## Moat
 
 The copyable layer is not the moat.
@@ -228,6 +291,11 @@ OSS owns:
 - semantic proof visibility
 - continuity hints
 - risk dimensions in reviewer output
+- trust verdicts
+- recovery, secrets-safe, and cost-awareness guidance
+- deploy-readiness judgment
+- release and deploy checklist visibility
+- post-deploy maintenance summaries
 - public demos, benchmarks, CI, and i18n
 
 If the capability is required for a repo to use `agent-guardrails` as a real merge gate, it belongs in OSS.
@@ -241,6 +309,10 @@ Pro Local should sell:
 - richer continuity intelligence
 - higher-confidence semantic judgments
 - local agent-native orchestration
+- local production-profile assistants
+- script or CI deployment orchestration
+- local post-deploy verify and rollback assistance
+- provider adapter support
 - IDE-native review surfaces
 - stronger reviewer summaries
 
@@ -259,6 +331,11 @@ Pro Cloud should sell:
 - shared policies
 - dashboards and trends
 - centralized orchestration
+- hosted deployment orchestration
+- approvals and release gates
+- audit trails
+- rollout visibility
+- centralized monitoring and trend views
 - org-wide governance
 
 ## Success criteria
@@ -272,6 +349,8 @@ The product is healthy when:
 - semantic drift is visible before merge
 - review output speeds up human judgment
 - the next maintainer cost is reduced, not increased
+- deploy-readiness is explicit before release
+- post-deploy recovery and operator next actions are visible when production surfaces change
 
 Recommended KPIs:
 
@@ -285,16 +364,16 @@ Recommended KPIs:
 
 ## Next 90 days
 
-1. Build the first agent-native loop MVP on top of the shared runtime and MCP layer.
-2. Add the first continuity layer MVP:
-   - module history
-   - preferred reuse hints
-   - continuity break warnings
-   - future maintainer risk in review output
-3. Deepen risk-dimension coverage from hints into stronger semantic signals:
-   - security-sensitive path checks
-   - dependency drift checks
-   - performance-sensitive change hints
-   - understanding or explainability risk
-4. Run at least one external pilot beyond the current source-repo pilot.
-5. Keep all of the above inside the same OSS runtime path before expanding paid surfaces.
+1. Finish the low-cognitive-load product entry:
+   - bilingual first screen
+   - clearer category contrast versus one-shot generation tools
+   - setup output that reads like a short path, not a manual
+2. Prototype rough-intent mode on the same runtime path so vague requests become 2 to 3 smallest-safe task suggestions.
+3. Add a short trust verdict plus clearer recovery, secrets-safe, and cost-awareness guidance above the existing reviewer summary.
+4. Turn language support into a growth lever:
+   - keep JS/TS as the deepest path
+   - ship a Python/FastAPI baseline proof path that demonstrates runtime and deploy-readiness credibility without semantic-parity claims
+   - define the first Python semantic roadmap slice only after that baseline proof lands
+5. Publish a single proof asset that shows what this runtime catches that normal AI coding workflows miss, then use that same proof page as the entry for early distribution.
+6. Add deploy-readiness judgment and a post-deploy maintenance surface to the OSS reviewer output before any real deployment orchestration is attempted.
+7. Keep deployment orchestration as a later automation layer so the runtime stays the product and provider adapters do not outrun trust, recovery, and proof.
