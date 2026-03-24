@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - Draft
+## 0.2.0 - 2026-03-24
 
 Minor release focused on turning the OSS reviewer surface into a clearer production-readiness story, while shipping the first real Python/FastAPI proof slice.
 

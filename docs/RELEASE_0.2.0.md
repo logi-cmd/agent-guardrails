@@ -73,4 +73,4 @@ npm run demo:python-fastapi
 
 ## Release status
 
-This release should be published as `agent-guardrails@0.2.0` after the branch merges.
+Release notes prepared. Publish after `main` is pushed and the `v0.2.0` tag is created.

@@ -1,6 +1,6 @@
 {
   "name": "agent-guardrails",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Production guardrails for AI coding agents",
   "type": "module",
   "files": [
