@@ -163,11 +163,11 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
 - The first-run path is now setup-first, but the stronger proof story is still TS/JS-heavy and Python does not yet have an equally convincing proof slice
 - Production-profile, rollback, and observability fields now exist, but they still stop at review-time guidance rather than a fully explicit deploy-readiness or post-deploy maintenance surface
-- The README is now more homepage-like and less Claude-specific, but the GitHub push path in this Codex shell is still fragile enough that the latest docs-only commit may require a transport-level workaround or a user-terminal push
+- The README is now more homepage-like, less Claude-specific, and the latest docs/package follow-up commits are now pushed, but the GitHub transport path still benefits from the fixed credential-manager/SSH release protocol instead of ad hoc retries
 
 ## Next step
 
-Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, then make sure the latest README/workflow cleanup commit is pushed cleanly through the stabilized SSH release path.
+Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, then use the now-stabilized release protocol for the next published milestone instead of rediscovering the GitHub push path.
 
 ## Handoff
 
