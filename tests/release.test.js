@@ -20,6 +20,7 @@ export async function run() {
   const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
   const pilot = read("docs/REAL_REPO_PILOT.md");
   const troubleshooting = read("docs/TROUBLESHOOTING.md");
+  const workflows = read("docs/WORKFLOWS.md");
   const workflow = read(".github/workflows/guardrails.yml");
   const templateWorkflow = read("templates/base/workflows/agent-guardrails.yml");
   const zhReadme = read("docs/zh-CN/README.md");
@@ -50,23 +51,25 @@ export async function run() {
   assert.match(readme, /npm run demo:python-fastapi/);
   assert.match(readme, /## What This Catches \//);
   assert.match(readme, /docs\/PROOF\.md/);
-  assert.match(readme, /## Setup-First Quick Start/);
+  assert.match(readme, /## Setup Details \//);
   assert.match(readme, /## CLI Fallback Quick Start/);
-  assert.ok(readme.indexOf("## Setup-First Quick Start") < readme.indexOf("## CLI Fallback Quick Start"));
+  assert.ok(readme.indexOf("## Setup Details /") < readme.indexOf("## CLI Fallback Quick Start"));
+  assert.match(readme, /agent-guardrails setup --agent <your-agent>/);
   assert.match(readme, /agent-guardrails setup --agent claude-code/);
   assert.match(readme, /agent-guardrails setup --agent cursor --preset nextjs/);
-  assert.match(readme, /agent-guardrails setup --agent claude-code --write-repo-config/);
-  assert.match(readme, /agent-guardrails mcp/);
+  assert.match(readme, /agent-guardrails setup --agent <your-agent> --write-repo-config/);
   assert.match(readme, /start_agent_native_loop/);
   assert.match(readme, /finish_agent_native_loop/);
-  assert.match(readme, /## Supported Agents/);
-  assert.match(readme, /## FAQ/);
   assert.match(readme, /## What This Proves/);
   assert.match(readme, /## Open Source vs Pro/);
   assert.match(readme, /## Benchmarks/);
   assert.match(readme, /## Commercialization/);
   assert.match(readme, /## Chinese Docs/);
-  assert.match(readme, /\.agent-guardrails\/evidence\/current-task\.md/);
+  assert.equal((readme.match(/## Current Language Support \//g) || []).length, 1);
+  assert.match(readme, /docs\/WORKFLOWS\.md/);
+  assert.doesNotMatch(readme, /## FAQ/);
+  assert.doesNotMatch(readme, /## CLI Commands/);
+  assert.doesNotMatch(readme, /## Presets/);
   assert.match(readme, /如果你是第一次用，先从 `setup` 开始。/);
   assert.match(readme, /你应该得到的是：/);
 
@@ -111,6 +114,15 @@ export async function run() {
   assert.match(proof, /Deepest support today:\*\* JavaScript \/ TypeScript/);
   assert.doesNotMatch(proof, /plugin-python.*(shipped|ship|available today|semantic parity)/i);
 
+  assert.match(workflows, /## Supported agents/);
+  assert.match(workflows, /## CLI commands/);
+  assert.match(workflows, /## Presets/);
+  assert.match(workflows, /## FAQ/);
+  assert.match(workflows, /## Current limits/);
+  assert.match(workflows, /agent-guardrails mcp/);
+  assert.match(workflows, /agent-guardrails check --base-ref origin\/main --json/);
+  assert.match(workflows, /\.agent-guardrails\/evidence\/current-task\.md/);
+
   assert.match(semanticArchitecture, /## Detector pipeline/);
   assert.match(semanticArchitecture, /## Plugin interface/);
   assert.match(semanticArchitecture, /plugins\/plugin-ts/);
@@ -144,6 +156,7 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_TEMPLATE.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_SUMMARY_TEMPLATE.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PROOF.md")), true);
+  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "WORKFLOWS.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "examples", "python-fastapi-demo", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "claude-code.md")), true);

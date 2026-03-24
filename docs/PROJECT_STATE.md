@@ -56,6 +56,8 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - Added a shared trust verdict layer across `check`, `check --json`, MCP, and the agent-native loop, with the first OSS deploy-readiness and post-deploy maintenance summary fields
 - Tightened the production-profile verdict logic so deploy blockers stay distinct from post-deploy watch items, and fixed evidence parsing so production review notes survive into the detector pipeline
 - Added the first Python/FastAPI baseline proof slice with a runnable sandbox demo plus an OSS benchmark scenario, without introducing `plugin-python` or claiming semantic parity with TS/JS
+- Narrowed the README again by removing duplicated language-support framing and compressing repeated setup-first guidance so the first-run path stays easier to scan
+- Split deeper usage material out of the README into `docs/WORKFLOWS.md` so the main README behaves more like a product homepage than a full manual
 - Re-verified the full suite with `npm test` and `npm run benchmark` after the entry-compression changes
 - Upgraded the maintainer CI workflow to run tests, demo, help smoke, pack dry-run, and install smoke
 - Added release validation coverage for README/package metadata/workflow quality and a tarball install smoke script
