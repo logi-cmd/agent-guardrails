@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-Keep the published OSS baseline honest after `0.1.3`, but shift the next iteration from detector breadth to lower-cognitive-load entry, clearer category contrast, and sharper proof. The bilingual first screen, support-boundary clarity, proof entrypoint, rough-intent runtime prototype, the first trust-verdict/deploy-readiness/post-deploy-maintenance surface, and the first Python/FastAPI baseline proof slice are now in place; the next focus is to decide whether to deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface before any real deployment orchestration.
+`0.2.0` is now published with the first Python/FastAPI baseline proof slice and the first OSS deploy-readiness/post-deploy-maintenance surface. The next focus is to decide whether to deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface before any real deployment orchestration.
 
 ## Done recently
 
@@ -159,11 +159,11 @@ Keep the published OSS baseline honest after `0.1.3`, but shift the next iterati
 - Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
 - The first-run path is now setup-first, but the stronger proof story is still TS/JS-heavy and Python does not yet have an equally convincing proof slice
 - Production-profile, rollback, and observability fields now exist, but they still stop at review-time guidance rather than a fully explicit deploy-readiness or post-deploy maintenance surface
-- Release tagging and publish sign-off for `0.1.3` are complete
+- `0.2.0` is published, but `npm publish` emitted a package metadata warning that auto-corrected the `bin` entry during publish and should be cleaned up in a follow-up
 
 ## Next step
 
-Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, while keeping deployment orchestration deferred.
+Decide whether the next milestone should deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface, then clean up the npm `bin` publish warning as part of that follow-up.
 
 ## Handoff
 
