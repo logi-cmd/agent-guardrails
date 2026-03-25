@@ -158,7 +158,8 @@ export async function run() {
       "finish_agent_native_loop",
       "run_guardrail_check",
       "summarize_review_risks",
-      "plan_rough_intent"
+      "plan_rough_intent",
+      "read_daemon_status"
     ]);
 
     const guardrailsResponse = await client.request("tools/call", {
@@ -241,6 +242,16 @@ export async function run() {
     assert.equal(typeof summaryResponse.result.structuredContent.costHints, "object");
     assert.equal(typeof summaryResponse.result.structuredContent.costHints.sizeLevel, "string");
     assert.equal(Array.isArray(summaryResponse.result.structuredContent.costHints.entries), true);
+
+    const daemonStatusResponse = await client.request("tools/call", {
+      name: "read_daemon_status",
+      arguments: { repoRoot: tempDir }
+    });
+    const daemonData = daemonStatusResponse.result.structuredContent;
+    assert.equal(typeof daemonData.running, "boolean");
+    assert.equal(typeof daemonData.checksRun, "number");
+    assert.equal(typeof daemonData.config, "object");
+    assert.equal(Array.isArray(daemonData.config.watchPaths), true);
   } finally {
     input.end();
     await serverPromise;
