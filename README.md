@@ -138,6 +138,20 @@ npx agent-guardrails setup --agent <your-agent>
 - `openhands`
 - `openclaw`
 
+### 更新 / Update
+
+如果通过 **npm 全局安装**：
+```bash
+npm update -g agent-guardrails
+```
+
+如果通过 **npx / MCP 使用**（不需要改配置文件）：
+```bash
+# 清除 npx 缓存，下次启动时自动拉取最新版
+npm cache clean --force
+# 然后重启你的 AI 工具（Claude Code / Cursor 等）即可
+```
+
 ---
 
 ## 文档 / Documentation
@@ -572,6 +586,23 @@ The daemon monitors file changes and automatically runs guardrail checks:
 | Automatic on file change | Run when you want |
 | Background process | Foreground process |
 | Best for active development | Best for pre-commit/CI |
+
+### MCP Integration / MCP 集成
+
+AI agents can read daemon results via the `read_daemon_status` MCP tool — no polling needed:
+
+```json
+{
+  "mcpServers": {
+    "agent-guardrails": {
+      "command": "npx",
+      "args": ["agent-guardrails", "mcp"]
+    }
+  }
+}
+```
+
+The agent calls `read_daemon_status` after code changes to check the latest guardrail result, including findings, risks, and cost hints.
 
 ---
 
