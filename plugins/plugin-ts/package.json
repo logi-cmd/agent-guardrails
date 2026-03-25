@@ -1,9 +1,21 @@
 {
   "name": "@agent-guardrails/plugin-ts",
-  "version": "0.0.0-local",
-  "description": "Local TypeScript/JavaScript semantic detectors for agent-guardrails",
+  "version": "0.1.0",
+  "description": "TypeScript/JavaScript semantic detectors for agent-guardrails with AST parsing",
   "type": "module",
   "main": "./index.js",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@typescript-eslint/parser": "^8.0.0",
+    "@typescript-eslint/typescript-estree": "^8.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.7.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
 }

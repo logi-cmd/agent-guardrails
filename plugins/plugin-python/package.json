@@ -1,0 +1,27 @@
+{
+  "name": "@agent-guardrails/plugin-python",
+  "version": "0.1.0",
+  "description": "Python semantic detection plugin for agent-guardrails",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/*.test.js"
+  },
+  "keywords": [
+    "agent-guardrails",
+    "python",
+    "semantic-analysis",
+    "code-quality"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "agent-guardrails": ">=0.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
