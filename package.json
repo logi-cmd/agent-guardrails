@@ -1,6 +1,7 @@
 {
   "name": "agent-guardrails",
   "version": "0.3.3",
+  "mcpName": "io.github.logi-cmd/agent-guardrails",
   "description": "Production guardrails for AI coding agents",
   "type": "module",
   "files": [
@@ -46,12 +47,20 @@
     "ai",
     "agent",
     "guardrails",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "code-review",
+    "merge-gate",
     "cli",
     "developer-tools",
     "codex",
     "cursor",
     "claude-code",
-    "openhands"
+    "windsurf",
+    "openhands",
+    "ai-safety",
+    "llm-guardrails"
   ],
   "license": "MIT",
   "optionalDependencies": {
