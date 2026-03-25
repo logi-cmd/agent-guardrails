@@ -1,13 +1,165 @@
 ﻿# Agent Guardrails
 
-**3 seconds to know: Can you safely merge this AI change?**
+**3 秒判断：这次 AI 改动可以安全 merge 吗？**
 
-`agent-guardrails` is the merge gate for AI-written code. It tells you:
-- ✅ **Safe to merge** — scope is bounded, tests pass, no drift
-- ⚠️ **Needs review** — some risk signals, check these files
-- ❌ **Don't merge** — out of scope, missing tests, or breaking changes
+[中文简介](#中文简介) | [Quick Start](#快速开始--先看这里) | [Docs](#文档--documentation)
 
-For real repos, not one-off prototypes.
+`agent-guardrails` 是 **AI 代码合并门** - 在 merge 前检查 AI 改动是否符合预期。
+
+- 🎯 **范围验证** - AI 只改了允许的文件
+- ✅ **测试验证** - 测试必须运行
+- 🔍 **漂移检测** - 检测并行抽象、接口变更
+- 🛡 **保护路径** - 关键文件不被触碰
+
+## How it works
+
+![Workflow](./docs/images/workflow.svg)
+
+---
+
+## Before vs After
+
+![Before vs After](./docs/images/before-after.svg)
+
+---
+
+## Rough-Intent Mode
+
+Don't have a precise task? Just say what you want in natural language:
+
+![Rough-Intent Mode](./docs/images/rough-intent.svg)
+
+```bash
+# No detailed flags needed - just describe your task
+agent-guardrails plan "加个登录功能" --lang zh-CN --yes
+```
+
+---
+
+## 快速开始 / 先看这里
+
+**30 秒快速体验**（推荐）
+
+```bash
+# 1. 安装
+npm install -g agent-guardrails
+
+# 2. 在项目中设置
+cd your-repo
+agent-guardrails setup --agent claude-code
+```
+
+你可以用其他 Agent：
+- `claude-code` - Claude Code CLI
+- `cursor` - Cursor Editor
+- `codex` - OpenAI Codex CLI
+- `openhands` - OpenHands CLI
+- `openclaw` - OpenClaw CLI
+
+**注意**： `setup` 会在项目根目录生成配置文件，输出使用指南。
+
+请复制输出的配置片段到 粘贴到你的 AI 工具中。
+
+**3. 开始使用**
+让你的 AI 按照指南操作代码
+- 输入 `/init` 开始新任务
+- 输入 `/plan` 创建任务计划
+- 输入 `/check` 在完成后检查
+
+- 使用 `/review` 获取合并建议
+
+**4. 在 merge 前运行检查**
+```bash
+agent-guardrails check --review
+```
+
+---
+
+## 核心价值 / Core Value
+
+### 与 传统 AI 编码 | 使用 agent-guardrails |
+|---------------|---------------------------|
+| "AI 改了 47 个文件，不知道为什么" | "AI 改了 3 个文件,都在范围内" |
+| "应该测试过了？" | "测试运行完成，12 通过，0 失败" |
+| "这看起来像是个新模式" | "⚠️ 检测到并行抽象" |
+| "希望不会出问题" | "✓ 可以安全 merge，剩余风险：低" |
+| 5 files, clear scope, clear validation | 12 passed, 0 failed | 0 files, clear scope, clear validation | safe to merge, remaining risk: low |
+
+---
+
+## 适用场景 / When to Use
+
+| 场景 | 推荐度 |
+|------|--------|
+| 在真实仓库中使用 AI Agent 的开发者 | ⭐⭐⭐⭐⭐ |
+| 被越界改动、漏测试坑过的团队 | ⭐⭐⭐⭐⭐ |
+| 希望在 merge 前看到清晰验证结果的人 | ⭐⭐⭐⭐ |
+
+**不适用场景**：
+- 只想做一次性 prototype 的用户
+- 不关心代码质量和维护性的团队
+- 想找通用静态分析工具的用户
+
+---
+
+## 与竞品对比 / vs. Competitors
+
+| 功能 | CodeRabbit | Sonar | agent-guardrails |
+|------|-----------|-------|------------------|
+| 事前约束 | ❌ 事后评论 | ❌ 事后检查 | ✅ |
+| 范围控制 | ❌ | ❌ | ✅ |
+| 任务上下文 | ❌ | ❌ | ✅ |
+| 测试相关性检查 | ❌ | ❌ | ✅ |
+
+**我们的优势**： 在代码生成**之前**定义边界，而不是生成**之后**发现问题
+- 主动而非被动
+- 与 AI Agent 巷度集成
+- 支持多种编程语言
+
+- 完全开源免费
+
+---
+
+## 安装 / Installation
+
+```bash
+npm install -g agent-guardrails
+```
+
+在项目目录运行：
+```bash
+npx agent-guardrails setup --agent <your-agent>
+```
+
+支持的 Agent：
+- `claude-code` (推荐)
+- `cursor`
+- `codex`
+- `openhands`
+- `openclaw`
+
+---
+
+## 文档 / Documentation
+
+- [README.md](./README.md) - 你文档
+- [FAILURE Cases](./docs/FAILURE_Cases.md) - 真实失败案例
+- [Rough-Intent Mode](./docs/Rrough_intent.md) - 模糊请求处理
+- [OSS/Pro 边界](./docs/oss_pro_boundary.md) - 功能对比
+
+- [Roadmap](./docs/roadmap.md) - 发展规划
+
+- [Proof](./docs/proof.md) - 效果证明
+
+- [Pilots](./docs/pilots/README.md) - 试点记录
+
+- [Python FastAPI Demo](./examples/python-fastapi-demo/README.md) - Python 示例
+- [TypeScript Demo](./examples/pattern-drift-demo/README.md) - TypeScript 示例
+- [Bounded Scope Demo](./examples/bounded-scope-demo/README.md) - 范围控制示例
+- [Boundary Demo](./examples/boundary-violation-demo/README.md) - 边界检查示例
+- [Interface Drift Demo](./examples/interface-drift-demo/README.md) - 接口变更示例
+- [Source-Test Relevance Demo](./examples/source-test-relevance-demo/README.md) - 测试相关性示例
+
 
 ---
 
@@ -639,3 +791,26 @@ See [CHANGELOG.md](./CHANGELOG.md).
 ## License
 
 MIT
+
+---
+
+## Contact & Community / 联系方式
+
+| Channel | Link |
+|---------|------|
+| **GitHub Issues** | [github.com/logi-cmd/agent-guardrails/issues](https://github.com/logi-cmd/agent-guardrails/issues) |
+| **GitHub Discussions** | [github.com/logi-cmd/agent-guardrails/discussions](https://github.com/logi-cmd/agent-guardrails/discussions) |
+| **Twitter / X** | [@logi_cmd](https://twitter.com/logi_cmd) |
+| **Email** | [agent-guardrails@logi-cmd.com](mailto:agent-guardrails@logi-cmd.com) |
+
+### Get Help / 获取帮助
+
+- 🐛 **Bug Reports**: [Open an Issue](https://github.com/logi-cmd/agent-guardrails/issues/new?template=bug_report.md)
+- 💡 **Feature Requests**: [Start a Discussion](https://github.com/logi-cmd/agent-guardrails/discussions/new?category=ideas)
+- ❓ **Questions**: [Ask in Discussions](https://github.com/logi-cmd/agent-guardrails/discussions/new?category=q-a)
+
+### Star History / Star 历史
+
+If you find this project helpful, please consider giving it a ⭐️!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=logi-cmd/agent-guardrails&type=Date)](https://star-history.com/#logi-cmd/agent-guardrails&Date)

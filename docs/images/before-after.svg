@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+  <defs>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#dc2626"/>
+      <stop offset="100%" style="stop-color:#ef4444"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#059669"/>
+      <stop offset="100%" style="stop-color:#10b981"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="400" fill="#0f172a" rx="12"/>
+
+  <!-- Title -->
+  <text x="350" y="35" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="20" font-weight="bold">Before vs After</text>
+
+  <!-- Before Section -->
+  <rect x="30" y="60" width="310" height="320" fill="#1e293b" rx="8"/>
+  <rect x="30" y="60" width="310" height="40" fill="url(#redGrad)" rx="8"/>
+  <rect x="30" y="92" width="310" height="8" fill="url(#redGrad)"/>
+  <text x="185" y="87" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="14" font-weight="bold">❌ Without Guardrails</text>
+
+  <!-- Before Items -->
+  <text x="50" y="130" fill="#94a3b8" font-family="system-ui" font-size="12">AI changed 47 files...</text>
+  <text x="50" y="155" fill="#94a3b8" font-family="system-ui" font-size="12">Not sure why 🤷</text>
+  <text x="50" y="180" fill="#94a3b8" font-family="system-ui" font-size="12">Tests? Maybe... 🤞</text>
+  <text x="50" y="205" fill="#94a3b8" font-family="system-ui" font-size="12">This looks like a new pattern 🆕</text>
+  <text x="50" y="230" fill="#94a3b8" font-family="system-ui" font-size="12">Hope nothing breaks! 🙏</text>
+
+  <!-- Before Stats -->
+  <rect x="50" y="260" width="270" height="100" fill="#0f172a" rx="6"/>
+  <text x="185" y="285" text-anchor="middle" fill="#ef4444" font-family="system-ui" font-size="11" font-weight="bold">Results:</text>
+  <text x="60" y="305" fill="#f87171" font-family="system-ui" font-size="11">• 2 AM hotfix required</text>
+  <text x="60" y="325" fill="#f87171" font-family="system-ui" font-size="11">• 45 min downtime</text>
+  <text x="60" y="345" fill="#f87171" font-family="system-ui" font-size="11">• 200+ support tickets</text>
+
+  <!-- After Section -->
+  <rect x="360" y="60" width="310" height="320" fill="#1e293b" rx="8"/>
+  <rect x="360" y="60" width="310" height="40" fill="url(#greenGrad)" rx="8"/>
+  <rect x="360" y="92" width="310" height="8" fill="url(#greenGrad)"/>
+  <text x="515" y="87" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="14" font-weight="bold">✅ With Guardrails</text>
+
+  <!-- After Items -->
+  <text x="380" y="130" fill="#94a3b8" font-family="system-ui" font-size="12">AI changed 3 files ✓</text>
+  <text x="380" y="155" fill="#94a3b8" font-family="system-ui" font-size="12">All in scope ✓</text>
+  <text x="380" y="180" fill="#94a3b8" font-family="system-ui" font-size="12">Tests: 12 passed, 0 failed ✓</text>
+  <text x="380" y="205" fill="#94a3b8" font-family="system-ui" font-size="12">No pattern drift ✓</text>
+  <text x="380" y="230" fill="#94a3b8" font-family="system-ui" font-size="12">Safe to merge! ✓</text>
+
+  <!-- After Stats -->
+  <rect x="380" y="260" width="270" height="100" fill="#0f172a" rx="6"/>
+  <text x="515" y="285" text-anchor="middle" fill="#10b981" font-family="system-ui" font-size="11" font-weight="bold">Results:</text>
+  <text x="390" y="305" fill="#34d399" font-family="system-ui" font-size="11">• 60% smaller changes</text>
+  <text x="390" y="325" fill="#34d399" font-family="system-ui" font-size="11">• 40% faster review</text>
+  <text x="390" y="345" fill="#34d399" font-family="system-ui" font-size="11">• 95% incidents prevented</text>
+</svg>
