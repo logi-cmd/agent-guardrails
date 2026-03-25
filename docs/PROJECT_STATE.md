@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.3.1** - Published to npm and GitHub
+**v0.3.2** - Daemon mode + test fixes
 
 ### Key Features
 - ✅ Rough-Intent Mode: 模糊意图解析，自动推断任务范围
@@ -16,6 +16,8 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - ✅ 双语支持 (en, zh-CN)
 - ✅ MCP 工具支持第三方聊天机器人
 - ✅ --version 参数
+- ✅ Daemon 模式: 后台自动检查 AI 改动
+- ✅ --foreground 前台模式: 调试/Docker 环境
 
 ## Current focus
 
@@ -26,6 +28,9 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Done recently (v0.3.x)
 
+- v0.3.2: 完善 Daemon 模式 (chokidar 依赖、前台模式、测试、文档)
+- v0.3.2: 修复 4 个测试失败 (plugin-ts, mcp, plan, release)
+- v0.3.2: 添加 plan_rough_intent MCP 工具
 - v0.3.1: 添加 --version 参数，完善 i18n 覆盖
 - v0.3.1: 修复 MCP server JSON schema 语法错误
 - v0.3.0: 添加 Rough-Intent 模式，支持模糊意图解析
@@ -193,7 +198,7 @@ Decide whether the next milestone should deepen Python semantics or further hard
 
 Default rule: when a meaningful milestone lands, end the project-thread update with:
 
-- `What changed`: one sentence
-- `Revenue Path`: the next missing link before paid
-- `Commercial risk`: the main blocker to the first paid outcome
-- `What I need next`: the one commercial decision or action
+- `What changed`: Daemon 模式完善，所有测试通过，代码已提交
+- `Revenue Path`: 继续推广获取用户反馈
+- `Commercial risk`: 用户获取渠道尚未验证
+- `What I need next`: 技术博客或社区推广决策
