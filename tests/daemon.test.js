@@ -7,6 +7,9 @@ import {
   getDaemonConfig,
   writeDaemonConfig
 } from "../lib/commands/daemon.js";
+import {
+  createInfoStore
+} from "../lib/daemon/worker.js";
 
 // Default config values for testing
 const DEFAULT_WATCH_PATHS = ["src/", "lib/", "tests/"];
@@ -207,6 +210,91 @@ async function testConfigHandlesNonNumericPid() {
   }
 }
 
+async function testStartTimeNotOverwritten() {
+  const tempDir = createTempDir();
+  try {
+    ensureGuardrailsDir(tempDir);
+    const infoFile = path.join(tempDir, ".agent-guardrails", "daemon-info.json");
+    const fixedStart = "2026-01-01T00:00:00.000Z";
+
+    const store = createInfoStore(infoFile, fixedStart);
+
+    // First save
+    store.save();
+    const first = JSON.parse(fs.readFileSync(infoFile, "utf8"));
+    assert.equal(first.startTime, fixedStart, "startTime should be the fixed value");
+
+    // Increment and save again
+    store.incrementChecks();
+    store.save();
+    const second = JSON.parse(fs.readFileSync(infoFile, "utf8"));
+    assert.equal(second.startTime, fixedStart, "startTime should NOT change after increment");
+    assert.equal(second.checksRun, 1, "checksRun should be 1 after increment");
+
+    console.log("✅ testStartTimeNotOverwritten passed");
+  } finally {
+    cleanupTempDir(tempDir);
+  }
+}
+
+async function testWindowsPidExactMatch() {
+  const tempDir = createTempDir();
+  try {
+    ensureGuardrailsDir(tempDir);
+
+    // Write a PID that is a substring of another valid PID
+    const pidFile = path.join(tempDir, ".agent-guardrails", "daemon.pid");
+    fs.writeFileSync(pidFile, "123");
+
+    const result = isDaemonRunning(tempDir);
+    // PID 123 is very unlikely to be running on any system, so this should be false
+    assert.equal(result.running, false, "PID 123 should not falsely match other processes");
+
+    console.log("✅ testWindowsPidExactMatch passed");
+  } finally {
+    cleanupTempDir(tempDir);
+  }
+}
+
+async function testFallbackWatcherDetectsChange() {
+  const tempDir = createTempDir();
+  try {
+    const watchDir = path.join(tempDir, "watched");
+    fs.mkdirSync(watchDir, { recursive: true });
+
+    const { createWatcher } = await import("../lib/daemon/worker.js");
+    const config = {
+      watchPaths: ["watched/"],
+      ignorePatterns: ["node_modules"],
+      checkInterval: 100
+    };
+
+    const changes = [];
+    let resolveWatch;
+    const watchReady = new Promise((r) => { resolveWatch = r; });
+
+    const watcher = await createWatcher(tempDir, config, (filePath) => {
+      changes.push(filePath);
+      if (changes.length >= 1) resolveWatch();
+    }, () => {});
+
+    // Create a file to trigger the watcher
+    const testFile = path.join(watchDir, "test-change.js");
+    fs.writeFileSync(testFile, "// test");
+
+    // Wait for the event (with timeout)
+    const { setTimeout: delay } = await import("node:timers/promises");
+    await Promise.race([watchReady, delay(2000)]);
+
+    watcher.close();
+    assert.ok(changes.length > 0, `Fallback watcher should detect file creation, got ${changes.length} changes`);
+
+    console.log("✅ testFallbackWatcherDetectsChange passed");
+  } finally {
+    cleanupTempDir(tempDir);
+  }
+}
+
 // ============================================================
 // Run Tests
 // ============================================================
@@ -223,7 +311,10 @@ export async function run() {
     testConfigCreatesDirectoryIfMissing,
     testConfigHandlesInvalidJson,
     testConfigHandlesEmptyPidFile,
-    testConfigHandlesNonNumericPid
+    testConfigHandlesNonNumericPid,
+    testStartTimeNotOverwritten,
+    testWindowsPidExactMatch,
+    testFallbackWatcherDetectsChange
   ];
 
   let passed = 0;

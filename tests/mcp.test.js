@@ -213,6 +213,8 @@ export async function run() {
     assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.status, "pass");
     assert.equal(finishLoopResponse.result.structuredContent.reviewerSummary.verdict, "Safe to review");
     assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.futureMaintenanceRisks), true);
+    assert.equal(typeof finishLoopResponse.result.structuredContent.reviewerSummary.costHints, "object");
+    assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.costHints.entries), true);
 
     const checkResponse = await client.request("tools/call", {
       name: "run_guardrail_check",
@@ -236,6 +238,9 @@ export async function run() {
     assert.equal(summaryResponse.result.structuredContent.status, "pass");
     assert.equal(summaryResponse.result.structuredContent.verdict, "Safe to review");
     assert.equal(Array.isArray(summaryResponse.result.structuredContent.nextActions), true);
+    assert.equal(typeof summaryResponse.result.structuredContent.costHints, "object");
+    assert.equal(typeof summaryResponse.result.structuredContent.costHints.sizeLevel, "string");
+    assert.equal(Array.isArray(summaryResponse.result.structuredContent.costHints.entries), true);
   } finally {
     input.end();
     await serverPromise;
