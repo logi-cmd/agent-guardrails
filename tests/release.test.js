@@ -62,7 +62,7 @@ export async function run() {
 
   assert.match(readme, /## Start Here \//);
   assert.match(readme, /## Quick Start \//);
-  assert.match(readme, /For real repos, not one-off prototypes\./);
+  assert.match(readme, /lives in a real repo and needs to be trusted/);
   assert.match(readme, /## Who This Is For \//);
   assert.match(readme, /## Who This Is Not For \//);
   assert.match(readme, /## Why This Is Different \//);
@@ -93,8 +93,8 @@ export async function run() {
   assert.doesNotMatch(readme, /## FAQ/);
   assert.doesNotMatch(readme, /## CLI Commands/);
   assert.doesNotMatch(readme, /## Presets/);
-  assert.match(readme, /如果你是第一次用，先从 `setup` 开始。/);
-  assert.match(readme, /你应该得到的是：/);
+  assert.match(readme, /setup.*会在项目根目录生成配置文件/);
+  assert.match(readme, /请复制输出的配置片段/);
 
   assert.match(zhReadme, /中文/);
   assert.match(zhStrategy, /产品策略/);

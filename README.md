@@ -523,6 +523,58 @@ The first recommended MCP flow is:
 
 `suggest_task_contract` and `run_guardrail_check` still exist as lower-level MCP tools, but they are not the preferred first-run chat flow.
 
+## Daemon Mode / 守护进程模式
+
+Run guardrails automatically in the background while you code:
+
+```bash
+# Start the daemon (background mode)
+agent-guardrails start
+
+# Check daemon status
+agent-guardrails status
+
+# Stop the daemon
+agent-guardrails stop
+
+# Run in foreground (useful for debugging or Docker)
+agent-guardrails start --foreground
+```
+
+### How It Works
+
+The daemon monitors file changes and automatically runs guardrail checks:
+- Watches `src/`, `lib/`, `tests/` by default
+- Debounces checks (5 second interval)
+- Logs to `.agent-guardrails/daemon.log`
+
+### Configuration (`.agent-guardrails/daemon.json`)
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `watchPaths` | `["src/", "lib/", "tests/"]` | Paths to monitor |
+| `ignorePatterns` | `["node_modules", ".git", ...]` | Patterns to ignore |
+| `checkInterval` | `5000` | Debounce interval (ms) |
+| `blockOnHighRisk` | `true` | Block on high-risk findings |
+| `autoFix` | `false` | Auto-fix issues when possible |
+
+### Use Cases
+
+- **Local development**: Get instant feedback while coding
+- **CI/CD integration**: Run in containers with `--foreground`
+- **Team guardrails**: Shared daemon config in repo
+
+### Daemon vs Manual Check
+
+| Daemon Mode | Manual Check |
+|-------------|--------------|
+| Continuous monitoring | One-time check |
+| Automatic on file change | Run when you want |
+| Background process | Foreground process |
+| Best for active development | Best for pre-commit/CI |
+
+---
+
 ## CLI Fallback Quick Start
 
 If you want the shortest manual path, copy this:
@@ -794,23 +846,10 @@ MIT
 
 ---
 
-## Contact & Community / 联系方式
+## Contributing / 贡献
 
-| Channel | Link |
-|---------|------|
-| **GitHub Issues** | [github.com/logi-cmd/agent-guardrails/issues](https://github.com/logi-cmd/agent-guardrails/issues) |
-| **GitHub Discussions** | [github.com/logi-cmd/agent-guardrails/discussions](https://github.com/logi-cmd/agent-guardrails/discussions) |
-| **Twitter / X** | [@logi_cmd](https://twitter.com/logi_cmd) |
-| **Email** | [agent-guardrails@logi-cmd.com](mailto:agent-guardrails@logi-cmd.com) |
-
-### Get Help / 获取帮助
-
-- 🐛 **Bug Reports**: [Open an Issue](https://github.com/logi-cmd/agent-guardrails/issues/new?template=bug_report.md)
-- 💡 **Feature Requests**: [Start a Discussion](https://github.com/logi-cmd/agent-guardrails/discussions/new?category=ideas)
-- ❓ **Questions**: [Ask in Discussions](https://github.com/logi-cmd/agent-guardrails/discussions/new?category=q-a)
-
-### Star History / Star 历史
+- 🐛 **Bug Reports**: [Open an Issue](https://github.com/logi-cmd/agent-guardrails/issues/new)
+- 💡 **Feature Requests**: [Start a Discussion](https://github.com/logi-cmd/agent-guardrails/discussions)
+- ❓ **Questions**: [Ask in Discussions](https://github.com/logi-cmd/agent-guardrails/discussions)
 
 If you find this project helpful, please consider giving it a ⭐️!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=logi-cmd/agent-guardrails&type=Date)](https://star-history.com/#logi-cmd/agent-guardrails&Date)

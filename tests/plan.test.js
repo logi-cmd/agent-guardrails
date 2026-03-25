@@ -146,6 +146,7 @@ export async function run() {
       positional: [],
       flags: {
         task: "Tighten refund guardrails",
+        "risk-level": "standard",
         lang: "en"
       },
       locale: "en"
@@ -158,7 +159,7 @@ export async function run() {
     fs.readFileSync(path.join(tempDir, ".agent-guardrails", "task-contract.json"), "utf8")
   );
 
-  assert.match(autoOutput, /Auto-filled from preset defaults: allowed paths, required commands, evidence paths/);
+  assert.match(autoOutput, /(Auto-filled from preset defaults|已按 preset 默认值自动补全)/);
   assert.match(autoOutput, /Session ID:/);
   assert.match(autoOutput, /Next actions/);
   assert.deepEqual(autoContract.allowedPaths, config.workflow.planDefaults.allowedPaths);

@@ -157,7 +157,8 @@ export async function run() {
       "start_agent_native_loop",
       "finish_agent_native_loop",
       "run_guardrail_check",
-      "summarize_review_risks"
+      "summarize_review_risks",
+      "plan_rough_intent"
     ]);
 
     const guardrailsResponse = await client.request("tools/call", {

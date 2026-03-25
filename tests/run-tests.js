@@ -40,6 +40,10 @@ const testModules = [
     path: "./mcp.test.js"
   },
   {
+    name: "daemon",
+    path: "./daemon.test.js"
+  },
+  {
     name: "release",
     path: "./release.test.js"
   }

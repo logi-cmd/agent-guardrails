@@ -396,7 +396,7 @@ function isImplementationOnlyTask(allowedChangeTypes) {
 }
 
 function matchesExpectedSurface(entry, expectedTokens) {
-  const haystacks = [entry.line, ...(entry.names || [])].map((item) => item?.toLowerCase() || "");
+  const haystacks = [entry.line, ...(entry.names || [])].map((item) => String(item ?? "").toLowerCase());
   return expectedTokens.some((token) => haystacks.some((haystack) => haystack.includes(token)));
 }
 

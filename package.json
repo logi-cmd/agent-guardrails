@@ -53,5 +53,8 @@
     "claude-code",
     "openhands"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "optionalDependencies": {
+    "chokidar": "^3.6.0"
+  }
 }
