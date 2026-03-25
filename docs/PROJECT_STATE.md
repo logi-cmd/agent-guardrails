@@ -1,18 +1,38 @@
 # Project State
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Goal
 
 Build the production-safety layer for AI coding workflows, with an open-source merge-gate baseline and a clear path toward agent-native automation.
 
+## Current Version
+
+**v0.3.1** - Published to npm and GitHub
+
+### Key Features
+- ✅ Rough-Intent Mode: 模糊意图解析，自动推断任务范围
+- ✅ 10 种任务类型自动识别
+- ✅ 双语支持 (en, zh-CN)
+- ✅ MCP 工具支持第三方聊天机器人
+- ✅ --version 参数
+
 ## Current focus
 
-`0.2.0` is now published with the first Python/FastAPI baseline proof slice and the first OSS deploy-readiness/post-deploy-maintenance surface. The next focus is to decide whether to deepen Python semantics or further harden the OSS deploy-readiness and post-deploy maintenance surface before any real deployment orchestration.
+产品已完成 OSS 核心功能，正在进行推广阶段。下一步重点：
+1. 写技术博客获取流量
+2. HN/Product Hunt 发布
+3. 收集用户反馈迭代
 
-## Done recently
+## Done recently (v0.3.x)
 
-- Chose the project direction around `init`, `plan`, and `check`
+- v0.3.1: 添加 --version 参数，完善 i18n 覆盖
+- v0.3.1: 修复 MCP server JSON schema 语法错误
+- v0.3.0: 添加 Rough-Intent 模式，支持模糊意图解析
+- v0.3.0: 添加 10 种任务类型自动识别
+- v0.3.0: 添加 MCP 工具 `plan_rough_intent`
+- v0.3.0: 添加 README 可视化图片
+- v0.3.0: 发布到 npm 和 GitHub
 - Created the first repository scaffold, templates, and baseline CLI
 - Added a first-pass GitHub Action template and preset configs
 - Added zero-dependency tests for `init`, `plan`, and `check`
