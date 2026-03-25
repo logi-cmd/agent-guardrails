@@ -5,3 +5,4 @@ dist/
 .tmp-install-smoke/
 tmp-openclaw-init/
 agent-guardrails-*.tgz
+docs/PROJECT_STATE.md
