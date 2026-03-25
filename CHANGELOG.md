@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.3.1 - 2026-03-25
+
+Minor release focused on user experience improvement and Rough-Intent mode.
+
+### New Features
+
+- **Rough-Intent Mode**: Parse vague/fuzzy task descriptions and auto-generate task contracts
+  - Supports 10 task types: auth, feature, bugfix, refactor, performance, api, ui, test, config, docs
+  - Auto-infers allowed paths, test commands, risk level, and guard rules
+  - Supports 3 modes: interactive (CLI), suggest (MCP), auto (CI/CD)
+  - Bilingual support (en, zh-CN)
+
+- **MCP Tool**: `plan_rough_intent` for third-party chatbot integration
+  - Returns structured suggestions with confidence scores
+  - Auto-accept mode when confidence >= 60%
+
+### Improvements
+
+- **README**: Added visual diagrams (workflow, before-after, rough-intent)
+- **i18n**: Added Rough-Intent translation keys for English and Chinese
+- **OSS/Pro Boundary**: Rough-Intent core is OSS; semantic inference is Pro (TODO)
+
+### Example Usage
+
+```bash
+# Before: need detailed flags
+agent-guardrails plan --task "Add login" --allow-paths "src/auth/" --required-commands "npm test"
+
+# After: just describe what you want
+agent-guardrails plan "加个登录功能" --lang zh-CN --yes
+```
+
+## 0.3.0 - 2026-03-25
+
+Initial public npm release.
+
+- Published to npm as `agent-guardrails`
+- GitHub repository: https://github.com/logi-cmd/agent-guardrails
+- Core features: scope validation, test validation, drift detection, protected paths
+
 ## 0.2.0 - 2026-03-24
 
 Minor release focused on turning the OSS reviewer surface into a clearer production-readiness story, while shipping the first real Python/FastAPI proof slice.
