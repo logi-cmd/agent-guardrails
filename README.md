@@ -87,6 +87,59 @@ agent-guardrails check --review
 
 ---
 
+## 被动理解层 / Passive Understanding Layer
+
+Instead of forcing review, we provide automatic understanding. When AI makes changes, you get clear explanations without extra work.
+
+### Auto Change Explanation / 自动变更解释
+
+When AI modifies code, the system automatically explains what changed and why:
+- Plain language summaries (zh-CN / en)
+- Context-aware explanations tied to task intent
+- Highlight of unexpected modifications
+
+### Code Archaeology / 代码考古
+
+Track how your codebase evolves over time:
+- Pattern evolution tracking across commits
+- Historical context for "why this code exists"
+- Understanding code changes without digging through git history
+
+### Precision Prompts / 精准提示
+
+Key risk prompts appear as yes/no questions during agent loop completion:
+- Binary choices reduce cognitive load
+- Focused on merge-blocking concerns
+- Integrated into natural workflow
+
+### New Detectors / 新增检测器
+
+Three diagnostic detectors identify vibe-coding risks:
+
+| Detector | Purpose |
+|----------|---------|
+| `state-mgmt-complexity` | Flags complex state management patterns |
+| `async-logic-risk` | Identifies risky async/await patterns |
+| `performance-degradation` | Catches potential performance regressions |
+
+### New MCP Tools / 新增 MCP 工具
+
+```json
+{
+  "explain_change": "Generate human-readable explanation of AI changes",
+  "query_archaeology": "Query code evolution patterns and history"
+}
+```
+
+### New API Endpoints / 新增 API 端点
+
+```
+POST /api/explain      - Get change explanations
+POST /api/archaeology  - Query code archaeology data
+```
+
+---
+
 ## 适用场景 / When to Use
 
 | 场景 | 推荐度 |

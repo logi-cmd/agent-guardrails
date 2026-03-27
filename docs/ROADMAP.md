@@ -23,7 +23,7 @@ The open-source baseline now has clearer layering and first semantic proof point
 - optional stricter repo policies for protected areas and module boundaries
 - a source-repo self-pilot written up in public docs
 
-## Phase 3 (Next)
+## Phase 3 (Shipped)
 
 The next sequence is about lowering cognitive load before adding more detector breadth.
 
@@ -33,20 +33,27 @@ The next sequence is about lowering cognitive load before adding more detector b
 - rough-intent mode so users can start from a vague request
 - short trust verdict above the reviewer summary
 - recovery guidance, secrets-safe guidance, and cost-awareness hints
+- **被动理解层 (Passive Understanding Layer)** - automatic change explanations without forced review
+- **诊断检测器 (Diagnostic Detectors)** - state-mgmt-complexity, async-logic-risk, performance-degradation
+- new MCP tools: `explain_change`, `query_archaeology`
+- new API endpoints: `POST /api/explain`, `POST /api/archaeology`
+- precision prompts as yes/no questions during agent loop completion
 
-## Phase 4 (Later)
+## Phase 4 (Next)
 
-Once entry, trust, and recovery are stronger, the project should widen support and proof before going deeper on enforcement.
+With passive understanding layer shipped, the focus shifts to broader proof and deeper language support.
 
 - clearer current language-support packaging in the docs and proof surface
 - Python as the next deeper ecosystem
 - ship a Python/FastAPI baseline proof slice before semantic-depth claims
 - a single proof asset for "what this catches that normal AI coding workflows miss"
 - early distribution through one proof page plus one sandbox-first trial path
+- expand diagnostic detector coverage beyond the initial three
+- refine code archaeology with module-level pattern learning
 
 ## Phase 5 (Later)
 
-After entry, trust, recovery, language support, and proof are clearer, the project should first add production-readiness and post-deploy maintenance surface to the same runtime path.
+With broader proof established, add production-readiness and post-deploy maintenance surface.
 
 - deploy-readiness verdicts
 - release and deploy checklist visibility
@@ -65,7 +72,7 @@ Only after the runtime can judge production-readiness clearly should the project
 
 ## Phase 7 (Later)
 
-After entry, trust, recovery, language support, proof, and deployment layering are clearer, the project can move back into deeper enforcement and team-scale layers.
+After entry, trust, recovery, language support, proof, and deployment layering are clearer, move into deeper enforcement and team-scale layers.
 
 - Python semantic pack
 - protected-area semantic escalation
