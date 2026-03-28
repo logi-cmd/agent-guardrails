@@ -83,11 +83,14 @@ agent-guardrails setup --agent claude-code
 ```
 
 你可以用其他 Agent：
-- `claude-code` - Claude Code CLI
+- `claude-code` - Claude Code
 - `cursor` - Cursor Editor
 - `codex` - OpenAI Codex CLI
-- `openhands` - OpenHands CLI
-- `openclaw` - OpenClaw CLI
+- `gemini` - Gemini CLI
+- `openhands` - OpenHands
+- `openclaw` - OpenClaw
+- `opencode` - OpenCode
+- `windsurf` - Windsurf
 
 **注意**： `setup` 会在项目根目录生成配置文件，输出使用指南。
 
@@ -199,7 +202,7 @@ POST /api/archaeology  - Query code archaeology data
 
 **我们的优势**： 在代码生成**之前**定义边界，而不是生成**之后**发现问题
 - 主动而非被动
-- 与 AI Agent 巷度集成
+- 与 AI Agent 深度集成
 - 支持多种编程语言
 
 - 完全开源免费
@@ -221,8 +224,11 @@ npx agent-guardrails setup --agent <your-agent>
 - `claude-code` (推荐)
 - `cursor`
 - `codex`
+- `gemini`
 - `openhands`
 - `openclaw`
+- `opencode`
+- `windsurf`
 
 ### 更新 / Update
 
@@ -244,7 +250,7 @@ npm cache clean --force
 
 - [README.md](./README.md) - 你文档
 - [FAILURE Cases](./docs/FAILURE_Cases.md) - 真实失败案例
-- [Rough-Intent Mode](./docs/Rrough_intent.md) - 模糊请求处理
+- [Rough-Intent Mode](./docs/ROUGH_INTENT.md) - 模糊请求处理
 - [OSS/Pro 边界](./docs/oss_pro_boundary.md) - 功能对比
 
 - [Roadmap](./docs/roadmap.md) - 发展规划
@@ -393,11 +399,11 @@ npm run demo
 
 ## Who This Is For / 适合谁
 
-- developers already using Claude Code, Cursor, Codex, OpenHands, or OpenClaw inside real repos
+- developers already using Claude Code, Cursor, Codex, Gemini, OpenHands, OpenClaw, OpenCode, or Windsurf inside real repos
 - teams and solo builders who have already been burned by scope drift, skipped validation, or AI-shaped maintenance debt
 - users who want smaller AI changes, clearer validation, and reviewer-facing output before merge
 
-- 已经在真实仓库里使用 Claude Code、Cursor、Codex、OpenHands 或 OpenClaw 的开发者
+- 已经在真实仓库里使用 Claude Code、Cursor、Codex、Gemini、OpenHands、OpenClaw、OpenCode 或 Windsurf 的开发者
 - 已经被越界改动、漏测试或维护漂移坑过的个人开发者和小团队
 - 希望在 merge 前看到更小改动、更清楚验证结果和 reviewer 输出的人
 
@@ -606,6 +612,10 @@ Today that safe repo-local write path is intended for:
 - `cursor` via `.cursor/mcp.json`
 - `openhands` via `.openhands/mcp.json`
 - `openclaw` via `.openclaw/mcp.json`
+- `opencode` via `.opencode/mcp.json`
+- `windsurf` via `.windsurf/mcp.json`
+
+Note: `codex` and `gemini` use user-global config and do not support `--write-repo-config`.
 
 Once you connect the generated config to your agent, the happy path should feel like normal chat:
 
@@ -724,67 +734,6 @@ If you are unsure which preset to choose:
 
 If you are not sure about file paths, prefer the MCP flow first. The runtime can infer a sensible starting contract before you tighten anything manually.
 
-## External Pilot Paths
-
-If you want the current most opinionated happy path, use Claude Code first.
-For broader pilot coverage, validate the same setup-first path across:
-
-- `claude-code` as the primary path
-- `cursor` and `codex` as secondary paths
-- `openhands` and `openclaw` as supplementary paths
-
-Use the same setup-first loop for all five current agent entries:
-
-- `claude-code`
-- `cursor`
-- `codex`
-- `openhands`
-- `openclaw`
-
-Current pilot priority is:
-
-1. `claude-code`
-2. `cursor`
-3. `codex`
-4. `openhands`
-5. `openclaw`
-
-
-中文说明：
-
-如果你要开始第一条真实 pilot，建议先用 `claude-code`。
-这条路径最容易把 setup、MCP 粘贴、第一次聊天和 reviewer summary 这一整条链路跑通。
-
-每条 pilot 只看这几个问题：
-
-- 是否能从安装直接走到第一次聊天
-- setup 输出是否清楚
-- MCP 配置是否仍然是最大摩擦
-- reviewer summary 是否值得信任
-
-
-For each pilot:
-
-1. run `npx agent-guardrails setup --agent <name>`
-2. paste the generated snippet into that agent's MCP config
-3. send the generated first chat message
-4. confirm the agent uses:
-   - `read_repo_guardrails`
-   - `start_agent_native_loop`
-   - `finish_agent_native_loop`
-
-Use the matching pilot record in [docs/pilots/](./docs/pilots/README.md) for each individual run:
-
-- [Claude Code pilot](./docs/pilots/claude-code.md)
-- [Cursor pilot](./docs/pilots/cursor.md)
-- [Codex pilot](./docs/pilots/codex.md)
-- [OpenHands pilot](./docs/pilots/openhands.md)
-- [OpenClaw pilot](./docs/pilots/openclaw.md)
-
-If you need reusable blank templates instead of the ready-made files above, keep using [docs/PILOT_TEMPLATE.md](./docs/PILOT_TEMPLATE.md) and [docs/PILOT_SUMMARY_TEMPLATE.md](./docs/PILOT_SUMMARY_TEMPLATE.md).
-
-After all five pilot runs are complete, roll the results up into [docs/pilots/SUMMARY.md](./docs/pilots/SUMMARY.md) so the next decision is based on one cross-entry view instead of scattered notes.
-
 ## What This Proves
 
 The flagship examples are:
@@ -859,8 +808,6 @@ This is intentionally generic-first. It relies on file-shape heuristics, repo po
 
 ## Open Source vs Pro
 
-### Today
-
 The open-source core is already the product:
 
 - repo-local production baseline
@@ -870,38 +817,7 @@ The open-source core is already the product:
 - active semantic examples for pattern drift, interface drift, boundary violation, and source-to-test relevance
 - a baseline repo-local workflow that can already act as a real merge gate
 
-### Next
-
-The next technical step is conversation-first onboarding and stronger runtime-backed enforcement through the same MCP and CLI surface:
-
-- detector pipeline foundation
-- benchmarked semantic examples
-- a first TypeScript or JavaScript semantic pack under `plugins/plugin-ts/`
-- first active semantic proofs for pattern drift, interface drift, boundary violation, and source-to-test relevance
-- semantic analyzers for TypeScript or JavaScript first, Python second
-- MCP-first onboarding and chat-oriented adoption
-- broader real-repo pilots beyond the documented pilot
-
-### Paid
-
-Paid tiers should extend the baseline rather than replace it:
-
-- `Pro Local`: semantic packs, auto task generation, richer local review, maintenance-aware workflows, and lower-touch deployment orchestration
-- `Pro Cloud`: hosted review, shared policies, trend dashboards, deployment governance, and centralized orchestration
-
 Baseline merge-gate features stay open source.
-
-That means the OSS core should keep owning the production-readiness gate:
-
-- trust verdicts
-- recovery / secrets-safe / cost-aware guidance
-- deploy-readiness judgment
-- release and deploy checklist visibility
-- post-deploy maintenance summaries
-
-Deployment orchestration itself remains a later automation layer on top of the same runtime, not a second product that bypasses it.
-
-The first semantic pack lives publicly in this repo today as an early semantic milestone. It is positioned as the future `Pro Local` direction, not as a separate closed-source runtime.
 
 ## Deeper Usage
 
