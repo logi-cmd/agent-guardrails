@@ -159,7 +159,9 @@ export async function run() {
       "run_guardrail_check",
       "summarize_review_risks",
       "plan_rough_intent",
-      "read_daemon_status"
+      "read_daemon_status",
+      "explain_change",
+      "query_archaeology"
     ]);
 
     const guardrailsResponse = await client.request("tools/call", {
