@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-26
+Last updated: 2026-03-28
 
 ## Goal
 
@@ -8,32 +8,45 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.4.0** - Daemon 7-Agent hooks + cross-platform fixes
+**v0.5.0** — 智能层正式上线：Real diff 分析 + 持久化考古 + 框架检测
 
-### Key Features
-- ✅ Rough-Intent Mode: 模糊意图解析，自动推断任务范围
-- ✅ 10 种任务类型自动识别
+### Key Features (8 Agent 支持)
+- ✅ 8 Agent Hook 注入: Claude Code / Cursor / Codex / Gemini / OpenHands / OpenClaw / OpenCode / Windsurf
+- ✅ Rough-Intent Mode: 模糊意图解析 + 框架检测 + 路径推断准确率提升
+- ✅ 13 种任务类型自动识别 (新增 deploy/security/database)
+- ✅ 复合关键词匹配 (如"登录页面" → auth+ui)
 - ✅ 双语支持 (en, zh-CN)
-- ✅ MCP 工具支持第三方聊天机器人
-- ✅ --version 参数
-- ✅ Daemon 模式: 后台自动检查 AI 改动
-- ✅ --foreground 前台模式: 调试/Docker 环境
-- ✅ 7 种 Agent Hook 注入: Claude Code / Windsurf / Cursor / OpenCode / OpenClaw / Codex / Gemini
-- ✅ 全平台兼容: Windows / Linux / macOS (所有 hook 脚本均为 .cjs)
+- ✅ MCP 工具: 10 个 (新增 explain_change, query_archaeology)
+- ✅ Real git diff 分析引擎: explain_change 从模板拼接升级为真实 diff 分析
+- ✅ 持久化考古数据: .agent-guardrails/archaeology.json 跨会话积累
 - ✅ 被动理解层: 自动变更解释、代码考古、精准提示
 - ✅ 诊断检测器: state-mgmt-complexity, async-logic-risk, performance-degradation
-- ✅ 新 MCP 工具: explain_change, query_archaeology
-- ✅ 新 API 端点: POST /api/explain, POST /api/archaeology
+- ✅ 全平台兼容: Windows / Linux / macOS (所有 hook 脚本均为 .cjs)
+
+### AI 集成方向 (已讨论，待实施)
+- 开源版本 = 规则引擎 (门控 + 理解)
+- 付费版本 = AI 增强 + 修复建议 + 跨仓库分析
 
 ## Current focus
 
-产品已完成 OSS 核心功能和守护进程多 Agent 适配，下一步重点：
+智能层已上线，下一步重点：
 1. 收集用户反馈迭代
 2. 扩大社区影响力
+3. 评估是否需要 AI 增强后端 (可选接入 API key)
 
-## Done recently (v0.4.x)
+## Done recently (v0.5.x)
 
-- docs: 更新 README 和 ROADMAP 文档 — 添加被动理解层、诊断检测器、新 MCP 工具和 API 端点
+- v0.5.0: Real git diff 分析引擎 — explain_change 从模板拼接升级为真实 diff 分析
+- v0.5.0: 持久化考古数据 — query_archaeology 跨会话积累 (.agent-guardrails/archaeology.json)
+- v0.5.0: 持久化 session — 新增 persistSession/loadPersistedSession/listPersistedSessions
+- v0.5.0: Rough-intent repo 结构分析 — 新增 analyzeRepoStructure, 框架检测 (Next.js/Express/FastAPI/Django)
+- v0.5.0: 3 个新任务类型 — deploy/security/database + 复合关键词匹配
+- v0.5.0: MCP explain_change 返回结构化对象 { summary, files, categories, riskIndicators }
+- v0.5.0: MCP query_archaeology 接入持久化存储
+- v0.5.0: MCP plan_rough_intent 传入 repoRoot 启用框架检测
+- v0.5.0: agent-loop finish 时自动保存考古笔记
+- v0.5.0: 8 agent 支持 — setup/agents.js 补全 gemini/opencode/windsurf
+- v0.5.0: npm 发布 agent-guardrails@0.5.0 + GitHub tag v0.5.0
 - v0.4.0: Daemon 7-Agent hook 完善 — 修复 8 个 bug，全平台兼容，i18n 统一
 - v0.4.0: 修复 opencode-plugin.js 退出码逻辑反转（错误被静默忽略）
 - v0.4.0: 修复 Windsurf/Cursor hook 幂等检查失效（每次 start 重复注入）

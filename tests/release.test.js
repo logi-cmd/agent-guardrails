@@ -102,8 +102,8 @@ export async function run() {
   assert.match(roadmap, /## Phase 1 \(Shipped\)/);
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);
   assert.match(roadmap, /## Phase 3 \(Shipped\)/);
-  assert.match(roadmap, /## Phase 4 \(Next\)/);
-  assert.match(roadmap, /## Phase 5 \(Later\)/);
+  assert.match(roadmap, /## Phase 4 \(Shipped/);
+  assert.match(roadmap, /## Phase 5 \(Next\)/);
   assert.match(roadmap, /## Phase 6 \(Later\)/);
   assert.match(roadmap, /## Phase 7 \(Later\)/);
   assert.match(roadmap, /rough-intent mode/i);

@@ -39,9 +39,20 @@ The next sequence is about lowering cognitive load before adding more detector b
 - new API endpoints: `POST /api/explain`, `POST /api/archaeology`
 - precision prompts as yes/no questions during agent loop completion
 
-## Phase 4 (Next)
+## Phase 4 (Shipped — v0.5.0)
 
-With passive understanding layer shipped, the focus shifts to broader proof and deeper language support.
+Smart layer goes live with real diff analysis, persistent archaeology, and repo structure awareness.
+
+- real git diff analysis engine for `explain_change`
+- persistent archaeology store across sessions (`query_archaeology`)
+- repo structure analysis with framework detection (Next.js/Express/FastAPI/Django)
+- 3 new task types: deploy/security/database + compound keyword matching
+- MCP structured output for `explain_change` and `query_archaeology`
+- 8-agent support with templates and daemon hooks
+
+## Phase 5 (Next)
+
+With the smart layer shipped, focus shifts to broader proof and deeper language support.
 
 - clearer current language-support packaging in the docs and proof surface
 - Python as the next deeper ecosystem
@@ -50,11 +61,6 @@ With passive understanding layer shipped, the focus shifts to broader proof and 
 - early distribution through one proof page plus one sandbox-first trial path
 - expand diagnostic detector coverage beyond the initial three
 - refine code archaeology with module-level pattern learning
-
-## Phase 5 (Later)
-
-With broader proof established, add production-readiness and post-deploy maintenance surface.
-
 - deploy-readiness verdicts
 - release and deploy checklist visibility
 - rollback and recovery guidance in production-shaped outputs
