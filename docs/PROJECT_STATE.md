@@ -27,10 +27,9 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-产品已完成 OSS 核心功能和守护进程多 Agent 适配，正在进行推广阶段。下一步重点：
-1. 写技术博客获取流量
-2. HN/Product Hunt 发布
-3. 收集用户反馈迭代
+产品已完成 OSS 核心功能和守护进程多 Agent 适配，下一步重点：
+1. 收集用户反馈迭代
+2. 扩大社区影响力
 
 ## Done recently (v0.4.x)
 

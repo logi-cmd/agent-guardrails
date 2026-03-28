@@ -27,16 +27,21 @@
 [warning] performance/perf-degradation-file-growth
 [warning] performance/perf-degradation-large-asset
 
-# Precision prompts (zh-CN)
+# Precision Prompts (zh-CN)
 1. 这次改动涉及状态管理文件，请确认同步逻辑是否正确？（是/否）
 2. 检测到异步逻辑风险模式，请确认已正确处理并发？（是/否）
 3. 检测到文件大幅增长，请确认是否需要拆分？（是/否）
 
+# Precision Prompts (en)
+1. This change involves state management files. Confirm synchronization logic is correct? (yes/no)
+2. Async logic risk pattern detected. Confirm concurrency is handled correctly? (yes/no)
+3. Significant file growth detected. Consider splitting? (yes/no)
+
 # MCP Tools
-explain_change → { explanation: '未检测到变更。', fileCount: 0 }
+explain_change → { explanation: "未检测到变更。", fileCount: 0 }
 query_archaeology → { sessionId: null, notes: [], noteCount: 0 }
 
-# i18n (zh-CN / en)
+# i18n
 ZH: agent-guardrails 对话服务已启动
 EN: agent-guardrails chat server running
 ```
