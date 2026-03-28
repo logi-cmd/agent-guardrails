@@ -37,18 +37,19 @@ console.log("Test 1: daemon.js contains all inject functions");
     "injectOpenCodeHook", "removeOpenCodeHook",
     "injectOpenClawHook", "removeOpenClawHook",
     "injectCodexHook", "removeCodexHook",
-    "injectGeminiHook", "removeGeminiHook"
+    "injectGeminiHook", "removeGeminiHook",
+    "injectOpenHandsHook", "removeOpenHandsHook"
   ];
   for (const fn of requiredFunctions) {
     check(content.includes(`function ${fn}`), `should define ${fn}`);
   }
 }
 
-console.log("Test 2: AGENT_HOOKS array has 7 entries");
+console.log("Test 2: AGENT_HOOKS array has 8 entries");
 {
   const content = fs.readFileSync(daemonPath, "utf8");
   const agentNames = [
-    "Claude Code", "Windsurf", "Cursor", "OpenCode", "OpenClaw", "Codex CLI", "Gemini CLI"
+    "Claude Code", "Windsurf", "Cursor", "OpenCode", "OpenClaw", "Codex CLI", "Gemini CLI", "OpenHands"
   ];
   for (const name of agentNames) {
     check(content.includes(`name: "${name}"`), `AGENT_HOOKS should include ${name}`);
@@ -82,7 +83,7 @@ console.log("Test 6: All hook scripts are non-empty");
   const hooksDir = path.resolve(__dirname, "..", "lib", "daemon", "hooks");
   const scripts = [
     "daemon-check.cjs", "windsurf-check.cjs", "cursor-check.cjs",
-    "opencode-plugin.js", "openclaw-handler.cjs", "codex-check.cjs", "gemini-check.cjs"
+    "opencode-plugin.js", "openclaw-handler.cjs", "codex-check.cjs", "gemini-check.cjs", "openhands-check.cjs"
   ];
   for (const name of scripts) {
     const content = fs.readFileSync(path.join(hooksDir, name), "utf8");

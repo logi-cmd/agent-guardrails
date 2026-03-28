@@ -9,7 +9,10 @@ const agentExpectations = [
   { agent: "claude-code", helperFile: "CLAUDE.md" },
   { agent: "cursor", helperFile: path.join(".cursor", "rules", "agent-guardrails.mdc") },
   { agent: "openhands", helperFile: path.join(".agents", "skills", "agent-guardrails.md") },
-  { agent: "openclaw", helperFile: "OPENCLAW.md" }
+  { agent: "openclaw", helperFile: "OPENCLAW.md" },
+  { agent: "gemini", helperFile: "GEMINI.md" },
+  { agent: "opencode", helperFile: path.join(".opencode", "rules", "agent-guardrails.md") },
+  { agent: "windsurf", helperFile: path.join(".windsurf", "rules", "agent-guardrails.md") }
 ];
 
 function captureLogs(run) {
@@ -123,6 +126,36 @@ export async function run() {
   assert.match(openclawWriteOutput, /Repo-local agent config written: \.openclaw\/mcp\.json/);
   assert.match(openclawWriteOutput, /Do this now/);
   assert.ok(openclawWriteResult.remainingManualStep.includes("point it at .openclaw/mcp.json"));
+
+  const opencodeWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-opencode-"));
+  const { value: opencodeWriteResult, output: opencodeWriteOutput } = await captureLogs(() =>
+    runSetup({
+      positional: [opencodeWriteDir],
+      flags: { agent: "opencode", "write-repo-config": true, lang: "en" },
+      locale: "en"
+    })
+  );
+  assert.equal(fs.existsSync(path.join(opencodeWriteDir, ".opencode", "mcp.json")), true);
+  assert.equal(opencodeWriteResult.mcp.repoConfigWrite.wrote, true);
+  assert.equal(opencodeWriteResult.mcp.repoConfigWrite.configPath, ".opencode/mcp.json");
+  assert.match(opencodeWriteOutput, /Repo-local agent config written: \.opencode\/mcp\.json/);
+  assert.match(opencodeWriteOutput, /Do this now/);
+  assert.ok(opencodeWriteResult.remainingManualStep.includes("point it at .opencode/mcp.json"));
+
+  const windsurfWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-windsurf-"));
+  const { value: windsurfWriteResult, output: windsurfWriteOutput } = await captureLogs(() =>
+    runSetup({
+      positional: [windsurfWriteDir],
+      flags: { agent: "windsurf", "write-repo-config": true, lang: "en" },
+      locale: "en"
+    })
+  );
+  assert.equal(fs.existsSync(path.join(windsurfWriteDir, ".windsurf", "mcp.json")), true);
+  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.wrote, true);
+  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.configPath, ".windsurf/mcp.json");
+  assert.match(windsurfWriteOutput, /Repo-local agent config written: \.windsurf\/mcp\.json/);
+  assert.match(windsurfWriteOutput, /Do this now/);
+  assert.ok(windsurfWriteResult.remainingManualStep.includes("point it at .windsurf/mcp.json"));
 
   const unsupportedWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-unsupported-"));
   const { value: unsupportedWriteResult, output: unsupportedWriteOutput } = await captureLogs(() =>
