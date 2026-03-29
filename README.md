@@ -14,6 +14,8 @@
 - 🛡 **保护路径** - 关键文件不被触碰
 - 🧠 **被动理解层** - 自动解释变更、代码考古、精准提示
 - 🐛 **诊断检测器** - 状态管理混乱、异步逻辑风险、性能退化
+- 🖥️ **GUI Dashboard** - 浏览器实时显示检测结果 (v0.6.0)
+- 🔧 **自动修复** - Tier-1 问题自动修复，零副作用 (v0.6.0)
 
 ## How it works
 
@@ -640,7 +642,7 @@ The first recommended MCP flow is:
 Run guardrails automatically in the background while you code:
 
 ```bash
-# Start the daemon (background mode)
+# Start the daemon (background mode) - opens GUI automatically
 agent-guardrails start
 
 # Check daemon status
@@ -649,45 +651,89 @@ agent-guardrails status
 # Stop the daemon
 agent-guardrails stop
 
+# Run without GUI (headless mode)
+agent-guardrails start --no-gui
+
 # Run in foreground (useful for debugging or Docker)
 agent-guardrails start --foreground
 ```
 
+### 🖥️ GUI Dashboard
+
+When you start the daemon, a browser window automatically opens showing a real-time dashboard:
+
+![GUI Dashboard](docs/images/gui-dashboard-demo.html)
+
+**Features**:
+- **Real-time updates**: See check results instantly as you code
+- **Dark theme**: Easy on the eyes during long coding sessions
+- **Summary cards**: Error/warning/info counts at a glance
+- **Findings list**: Detailed issue descriptions with severity levels
+- **Auto-fix status**: Shows which Tier-1 issues were automatically fixed
+- **Connection indicator**: Know when the daemon is running
+
+### 🔧 Auto-Fix (Tier 1)
+
+The daemon can automatically fix safe, low-risk issues:
+
+| Auto-Fix Type | What It Does | Safety Level |
+|--------------|--------------|--------------|
+| `evidence-file-missing` | Creates missing evidence directory and file | 🟢 Zero risk |
+| `test-stub-missing` | Creates test stub for intended source files | 🟢 Zero risk |
+| `gitignore-missing` | Adds .gitignore entries for guardrails files | 🟢 Zero risk |
+| `empty-evidence-update` | Updates evidence file with template sections | 🟢 Zero risk |
+
+**Safety guarantee**: All Tier-1 fixes are verified and can be automatically rolled back if they fail. Your source code is never modified.
+
 ### How It Works
 
 The daemon monitors file changes and automatically runs guardrail checks:
-- Watches `src/`, `lib/`, `tests/` by default
-- Debounces checks (5 second interval)
-- Logs to `.agent-guardrails/daemon.log`
+1. Watches `src/`, `lib/`, `tests/` by default
+2. Debounces checks (5 second interval)
+3. Runs guardrail check automatically
+4. Applies Tier-1 auto-fixes if enabled
+5. Updates GUI in real-time via SSE
+6. Logs to `.agent-guardrails/daemon.log`
 
 ### Configuration (`.agent-guardrails/daemon.json`)
+
+```json
+{
+  "watchPaths": ["src/", "lib/", "tests/"],
+  "ignorePatterns": ["node_modules", ".git", "*.log"],
+  "checkInterval": 5000,
+  "autoFix": true
+}
+```
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `watchPaths` | `["src/", "lib/", "tests/"]` | Paths to monitor |
 | `ignorePatterns` | `["node_modules", ".git", ...]` | Patterns to ignore |
 | `checkInterval` | `5000` | Debounce interval (ms) |
-| `blockOnHighRisk` | `true` | Block on high-risk findings |
-| `autoFix` | `false` | Auto-fix issues when possible |
+| `autoFix` | `true` | Auto-fix Tier-1 issues when possible |
 
 ### Use Cases
 
-- **Local development**: Get instant feedback while coding
-- **CI/CD integration**: Run in containers with `--foreground`
+- **Local development**: Get instant visual feedback while coding
+- **CI/CD integration**: Run in containers with `--foreground --no-gui`
 - **Team guardrails**: Shared daemon config in repo
+- **Vibe coding**: Focus on coding, let guardrails watch your back
 
 ### Daemon vs Manual Check
 
-| Daemon Mode | Manual Check |
-|-------------|--------------|
-| Continuous monitoring | One-time check |
-| Automatic on file change | Run when you want |
-| Background process | Foreground process |
-| Best for active development | Best for pre-commit/CI |
+| Feature | Daemon Mode | Manual Check |
+|---------|-------------|--------------|
+| Continuous monitoring | ✅ | ❌ |
+| GUI Dashboard | ✅ | ❌ |
+| Auto-Fix | ✅ | ❌ |
+| Real-time feedback | ✅ | ❌ |
+| Run on demand | ❌ | ✅ |
+| Best for | Active development | Pre-commit/CI |
 
 ### MCP Integration / MCP 集成
 
-AI agents can read daemon results via the `read_daemon_status` MCP tool — no polling needed:
+AI agents can read daemon results via the `read_daemon_status` MCP tool:
 
 ```json
 {
@@ -700,7 +746,170 @@ AI agents can read daemon results via the `read_daemon_status` MCP tool — no p
 }
 ```
 
-The agent calls `read_daemon_status` after code changes to check the latest guardrail result, including findings, risks, and cost hints.
+The agent calls `read_daemon_status` after code changes to get the latest guardrail result, including findings, auto-fix status, and risk summary.
+
+---
+
+## User Guide / 使用指南
+
+### 完整使用流程 (Bilingual Guide)
+
+#### 1. Installation / 安装
+
+```bash
+# Global install / 全局安装
+npm install -g agent-guardrails
+
+# Or use npx without installing / 或使用 npx 无需安装
+npx agent-guardrails <command>
+```
+
+#### 2. Project Setup / 项目设置
+
+```bash
+# Enter your project / 进入项目目录
+cd your-project
+
+# Initialize guardrails / 初始化 guardrails
+agent-guardrails setup --agent claude-code
+```
+
+This creates:
+- `.agent-guardrails/config.json` - Project configuration
+- `.agent-guardrails/daemon.json` - Daemon configuration (with autoFix enabled)
+- `.agent-guardrails/evidence/` - Evidence directory for task tracking
+- `AGENTS.md` - Agent instructions
+
+#### 3. Start Daemon Mode / 启动守护进程
+
+```bash
+# Start with GUI (recommended) / 启动并打开 GUI（推荐）
+agent-guardrails start
+
+# The browser will automatically open showing the dashboard
+# 浏览器会自动打开显示 Dashboard
+```
+
+**What happens**:
+1. ✅ Daemon starts monitoring files in background
+2. ✅ Browser opens with real-time GUI dashboard
+3. ✅ Auto-fix automatically handles Tier-1 issues
+4. ✅ You code normally while guardrails watches
+
+#### 4. Daily Workflow / 日常工作流
+
+**Option A: Daemon Mode (Recommended) / 守护进程模式（推荐）**
+
+```bash
+# Start once, code freely / 启动一次，自由编码
+agent-guardrails start
+
+# The GUI updates in real-time as you work
+# GUI 会实时更新你的改动
+
+# When done, check the dashboard for any issues
+# 完成后，查看 Dashboard 是否有问题
+
+# Stop when finished / 完成后停止
+agent-guardrails stop
+```
+
+**Option B: Manual Check / 手动检查模式**
+
+```bash
+# Plan your task / 计划任务
+agent-guardrails plan --task "Add user authentication"
+
+# Make your changes / 进行改动
+# ... code ...
+
+# Check before merge / merge 前检查
+agent-guardrails check --review
+```
+
+#### 5. Understanding the Dashboard / 理解 Dashboard
+
+The GUI Dashboard shows:
+
+| Section | Description | 说明 |
+|---------|-------------|------|
+| **Status Badge** | Overall check result | 整体检查结果 |
+| **Auto-Fix Panel** | Tier-1 fixes applied | 已应用的自动修复 |
+| **Summary** | Error/warning/info counts | 错误/警告/信息统计 |
+| **Findings** | Detailed issue list | 详细问题列表 |
+| **Connection** | Daemon connection status | 守护进程连接状态 |
+
+**Status Colors**:
+- 🟢 Green / 绿色: All clear / 一切正常
+- 🔴 Red / 红色: Errors found / 发现错误
+- 🟡 Yellow / 黄色: Warnings / 警告
+- 🔵 Blue / 蓝色: Info only / 仅信息
+
+#### 6. Auto-Fix Explained / 自动修复说明
+
+**Tier 1 (Auto-Applied) / 第一级（自动应用）**:
+- ✅ Creates missing evidence files
+- ✅ Creates test stubs for new source files
+- ✅ Updates .gitignore
+- ✅ Populates evidence templates
+
+**Tier 2 & 3 (Not Auto-Applied) / 第二、三级（不自动应用）**:
+- ❌ Business logic fixes
+- ❌ Architecture changes
+- ❌ Code refactoring
+
+**Safety Guarantee / 安全保证**:
+- All Tier-1 fixes are reversible
+- Source code is never modified
+- Failed fixes are automatically rolled back
+- Fixes are verified before being kept
+
+#### 7. Configuration Options / 配置选项
+
+**`.agent-guardrails/daemon.json`**:
+
+```json
+{
+  "watchPaths": ["src/", "tests/", "lib/"],
+  "ignorePatterns": ["node_modules", ".git"],
+  "checkInterval": 5000,
+  "autoFix": true
+}
+```
+
+| Option | Default | Description | 说明 |
+|--------|---------|-------------|------|
+| `watchPaths` | `["src/", "lib/", "tests/"]` | Directories to watch | 监听的目录 |
+| `ignorePatterns` | `["node_modules", ".git"]` | Patterns to ignore | 忽略的模式 |
+| `checkInterval` | `5000` | Debounce time (ms) | 防抖时间（毫秒）|
+| `autoFix` | `true` | Enable auto-fix | 启用自动修复 |
+
+#### 8. Troubleshooting / 故障排除
+
+**Problem: GUI doesn't open / GUI 没有打开**
+```bash
+# Check if daemon is running / 检查 daemon 是否运行
+agent-guardrails status
+
+# Try manual URL / 尝试手动打开
+# Open browser to: http://127.0.0.1:<port>
+```
+
+**Problem: Auto-fix not working / 自动修复不工作**
+```bash
+# Check daemon.json config / 检查配置
+cat .agent-guardrails/daemon.json
+
+# Ensure autoFix is true / 确认 autoFix 为 true
+# "autoFix": true
+```
+
+**Problem: Too many false positives / 太多误报**
+```bash
+# Adjust watch paths in daemon.json / 调整监听路径
+# Add ignore patterns / 添加忽略模式
+# Use --no-gui for headless mode / 使用 --no-gui 无界面模式
+```
 
 ---
 
