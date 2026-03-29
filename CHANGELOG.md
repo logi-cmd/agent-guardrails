@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.3 - 2026-03-30
+
+Patch release fixing GUI Dashboard "Waiting..." issue.
+
+### Bug Fixes
+
+- **GUI Dashboard**: Fixed SSE response format causing malformed server-sent events
+  - Changed `\\n` to `\n` in the initial `connected` event response
+  - This fixes the real-time updates that were stuck on "Waiting..."
+  
+- **Daemon**: Added initial check on startup
+  - Daemon now runs a guardrail check immediately when starting
+  - Previously, the GUI showed "Waiting..." until a file change triggered a check
+  - Now users see results right away when the dashboard opens
+
 ## 0.3.1 - 2026-03-25
 
 Minor release focused on user experience improvement and Rough-Intent mode.
