@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-28
+Last updated: 2026-03-29
 
 ## Goal
 
@@ -33,6 +33,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 1. 收集用户反馈迭代
 2. 扩大社区影响力
 3. 评估是否需要 AI 增强后端 (可选接入 API key)
+4. 创建 GitHub Release (由于 GH_TOKEN 缺失，需手动创建)
 
 ## Done recently (v0.5.x)
 
@@ -47,6 +48,9 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 - v0.5.0: agent-loop finish 时自动保存考古笔记
 - v0.5.0: 8 agent 支持 — setup/agents.js 补全 gemini/opencode/windsurf
 - v0.5.0: npm 发布 agent-guardrails@0.5.0 + GitHub tag v0.5.0
+- v0.5.0: 更新 .gitignore 排除运行时文件 (task-contract.json, archaeology.json, CLAUDE.md)
+- v0.5.0: 从 git 跟踪中移除已提交的运行时文件
+- v0.5.0: 提交并推送 .gitignore 更新到远程仓库
 - v0.4.0: Daemon 7-Agent hook 完善 — 修复 8 个 bug，全平台兼容，i18n 统一
 - v0.4.0: 修复 opencode-plugin.js 退出码逻辑反转（错误被静默忽略）
 - v0.4.0: 修复 Windsurf/Cursor hook 幂等检查失效（每次 start 重复注入）
@@ -224,17 +228,17 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Next step
 
-With Waves 1-3 documentation complete, focus shifts to Phase 4: Python semantic depth or broader detector coverage. The passive understanding layer (自动变更解释、代码考古、精准提示) and diagnostic detectors (state-mgmt-complexity, async-logic-risk, performance-degradation) are now documented and ready for user feedback. Consider:
-1. Deepen Python/FastAPI semantic support to match TS/JS proof level
-2. Expand diagnostic detector coverage for broader vibe-coding risk detection
-3. Prepare technical blog content highlighting the passive understanding layer differentiation
-4. Use the stabilized release protocol for the next published milestone
+v0.5.0 已发布 (npm + GitHub tag)，所有功能测试通过，代码已推送到远程。下一步重点：
+1. 手动创建 GitHub Release (由于 GH_TOKEN 缺失，需访问 https://github.com/logi-cmd/agent-guardrails/releases/new?tag=v0.5.0)
+2. 收集用户反馈 (explain_change, query_archaeology 的实际体验)
+3. 评估 v0.6 开发方向 (项目级理解层增强) 或 v0.7 AI 集成方向
+4. 考虑技术博客或社区推广
 
 ## Handoff
 
 Default rule: when a meaningful milestone lands, end the project-thread update with:
 
-- `What changed`: Daemon 7-Agent hook 完善，全平台兼容，8 个 bug 修复，已提交 e37ae1e
+- `What changed`: v0.5.0 发布完成 (npm + git tag)，运行时文件已从 git 跟踪中移除，.gitignore 已更新
 - `Revenue Path`: 继续推广获取用户反馈
-- `Commercial risk`: 用户获取渠道尚未验证
-- `What I need next`: 技术博客或社区推广决策
+- `Commercial risk`: GitHub Release 需手动创建，AI 集成方向待讨论
+- `What I need next`: 用户反馈收集或 v0.6 开发方向决策
