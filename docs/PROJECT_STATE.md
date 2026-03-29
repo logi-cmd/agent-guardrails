@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-30
+Last updated: 2026-03-30 (v0.6.1 released)
 
 ## Goal
 
@@ -8,7 +8,13 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.6.0** — GUI Dashboard + Tier-1 Auto-Fix：可视化 + 自动修复
+**v0.6.1** — GUI Dashboard + Tier-1 Auto-Fix：可视化 + 自动修复 + Windows 修复
+
+### Key Features (v0.6.1)
+- ✅ Windows 守护进程修复：修复 Windows 上 daemon 启动失败问题
+- ✅ 改进 spawn 逻辑：Windows 平台兼容性优化
+
+### Key Features (v0.6.0)
 
 ### Key Features (v0.6.0)
 - ✅ GUI Dashboard: 浏览器实时显示检测结果 (SSE 推送)
@@ -49,15 +55,18 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-v0.6.0 GUI + Auto-Fix 已上线，下一步重点：
+v0.6.1 已发布（修复 Windows daemon 问题），下一步重点：
 1. 收集 GUI 和 Auto-Fix 的用户反馈
 2. 考虑添加更多 Tier-1 修复规则（如 import 修复）
 3. 评估是否需要 Tier-2 建议修复（需要用户确认）
 4. 扩大社区影响力，推广 GUI 功能
-5. 创建 GitHub Release v0.6.0
+5. 监控 v0.6.1 的稳定性反馈
 
 ## Done recently (v0.6.x)
 
+- v0.6.1: Windows daemon 修复 — 修复 Windows 上守护进程启动失败问题
+- v0.6.1: spawn 逻辑优化 — Windows 平台兼容性改进
+- v0.6.1: npm 发布 agent-guardrails@0.6.1 + GitHub tag v0.6.1
 - v0.6.0: GUI Dashboard — 浏览器实时显示检测结果，支持暗色主题
 - v0.6.0: Tier-1 Auto-Fix — 自动修复安全级别问题（evidence/测试stub/gitignore）
 - v0.6.0: 修复验证与回滚 — 修复失败自动回滚，确保零副作用
