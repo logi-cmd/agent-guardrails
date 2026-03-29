@@ -1,5 +1,7 @@
 ﻿# Agent Guardrails
 
+[![SafeSkill 53/100](https://img.shields.io/badge/SafeSkill-53%2F100_Use%20with%20Caution-orange)](https://safeskill.dev/scan/logi-cmd-agent-guardrails)
+
 **3 秒判断：这次 AI 改动可以安全 merge 吗？**
 
 [中文简介](#中文简介) | [Quick Start](#快速开始--先看这里) | [Docs](#文档--documentation)
