@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.4 - 2026-03-30
+
+Patch release fixing GUI Dashboard statistics update.
+
+### Bug Fixes
+
+- **Daemon Info**: Fixed `checksRun` and `lastCheck` not updating after checks
+  - `createCheckRunner` now receives `info` parameter
+  - Check completion now updates `daemon-info.json` correctly
+  - GUI can now display accurate "last check" timestamp
+
 ## 0.6.3 - 2026-03-30
 
 Patch release fixing GUI Dashboard "Waiting..." issue.
