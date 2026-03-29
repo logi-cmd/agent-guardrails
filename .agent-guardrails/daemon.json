@@ -1,0 +1,6 @@
+{
+  "watchPaths": ["lib/", "tests/", "bin/"],
+  "ignorePatterns": ["node_modules", ".git", "*.log"],
+  "checkInterval": 5000,
+  "autoFix": true
+}

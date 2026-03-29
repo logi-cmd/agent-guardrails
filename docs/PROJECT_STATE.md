@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-29
+Last updated: 2026-03-30
 
 ## Goal
 
@@ -8,7 +8,27 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.5.0** — 智能层正式上线：Real diff 分析 + 持久化考古 + 框架检测
+**v0.6.0** — GUI Dashboard + Tier-1 Auto-Fix：可视化 + 自动修复
+
+### Key Features (v0.6.0)
+- ✅ GUI Dashboard: 浏览器实时显示检测结果 (SSE 推送)
+- ✅ Tier-1 Auto-Fix: 自动修复安全级别问题 (evidence/测试/gitignore)
+- ✅ 验证与回滚: 修复失败自动回滚，零副作用
+- ✅ --no-gui 选项: 可禁用 GUI 仅后台运行
+- ✅ Daemon 配置: 支持 .agent-guardrails/daemon.json 配置
+
+### Key Features (v0.5.0 已上线)
+- ✅ 8 Agent Hook 注入: Claude Code / Cursor / Codex / Gemini / OpenHands / OpenClaw / OpenCode / Windsurf
+- ✅ Rough-Intent Mode: 模糊意图解析 + 框架检测 + 路径推断准确率提升
+- ✅ 13 种任务类型自动识别 (新增 deploy/security/database)
+- ✅ 复合关键词匹配 (如"登录页面" → auth+ui)
+- ✅ 双语支持 (en, zh-CN)
+- ✅ MCP 工具: 10 个 (新增 explain_change, query_archaeology)
+- ✅ Real git diff 分析引擎: explain_change 从模板拼接升级为真实 diff 分析
+- ✅ 持久化考古数据: .agent-guardrails/archaeology.json 跨会话积累
+- ✅ 被动理解层: 自动变更解释、代码考古、精准提示
+- ✅ 诊断检测器: state-mgmt-complexity, async-logic-risk, performance-degradation
+- ✅ 全平台兼容: Windows / Linux / macOS (所有 hook 脚本均为 .cjs)
 
 ### Key Features (8 Agent 支持)
 - ✅ 8 Agent Hook 注入: Claude Code / Cursor / Codex / Gemini / OpenHands / OpenClaw / OpenCode / Windsurf
@@ -29,11 +49,21 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-智能层已上线，下一步重点：
-1. 收集用户反馈迭代
-2. 扩大社区影响力
-3. 评估是否需要 AI 增强后端 (可选接入 API key)
-4. 创建 GitHub Release (由于 GH_TOKEN 缺失，需手动创建)
+v0.6.0 GUI + Auto-Fix 已上线，下一步重点：
+1. 收集 GUI 和 Auto-Fix 的用户反馈
+2. 考虑添加更多 Tier-1 修复规则（如 import 修复）
+3. 评估是否需要 Tier-2 建议修复（需要用户确认）
+4. 扩大社区影响力，推广 GUI 功能
+5. 创建 GitHub Release v0.6.0
+
+## Done recently (v0.6.x)
+
+- v0.6.0: GUI Dashboard — 浏览器实时显示检测结果，支持暗色主题
+- v0.6.0: Tier-1 Auto-Fix — 自动修复安全级别问题（evidence/测试stub/gitignore）
+- v0.6.0: 修复验证与回滚 — 修复失败自动回滚，确保零副作用
+- v0.6.0: daemon.json 配置支持 — 可配置 autoFix, watchPaths, checkInterval
+- v0.6.0: --no-gui 选项 — 禁用 GUI 仅后台运行
+- v0.6.0: GUI 实时显示 Auto-Fix 结果 — 显示已应用/失败的修复项
 
 ## Done recently (v0.5.x)
 
