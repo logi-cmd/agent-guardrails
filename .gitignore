@@ -11,6 +11,8 @@ docs/PROJECT_STATE.md
 .agent-guardrails/daemon-result.json
 .agent-guardrails/daemon.log
 .agent-guardrails/daemon.pid
+.agent-guardrails/task-contract.json
+.agent-guardrails/archaeology.json
 .claude/
 .pydeps/
 .sisyphus/
@@ -20,5 +22,6 @@ docs/PROJECT_STATE.md
 memory/
 nul
 opencode.json
+CLAUDE.md
 plugins/plugin-ts/package-lock.json
 plugins/plugin-ts/test-ast-parser.js
