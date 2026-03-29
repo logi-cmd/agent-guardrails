@@ -1,0 +1,13 @@
+Use `agent-guardrails` as the repo-local guardrail layer for OpenCode.
+
+- Read `AGENTS.md`, `docs/PROJECT_STATE.md`, and `README.md` before editing.
+- If OpenCode is connected to `agent-guardrails mcp`, prefer:
+  1. `read_repo_guardrails`
+  2. `start_agent_native_loop`
+  3. implement inside the declared scope
+  4. `finish_agent_native_loop`
+- If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
+- Stay inside the task contract unless you explicitly widen the scope first.
+- If behavior changes, add or update tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
+- Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime and report the commands that actually ran.
+- Use `agent-guardrails check --json` for CI or automation, not as the primary local loop.

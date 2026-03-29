@@ -25,3 +25,8 @@
 - The repository shape and docs still reflect the actual product.
 - New behavior includes tests or a clear note explaining why tests were deferred.
 - Project state and next step stay accurate after meaningful work.
+<!-- agent-guardrails:daemon:start -->
+## Daemon Mode / 守护模式
+
+Daemon 正在运行。每次修改文件后，请调用 `read_daemon_status` MCP 工具检查 guardrail 结果。如果有 error 级别的 finding，在继续之前先修复。
+<!-- agent-guardrails:daemon:end -->
