@@ -8,21 +8,12 @@ Cursor should use `agent-guardrails` as the repo safety runtime behind the chat,
 agent-guardrails setup --agent cursor
 ```
 
-If you want setup to also write the repo-local MCP file for you:
-
-```bash
-agent-guardrails setup --agent cursor --write-repo-config
-```
-
 `setup` will:
 
 - auto-initialize the repo if needed
 - seed `.cursor/rules/agent-guardrails.mdc`
-- print the MCP config snippet for Cursor
-- tell you where to paste it
+- auto-write `.cursor/mcp.json` (no paste step needed)
 - give you one recommended first chat message
-
-With `--write-repo-config`, setup can also write `.cursor/mcp.json` directly so the remaining step becomes opening Cursor and sending the first chat message.
 
 ## Recommended first chat
 

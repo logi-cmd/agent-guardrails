@@ -10,22 +10,12 @@ This is still the primary path in the broader five-entry external pilot.
 agent-guardrails setup --agent claude-code
 ```
 
-If you want setup to also write the repo-local MCP file for you:
-
-```bash
-agent-guardrails setup --agent claude-code --write-repo-config
-```
-
 `setup` will:
 
 - auto-initialize the repo if needed
 - seed `CLAUDE.md`
-- print the MCP config snippet for Claude Code
-- tell you where to paste it
+- auto-write `.mcp.json` (no paste step needed)
 - give you one recommended first chat message
-- leave only one manual step: paste the snippet and start chatting
-
-With `--write-repo-config`, setup can also write `.mcp.json` directly so the remaining step becomes just opening Claude Code and sending the first chat message.
 
 ## Recommended first chat
 

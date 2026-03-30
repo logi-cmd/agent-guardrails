@@ -482,14 +482,6 @@ In your repo, run:
 agent-guardrails setup --agent <your-agent>
 ```
 
-If your agent supports a clearly safe repo-local config path, use:
-
-```bash
-agent-guardrails setup --agent <your-agent> --write-repo-config
-```
-
-Then open your existing agent and start chatting.
-
 For the current most opinionated happy path, start with:
 
 ```bash
@@ -601,25 +593,16 @@ npx agent-guardrails setup --agent claude-code
 npx agent-guardrails setup --agent cursor --preset nextjs
 ```
 
-If the agent uses a clearly safe repo-local MCP config file, you can remove even the paste step:
+For agents that support repo-local MCP config, `setup` auto-writes the config file:
 
-```bash
-npx agent-guardrails setup --agent claude-code --write-repo-config
-npx agent-guardrails setup --agent cursor --write-repo-config
-npx agent-guardrails setup --agent openhands --write-repo-config
-npx agent-guardrails setup --agent openclaw --write-repo-config
-```
+- `claude-code` → `.mcp.json`
+- `cursor` → `.cursor/mcp.json`
+- `openhands` → `.openhands/mcp.json`
+- `openclaw` → `.openclaw/mcp.json`
+- `opencode` → `.opencode/mcp.json`
+- `windsurf` → `.windsurf/mcp.json`
 
-Today that safe repo-local write path is intended for:
-
-- `claude-code` via `.mcp.json`
-- `cursor` via `.cursor/mcp.json`
-- `openhands` via `.openhands/mcp.json`
-- `openclaw` via `.openclaw/mcp.json`
-- `opencode` via `.opencode/mcp.json`
-- `windsurf` via `.windsurf/mcp.json`
-
-Note: `codex` and `gemini` use user-global config and do not support `--write-repo-config`.
+`codex` and `gemini` use user-global config (no auto-write).
 
 Once you connect the generated config to your agent, the happy path should feel like normal chat:
 

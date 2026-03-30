@@ -12,11 +12,8 @@ agent-guardrails setup --agent openclaw
 
 - auto-initialize the repo if needed
 - seed `OPENCLAW.md`
-- print the MCP config snippet for OpenClaw
-- tell you where to paste it
+- auto-write `.openclaw/mcp.json` (no paste step needed)
 - give you one recommended first chat message
-
-If you use `--write-repo-config`, setup can also write `.openclaw/mcp.json` directly so the remaining step becomes pointing OpenClaw at the repo-local config and opening the chat.
 
 ## Recommended first chat
 

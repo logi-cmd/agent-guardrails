@@ -24,7 +24,7 @@ Entry tier: Supplementary
 - Setup completed on `bounded-scope-demo`
 - Repo-local helper file written: `OPENCLAW.md`
 - MCP snippet generated for the OpenClaw workspace settings
-- Repo-local MCP config support is now available through `--write-repo-config` as `.openclaw/mcp.json`
+- Repo-local MCP config is auto-written as `.openclaw/mcp.json`
 - First chat completed successfully in OpenClaw
 
 ## First chat result

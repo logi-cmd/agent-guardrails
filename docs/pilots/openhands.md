@@ -24,7 +24,7 @@ Entry tier: Supplementary
 - Setup completed on `bounded-scope-demo`
 - Repo-local helper file written: `.agents/skills/agent-guardrails.md`
 - MCP snippet generated for the OpenHands workspace settings
-- Repo-local MCP config support is now available through `--write-repo-config` as `.openhands/mcp.json`
+- Repo-local MCP config is auto-written as `.openhands/mcp.json`
 - First chat step still pending in OpenHands
 
 ## Fill-in order

@@ -5,14 +5,14 @@ import path from "node:path";
 import { runSetup } from "../lib/commands/setup.js";
 
 const agentExpectations = [
-  { agent: "codex", helperFile: null },
-  { agent: "claude-code", helperFile: "CLAUDE.md" },
-  { agent: "cursor", helperFile: path.join(".cursor", "rules", "agent-guardrails.mdc") },
-  { agent: "openhands", helperFile: path.join(".agents", "skills", "agent-guardrails.md") },
-  { agent: "openclaw", helperFile: "OPENCLAW.md" },
-  { agent: "gemini", helperFile: "GEMINI.md" },
-  { agent: "opencode", helperFile: path.join(".opencode", "rules", "agent-guardrails.md") },
-  { agent: "windsurf", helperFile: path.join(".windsurf", "rules", "agent-guardrails.md") }
+  { agent: "codex", helperFile: null, expectsPaste: true },
+  { agent: "claude-code", helperFile: "CLAUDE.md", expectsPaste: false },
+  { agent: "cursor", helperFile: path.join(".cursor", "rules", "agent-guardrails.mdc"), expectsPaste: false },
+  { agent: "openhands", helperFile: path.join(".agents", "skills", "agent-guardrails.md"), expectsPaste: false },
+  { agent: "openclaw", helperFile: "OPENCLAW.md", expectsPaste: false },
+  { agent: "gemini", helperFile: "GEMINI.md", expectsPaste: true },
+  { agent: "opencode", helperFile: path.join(".opencode", "rules", "agent-guardrails.md"), expectsPaste: false },
+  { agent: "windsurf", helperFile: path.join(".windsurf", "rules", "agent-guardrails.md"), expectsPaste: false }
 ];
 
 function captureLogs(run) {
@@ -31,7 +31,7 @@ function captureLogs(run) {
 }
 
 export async function run() {
-  for (const { agent, helperFile } of agentExpectations) {
+  for (const { agent, helperFile, expectsPaste } of agentExpectations) {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `agent-guardrails-setup-${agent}-`));
     const { value: result, output } = await captureLogs(() =>
       runSetup({
@@ -62,7 +62,11 @@ export async function run() {
     assert.ok(result.firstChatPrompt.length > 0);
     assert.ok(result.pilot.recordPath.endsWith(`${agent}.md`));
     assert.equal(result.pilot.summaryPath, "docs/pilots/SUMMARY.md");
-    assert.ok(result.remainingManualStep.includes("paste the MCP snippet"));
+    if (expectsPaste) {
+      assert.ok(result.remainingManualStep.includes("paste the MCP snippet"));
+    } else {
+      assert.ok(result.remainingManualStep.includes("point it at"));
+    }
 
     if (helperFile) {
       assert.equal(fs.existsSync(path.join(tempDir, helperFile)), true);
@@ -167,7 +171,7 @@ export async function run() {
   );
   assert.equal(unsupportedWriteResult.mcp.repoConfigWrite.wrote, false);
   assert.equal(unsupportedWriteResult.mcp.repoConfigWrite.supported, false);
-  assert.match(unsupportedWriteOutput, /manual config paste/);
+  assert.match(unsupportedWriteOutput, /Prepared the agent config snippet/);
 
   const jsonDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-json-"));
   const { output: jsonOutput } = await captureLogs(() =>

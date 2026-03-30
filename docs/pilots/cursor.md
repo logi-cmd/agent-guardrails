@@ -28,7 +28,7 @@ Entry tier: Secondary
 
 ## Fill-in order
 
-1. Run `npx agent-guardrails setup --agent cursor --write-repo-config`
+1. Run `npx agent-guardrails setup --agent cursor` (auto-writes `.cursor/mcp.json`)
 2. Open Cursor and send the first chat prompt
 3. Fill in the pilot record immediately after the first successful run
 

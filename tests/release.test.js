@@ -80,7 +80,7 @@ export async function run() {
   assert.match(readme, /agent-guardrails setup --agent <your-agent>/);
   assert.match(readme, /agent-guardrails setup --agent claude-code/);
   assert.match(readme, /agent-guardrails setup --agent cursor --preset nextjs/);
-  assert.match(readme, /agent-guardrails setup --agent <your-agent> --write-repo-config/);
+  assert.match(readme, /setup.*auto-writes.*config file/);
   assert.match(readme, /start_agent_native_loop/);
   assert.match(readme, /finish_agent_native_loop/);
   assert.match(readme, /## What This Proves/);
