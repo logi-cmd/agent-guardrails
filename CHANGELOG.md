@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.7.2 - 2026-03-31
+
+Bugfix release: OpenCode adapter now writes the correct config format that OpenCode actually recognizes.
+
+### Bug Fixes
+
+- **OpenCode MCP Config** (`lib/setup/agents.js`)
+  - Changed OpenCode adapter to write `opencode.json` instead of `.opencode/mcp.json`
+  - Config format updated to use OpenCode's native `opencode.json` schema
+  - Previously wrote standard MCP JSON format which OpenCode does not recognize
+
+- **Setup Merge Behavior** (`lib/commands/setup.js`)
+  - `maybeWriteRepoConfig()` now merges with existing config files instead of overwriting
+  - Preserves user settings when updating existing OpenCode configs
+
+### Documentation
+
+- Updated README.md setup details section to reflect `opencode.json` path for opencode agent
+
+### Tests
+
+- Updated `setup.test.js` opencode write test assertions to expect `opencode.json` instead of `.opencode/mcp.json`
+
 ## 0.7.1 - 2026-03-31
 
 Bugfix release: setup now auto-writes repo-local MCP config without requiring `--write-repo-config` flag.

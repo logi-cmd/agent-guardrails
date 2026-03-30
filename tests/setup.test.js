@@ -139,12 +139,12 @@ export async function run() {
       locale: "en"
     })
   );
-  assert.equal(fs.existsSync(path.join(opencodeWriteDir, ".opencode", "mcp.json")), true);
+  assert.equal(fs.existsSync(path.join(opencodeWriteDir, "opencode.json")), true);
   assert.equal(opencodeWriteResult.mcp.repoConfigWrite.wrote, true);
-  assert.equal(opencodeWriteResult.mcp.repoConfigWrite.configPath, ".opencode/mcp.json");
-  assert.match(opencodeWriteOutput, /Repo-local agent config written: \.opencode\/mcp\.json/);
+  assert.equal(opencodeWriteResult.mcp.repoConfigWrite.configPath, "opencode.json");
+  assert.match(opencodeWriteOutput, /Repo-local agent config written: opencode\.json/);
   assert.match(opencodeWriteOutput, /Do this now/);
-  assert.ok(opencodeWriteResult.remainingManualStep.includes("point it at .opencode/mcp.json"));
+  assert.ok(opencodeWriteResult.remainingManualStep.includes("point it at opencode.json"));
 
   const windsurfWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-windsurf-"));
   const { value: windsurfWriteResult, output: windsurfWriteOutput } = await captureLogs(() =>
