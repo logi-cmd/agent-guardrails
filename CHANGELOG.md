@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.5 - 2026-03-30
+
+Patch release fixing GUI Dashboard not updating on file changes.
+
+### Bug Fixes
+
+- **Daemon Info**: Fixed `checksRun` being double-counted on file changes
+  - Removed duplicate `info.incrementChecks()`/`updateLastCheck()`/`save()` calls from file watcher callback
+  - `runCheck()` now correctly updates info only once per actual check
+
+- **GUI autoFix**: Fixed `autoFix` data not being passed to GUI state
+  - `pushResult` now extracts and passes `autoFix` to state store
+  - Auto-fix information now displays correctly in GUI Dashboard
+
 ## 0.6.4 - 2026-03-30
 
 Patch release fixing GUI Dashboard statistics update.
