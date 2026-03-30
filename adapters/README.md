@@ -17,8 +17,11 @@ Manual `plan` / `check` still exist as fallback infrastructure, but they are no 
 
 ## Available
 
-- [Codex](./codex/README.md)
 - [Claude Code](./claude-code/README.md)
+- [Codex](./codex/README.md)
 - [Cursor](./cursor/README.md)
-- [OpenHands](./openhands/README.md)
+- [Gemini CLI](./gemini/README.md)
 - [OpenClaw](./openclaw/README.md)
+- [OpenCode](./opencode/README.md)
+- [OpenHands](./openhands/README.md)
+- [Windsurf](./windsurf/README.md)

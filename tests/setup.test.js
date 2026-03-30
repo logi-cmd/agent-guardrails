@@ -129,6 +129,19 @@ export async function run() {
   assert.equal(openclawWriteResult.mcp.repoConfigWrite.configPath, null);
   assert.ok(openclawWriteOutput.includes("paste the MCP snippet"));
 
+  const geminiWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-gemini-"));
+  const { value: geminiWriteResult, output: geminiWriteOutput } = await captureLogs(() =>
+    runSetup({
+      positional: [geminiWriteDir],
+      flags: { agent: "gemini", "write-repo-config": true, lang: "en" },
+      locale: "en"
+    })
+  );
+  // gemini uses user-global config (~/.gemini/settings.json), so write-repo-config is a no-op
+  assert.equal(geminiWriteResult.mcp.repoConfigWrite.wrote, false);
+  assert.equal(geminiWriteResult.mcp.repoConfigWrite.configPath, null);
+  assert.ok(geminiWriteOutput.includes("paste the MCP snippet"));
+
   const opencodeWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-opencode-"));
   const { value: opencodeWriteResult, output: opencodeWriteOutput } = await captureLogs(() =>
     runSetup({

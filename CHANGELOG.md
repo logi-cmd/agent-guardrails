@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.7.4 - 2026-03-31
+
+Verification release: Verified all 8 agent adapters have correct MCP config formats. Added missing adapter documentation.
+
+### Verification
+
+- **Codex CLI** (`~/.codex/config.toml`)
+  - Format: TOML with `[mcp_servers.xxx]` table structure ✅
+  - Config verified correct
+
+- **Gemini CLI** (`~/.gemini/settings.json`)
+  - Format: Standard JSON with `mcpServers` object ✅
+  - Config verified correct
+
+### Documentation
+
+- Created `adapters/gemini/README.md`
+- Created `adapters/windsurf/README.md`
+- Created `adapters/opencode/README.md`
+- Updated `adapters/README.md` to list all 8 agents
+- Updated `adapters/codex/README.md` to clarify TOML format and user-global path
+
+### Tests
+
+- Added `gemini` write-repo-config test (no-op, like openclaw/windsurf)
+
 ## 0.7.3 - 2026-03-31
 
 Bugfix release: Fixed incorrect MCP config paths for OpenClaw and Windsurf agents.

@@ -3,7 +3,7 @@
 Codex does not need an extra repo-local adapter file. The main job is:
 
 1. run `agent-guardrails setup --agent codex`
-2. paste the generated MCP snippet into your Codex MCP config
+2. paste the generated MCP snippet into your Codex config (`~/.codex/config.toml`)
 3. start chatting normally
 
 ## Setup
@@ -15,8 +15,8 @@ agent-guardrails setup --agent codex
 `setup` will:
 
 - auto-initialize the repo if guardrail files are missing
-- print the MCP config snippet for Codex
-- tell you where to paste it
+- print the MCP config snippet for Codex in TOML format
+- tell you to paste it into `~/.codex/config.toml`
 - give you one recommended first chat message
 
 ## Recommended first chat
