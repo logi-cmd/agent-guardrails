@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.6 - 2026-03-30
+
+Patch release fixing GUI Dashboard not displaying warnings count.
+
+### Bug Fixes
+
+- **Summary Counts**: Fixed `warnings` count showing as 0 in GUI
+  - Changed from `f.level` to `f.severity` for filtering findings
+  - Findings use `severity` field, not `level`
+
 ## 0.6.5 - 2026-03-30
 
 Patch release fixing GUI Dashboard not updating on file changes.
