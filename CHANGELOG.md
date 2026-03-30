@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.7.0 - 2026-03-31
+
+Architecture release: unified daemon-hook architecture for real-time guardrail feedback.
+
+### Breaking Changes
+
+None — fully backward compatible. Hooks automatically fall back to independent checks when daemon is not running.
+
+### New Features
+
+- **Shared Result Reader** (`lib/daemon/hooks/shared-result-reader.cjs`)
+  - Hooks now read cached `daemon-result.json` instead of running independent checks
+  - Reduces hook latency from 1-4 seconds to <100ms when daemon is running
+  - Automatic fallback to independent `agent-guardrails check --json` when daemon is not running
+
+- **Daemon Status Markers** (`worker.js`)
+  - `daemon-result.json` now includes `status: "running"` / `"completed"` for concurrency coordination
+  - Hooks skip cached results while daemon check is in progress
+
+- **Git Pre-commit Hook** (`lib/daemon/hooks/pre-commit-check.cjs`)
+  - Blocks commits when error-level findings exist
+  - Shows warnings but allows commits for warning-level findings
+  - Auto-injected by `agent-guardrails start` into `.git/hooks/pre-commit`
+  - Safe append: does not overwrite existing pre-commit hooks
+
+- **OS Desktop Notifications** (`worker.js`)
+  - Windows: PowerShell toast notification
+  - macOS: osascript display notification
+  - Linux: notify-send
+  - Only fires when errors or warnings are found (no notification fatigue)
+
+### Refactored
+
+- **All 8 agent hooks** refactored to thin delivery layer
+  - `daemon-check.cjs` (Claude Code) — uses shared result reader
+  - `cursor-check.cjs` (Cursor) — uses shared result reader
+  - `windsurf-check.cjs` (Windsurf) — uses shared result reader
+  - `gemini-check.cjs` (Gemini CLI) — uses shared result reader
+  - `codex-check.cjs` (Codex CLI) — uses shared result reader
+  - `openhands-check.cjs` (OpenHands) — uses shared result reader
+  - `openclaw-handler.cjs` (OpenClaw) — uses shared result reader
+  - `opencode-plugin.js` (OpenCode) — reads daemon-result.json directly
+
+### Architecture Diagram
+
+```
+Before:  Daemon → check → JSON → GUI (nobody watches)
+         Hook → check AGAIN → stderr (duplicate, slow)
+
+After:   Daemon → check → daemon-result.json (status: "completed")
+                                       ↓
+                              ┌────────┼──────────┐
+                              ↓        ↓          ↓
+                        Agent Hooks  Git Hook  OS Notification
+                        (read JSON) (read JSON) (new)
+                        ↓ <100ms    ↓ gate      ↓ desktop
+                      Push to    Block/pass    Alert user
+                      agent chat  commits
+```
+
 ## 0.6.6 - 2026-03-30
 
 Patch release fixing GUI Dashboard not displaying warnings count.
