@@ -598,11 +598,9 @@ For agents that support repo-local MCP config, `setup` auto-writes the config fi
 - `claude-code` → `.mcp.json`
 - `cursor` → `.cursor/mcp.json`
 - `openhands` → `.openhands/mcp.json`
-- `openclaw` → `.openclaw/mcp.json`
-- `opencode` → `.opencode/mcp.json`
-- `windsurf` → `.windsurf/mcp.json`
+- `opencode` → `opencode.json`
 
-`codex` and `gemini` use user-global config (no auto-write).
+`codex`, `gemini`, `openclaw`, and `windsurf` use user-global config (no auto-write).
 
 Once you connect the generated config to your agent, the happy path should feel like normal chat:
 

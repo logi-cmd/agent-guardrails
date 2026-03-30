@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.7.3 - 2026-03-31
+
+Bugfix release: Fixed incorrect MCP config paths for OpenClaw and Windsurf agents.
+
+### Bug Fixes
+
+- **OpenClaw MCP Config** (`lib/setup/agents.js`)
+  - OpenClaw adapter now uses correct path `~/.openclaw/openclaw.json` instead of `.openclaw/mcp.json`
+  - Config format updated to OpenClaw's native `mcp.servers` structure
+  - Changed from repo-local to user-global config (no auto-write)
+
+- **Windsurf MCP Config** (`lib/setup/agents.js`)
+  - Windsurf adapter now uses correct path `~/.codeium/windsurf/mcp_config.json` instead of `.windsurf/mcp.json`
+  - Changed from repo-local to user-global config (no auto-write)
+
+### Documentation
+
+- Updated README.md setup section to reflect corrected paths
+- Updated adapters/openclaw/README.md to reflect user-global config behavior
+
+### Tests
+
+- Updated `setup.test.js` agent expectations for openclaw and windsurf
+- Changed openclaw and windsurf tests to expect "paste" behavior instead of "point it at"
+
 ## 0.7.2 - 2026-03-31
 
 Bugfix release: OpenCode adapter now writes the correct config format that OpenCode actually recognizes.

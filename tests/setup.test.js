@@ -9,10 +9,10 @@ const agentExpectations = [
   { agent: "claude-code", helperFile: "CLAUDE.md", expectsPaste: false },
   { agent: "cursor", helperFile: path.join(".cursor", "rules", "agent-guardrails.mdc"), expectsPaste: false },
   { agent: "openhands", helperFile: path.join(".agents", "skills", "agent-guardrails.md"), expectsPaste: false },
-  { agent: "openclaw", helperFile: "OPENCLAW.md", expectsPaste: false },
+  { agent: "openclaw", helperFile: "OPENCLAW.md", expectsPaste: true },
   { agent: "gemini", helperFile: "GEMINI.md", expectsPaste: true },
   { agent: "opencode", helperFile: path.join(".opencode", "rules", "agent-guardrails.md"), expectsPaste: false },
-  { agent: "windsurf", helperFile: path.join(".windsurf", "rules", "agent-guardrails.md"), expectsPaste: false }
+  { agent: "windsurf", helperFile: path.join(".windsurf", "rules", "agent-guardrails.md"), expectsPaste: true }
 ];
 
 function captureLogs(run) {
@@ -124,12 +124,10 @@ export async function run() {
       locale: "en"
     })
   );
-  assert.equal(fs.existsSync(path.join(openclawWriteDir, ".openclaw", "mcp.json")), true);
-  assert.equal(openclawWriteResult.mcp.repoConfigWrite.wrote, true);
-  assert.equal(openclawWriteResult.mcp.repoConfigWrite.configPath, ".openclaw/mcp.json");
-  assert.match(openclawWriteOutput, /Repo-local agent config written: \.openclaw\/mcp\.json/);
-  assert.match(openclawWriteOutput, /Do this now/);
-  assert.ok(openclawWriteResult.remainingManualStep.includes("point it at .openclaw/mcp.json"));
+  // openclaw uses user-global config (~/.openclaw/openclaw.json), so write-repo-config is a no-op
+  assert.equal(openclawWriteResult.mcp.repoConfigWrite.wrote, false);
+  assert.equal(openclawWriteResult.mcp.repoConfigWrite.configPath, null);
+  assert.ok(openclawWriteOutput.includes("paste the MCP snippet"));
 
   const opencodeWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-opencode-"));
   const { value: opencodeWriteResult, output: opencodeWriteOutput } = await captureLogs(() =>
@@ -154,12 +152,10 @@ export async function run() {
       locale: "en"
     })
   );
-  assert.equal(fs.existsSync(path.join(windsurfWriteDir, ".windsurf", "mcp.json")), true);
-  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.wrote, true);
-  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.configPath, ".windsurf/mcp.json");
-  assert.match(windsurfWriteOutput, /Repo-local agent config written: \.windsurf\/mcp\.json/);
-  assert.match(windsurfWriteOutput, /Do this now/);
-  assert.ok(windsurfWriteResult.remainingManualStep.includes("point it at .windsurf/mcp.json"));
+  // windsurf uses user-global config (~/.codeium/windsurf/mcp_config.json), so write-repo-config is a no-op
+  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.wrote, false);
+  assert.equal(windsurfWriteResult.mcp.repoConfigWrite.configPath, null);
+  assert.ok(windsurfWriteOutput.includes("paste the MCP snippet"));
 
   const unsupportedWriteDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-setup-write-unsupported-"));
   const { value: unsupportedWriteResult, output: unsupportedWriteOutput } = await captureLogs(() =>
