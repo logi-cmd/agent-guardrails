@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.7.1 - 2026-03-31
+
+Bugfix release: setup now auto-writes repo-local MCP config without requiring `--write-repo-config` flag.
+
+### Bug Fixes
+
+- **Setup Auto-Write** (`lib/commands/setup.js`)
+  - `setup --agent <name>` now auto-writes the repo-local MCP config for agents that support it (claude-code, cursor, openhands, openclaw, opencode, windsurf)
+  - Previously required explicit `--write-repo-config` flag; now automatic when `safeRepoConfigPath` exists
+  - `--write-repo-config` flag kept for backward compatibility but now a no-op
+
+### Documentation
+
+- Updated README.md examples to reflect auto-write behavior
+- Updated adapter READMEs (cursor, claude-code, openhands, openclaw) with simplified setup instructions
+- Updated pilot docs with new auto-write behavior
+
+### Tests
+
+- Updated `setup.test.js` to expect "point it at" for auto-write agents and "paste" for codex/gemini
+- Updated `release.test.js` to check for "auto-writes" text instead of `--write-repo-config` flag
+
 ## 0.7.0 - 2026-03-31
 
 Architecture release: unified daemon-hook architecture for real-time guardrail feedback.
