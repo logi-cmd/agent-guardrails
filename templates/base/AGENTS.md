@@ -1,43 +1,40 @@
-# Agent Rules
+# Agent Rules (MANDATORY — not optional)
 
-## Read First
+## MANDATORY: Read First
 
-Before writing code, read:
+Before writing ANY code, you MUST read:
 
-1. `AGENTS.md`
+1. `AGENTS.md` (this file)
 2. `docs/PROJECT_STATE.md`
 3. `README.md`
 4. the specific files you plan to modify
 
-## Working Style
+Skipping this step is a RULE VIOLATION.
 
-- Prefer existing patterns over new abstractions.
-- Keep changes small and easy to review.
-- List touched files before editing when the task is non-trivial.
-- If context is missing, surface the gap instead of inventing details.
-- When behavior changes, update or add tests.
+## MANDATORY: Guardrail Check Before Finishing
 
-## Guardrail Check (MANDATORY before finishing)
-
-**Before telling the user "task done", you MUST run:**
+**NEVER tell the user "task done" without running this command:**
 
 ```bash
 agent-guardrails check --base-ref HEAD~1
 ```
 
-- If issues found: **STOP and fix before proceeding.** Do NOT tell user "done".
-- If clean: include the check result in your summary.
-- If the command is not found: tell the user to run `npx agent-guardrails setup` first.
+**GATED RULES:**
+- If issues found → **STOP. Fix before proceeding. Do NOT tell user "done".**
+- If clean → include the check result in your summary.
+- If the command is not found → tell the user to run `npx agent-guardrails setup` first.
 
-## Task Contract (when available)
+**FAILURE TO RUN THIS COMMAND = INCOMPLETE WORK.**
+
+## MANDATORY: Task Contract
 
 If `.agent-guardrails/task-contract.json` exists:
 
-- Stay inside the declared scope (allowed paths, intended files).
-- Run the required commands listed in the contract.
-- Update `.agent-guardrails/evidence/current-task.md` with commands run, notable results, and residual risk.
+- **MUST** stay inside the declared scope (allowed paths, intended files).
+- **MUST** run the required commands listed in the contract.
+- **MUST** update `.agent-guardrails/evidence/current-task.md` with commands run, notable results, and residual risk.
 
-If no contract exists and the task is non-trivial, run:
+If no contract exists and the task is non-trivial, **MUST** run:
 
 ```bash
 agent-guardrails plan --task "<task description>"
@@ -45,11 +42,23 @@ agent-guardrails plan --task "<task description>"
 
 Then implement inside the generated contract.
 
-## Definition Of Done
+## MANDATORY: Working Rules
 
-- The implementation matches current project conventions.
-- The changed behavior has test coverage when appropriate.
-- Guardrail check passed (`agent-guardrails check --base-ref HEAD~1`).
-- Required commands for the task were actually run and reported.
-- The evidence note for the current task exists and reflects the real task outcome.
-- Risks, assumptions, and follow-up work are documented.
+- **MUST** prefer existing patterns over new abstractions.
+- **MUST** keep changes small and easy to review.
+- **MUST** list touched files before editing when the task is non-trivial.
+- **MUST** surface missing context instead of inventing details.
+- **MUST** update or add tests when behavior changes.
+
+## MANDATORY: Definition Of Done
+
+ALL of these must be true before reporting completion:
+
+- [ ] Implementation matches current project conventions.
+- [ ] Changed behavior has test coverage when appropriate.
+- [ ] Guardrail check passed (`agent-guardrails check --base-ref HEAD~1`).
+- [ ] Required commands for the task were actually run and reported.
+- [ ] Evidence note for the current task exists and reflects the real outcome.
+- [ ] Risks, assumptions, and follow-up work are documented.
+
+**IF ANY ITEM IS FALSE, THE TASK IS NOT DONE.**

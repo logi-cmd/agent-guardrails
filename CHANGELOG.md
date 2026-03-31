@@ -15,6 +15,11 @@ CLI-first release: Guardrail checks work without MCP configuration.
 
 - **Git pre-commit hook** (`templates/base/hooks/pre-commit.cjs`): Runs `agent-guardrails check --base-ref HEAD~1` before each commit. Commits with issues are blocked (skip with `--no-verify`).
 - **`writeText` append mode**: Supports appending to existing files with HTML markers.
+- **Daemon-Hook unified architecture**: Daemon is now the sole check engine. Hooks read `daemon-result.json` via `shared-result-reader.cjs` instead of running independent checks. Hook latency drops from 1-4s to <100ms when daemon is running.
+- **`shared-result-reader.cjs`**: Cache-first result reader with status-based freshness and automatic fallback to independent check.
+- **Worker.js status marking**: `daemon-result.json` now includes `status: "running"/"completed"` for concurrency coordination.
+- **Integration tests**: `shared-result-reader.test.js`, `daemon-check.test.js`, `daemon-hooks.test.js` — 122 new test assertions.
+- **i18n for daemon-check.cjs**: Claude Code hook now supports en/zh-CN locale via `AGENT_GUARDRAILS_LOCALE`.
 
 ### What This Means for Users
 

@@ -44,6 +44,18 @@ const testModules = [
     path: "./daemon.test.js"
   },
   {
+    name: "shared-result-reader",
+    path: "./shared-result-reader.test.js"
+  },
+  {
+    name: "daemon-check",
+    path: "./daemon-check.test.js"
+  },
+  {
+    name: "daemon-hooks",
+    path: "./daemon-hooks.test.js"
+  },
+  {
     name: "release",
     path: "./release.test.js"
   }

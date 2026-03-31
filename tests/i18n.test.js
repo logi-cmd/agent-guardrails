@@ -43,9 +43,9 @@ async function initSeedsChineseTemplates() {
   const openclaw = fs.readFileSync(path.join(tempDir, "OPENCLAW.md"), "utf8");
 
   assert.match(output, /下一步：/);
-  assert.match(agents, /开始写代码前/);
-  assert.match(claude, /工作流/);
-  assert.match(openclaw, /默认任务模式/);
+  assert.match(agents, /强制：先阅读/);
+  assert.match(claude, /强制：守卫检查/);
+  assert.match(openclaw, /强制：守卫检查/);
 }
 
 async function planRespectsLocaleEnvAndOverride() {

@@ -1,13 +1,31 @@
-# Task Brief
+# 任务简报
 
-## Request
+## 请求
 
-## Files to read first
+## 先阅读的文件
 
-## Planned file changes
+## 现有模式总结
 
-## Constraints
+## 计划修改的文件
 
-## Tests to run
+## 预期文件或模块
 
-## Risks and assumptions
+## 约束
+
+## 最小可行改动
+
+## 需要运行的测试
+
+## 必须执行的命令
+
+## Evidence 文件路径
+
+## Evidence 摘要
+
+## Review 关键区域
+
+## 允许的改动类型
+
+## 风险级别
+
+## 风险与假设

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-31 (v0.7.5 released)
+Last updated: 2026-04-01 (v0.8.1 work in progress)
 
 ## Goal
 
@@ -8,7 +8,7 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.7.5** — Active Guardrails: MCP 响应包含人类可读摘要 + check_after_edit 工具
+**v0.8.1** — Adapter templates strengthened with mandatory language (MUST/STOP/FAILURE = INCOMPLETE)
 
 ### Key Features (v0.7.5)
 - ✅ MCP 工具响应现在包含人类可读摘要作为第一个内容块 — 检查结果直接显示在聊天中
@@ -34,11 +34,23 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-v0.7.5 已发布（Active Guardrails — 人类可读 MCP 响应 + check_after_edit），下一步重点：
+v0.8.0 已发布，daemon-hook 统一架构已实现。下一步重点：
 1. 收集 Active Guardrails 的用户反馈
-2. 评估 v0.8 开发方向（更强的被动理解层或 Agent 工作流增强）
-3. 修复 pre-existing 测试失败（plugin-ts, benchmark boundary-violation）
+2. 评估 v0.9 开发方向
+3. 修复 pre-existing 测试失败（plugin-ts, benchmark）
 4. 考虑技术博客或社区推广
+
+## Done recently (v0.8.x)
+
+- v0.8.1: AGENTS.md 模板强化 —"Prefer"→"MUST prefer"，新增"MANDATORY: Guardrail Check"章节，明确"FAILURE TO RUN THIS COMMAND = INCOMPLETE WORK"
+- v0.8.1: 全部 8 个 adapter 模板强化 — claude-code、windsurf、gemini、codex、openclaw、openhands、opencode 统一使用强制语气
+- v0.8.0: Daemon-Hook 统一架构 — daemon 做唯一检查引擎，hooks 读 daemon-result.json 而非独立跑检查
+- v0.8.0: shared-result-reader 模块 — cache-first + fallback 模式，hook 延迟从 1-4s 降到 <100ms
+- v0.8.0: worker.js status 标记 — "running"/"completed" 防并发读取
+- v0.8.0: 8 个 hook 文件重构为 thin delivery 层（daemon-check、cursor、windsurf、gemini、codex、openhands、openclaw、opencode）
+- v0.8.0: daemon-check.cjs 补齐 i18n 支持
+- v0.8.0: 集成测试 — shared-result-reader.test.js、daemon-check.test.js、daemon-hooks.test.js
+- v0.8.0: npm 发布 agent-guardrails@0.8.0 + GitHub tag v0.8.0
 
 ## Done recently (v0.7.x)
 
@@ -243,17 +255,16 @@ v0.7.5 已发布（Active Guardrails — 人类可读 MCP 响应 + check_after_e
 
 ## Next step
 
-v0.7.5 已发布 (npm + GitHub tag)，所有功能测试通过，代码已推送到远程。下一步重点：
-1. 收集 Active Guardrails 用户反馈
-2. 评估 v0.8 开发方向
-3. 修复 pre-existing 测试失败（plugin-ts, benchmark）
-4. 考虑技术博客或社区推广
+v0.8.1 模板强化已完成。下一步重点：
+1. 修复 plugin-ts 依赖问题 — `npm install @typescript-eslint/parser`，发布新版本
+2. 测试 AI 行为 — 验证强化后的模板是否让 AI 自动运行检查
+3. 考虑技术博客或社区推广
 
 ## Handoff
 
 Default rule: when a meaningful milestone lands, end the project-thread update with:
 
-- `What changed`: v0.7.5 发布完成 — Active Guardrails（MCP 人类可读响应 + check_after_edit 工具）
-- `Revenue Path`: 继续推广获取用户反馈，Active Guardrails 是用户体验的关键改进
+- `What changed`: AGENTS.md +8 个 adapter 模板全部改为强制语气，AI 应把 guardrail check 视为必选项
+- `Revenue Path`: 模板强化后，AI 应自动运行检查，提升用户体验
 - `Commercial risk`: 无特殊风险
-- `What I need next`: 用户反馈收集或 v0.8 开发方向决策
+- `What I need next`: 修复 plugin-ts 依赖问题，发布新版本，测试 AI 行为

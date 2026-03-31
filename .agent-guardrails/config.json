@@ -4,12 +4,10 @@
   "workflow": {
     "planDefaults": {
       "allowedPaths": [
+        "src/",
         "lib/",
-        "tests/",
-        "templates/",
-        "docs/",
-        ".github/",
-        ".agent-guardrails/"
+        "test/",
+        "tests/"
       ],
       "requiredCommands": [
         "npm test"
@@ -39,21 +37,10 @@
   "checks": {
     "maxChangedFilesPerTask": 12,
     "requireTestsWithSourceChanges": true,
-    "allowedPaths": [
-      "AGENTS.md",
-      "README.md",
-      "package.json",
-      ".gitignore",
-      "bin/",
-      "docs/",
-      "lib/",
-      "templates/",
-      "tests/",
-      ".agent-guardrails/"
-    ],
+    "allowedPaths": [],
     "consistency": {
       "maxChangedFilesPerTask": 12,
-      "maxTopLevelEntries": 4,
+      "maxTopLevelEntries": 3,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true
     },
@@ -92,60 +79,91 @@
   },
   "protectedAreas": [
     {
-      "path": "lib/commands/",
-      "label": "core command logic",
+      "path": "src/auth/",
+      "label": "auth flows",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "src/billing/",
+      "label": "billing logic",
+      "minimumRiskLevel": "high",
+      "requiresReviewNotes": true
+    },
+    {
+      "path": "infra/",
+      "label": "infra configuration",
       "minimumRiskLevel": "medium",
       "requiresReviewNotes": true
     },
     {
-      "path": "templates/",
-      "label": "seeded repo templates",
-      "minimumRiskLevel": "medium",
-      "requiresReviewNotes": true
-    },
-    {
-      "path": ".github/workflows/",
-      "label": "automation workflows",
+      "path": "src/contracts/",
+      "label": "shared contracts",
       "minimumRiskLevel": "medium",
       "requiresReviewNotes": true
     }
   ],
   "productionProfiles": {
-    "default-cli": {
-      "focus": ["correctness", "maintainability", "operability"],
+    "default-service": {
+      "focus": [
+        "correctness",
+        "reliability",
+        "maintainability",
+        "observability"
+      ],
       "validationProfile": "standard"
     },
-    "release-critical": {
-      "focus": ["reliability", "maintainability", "operability"],
+    "high-throughput-api": {
+      "focus": [
+        "performance",
+        "concurrency",
+        "reliability",
+        "observability"
+      ],
       "validationProfile": "strict"
     }
   },
   "nfrPolicies": {
-    "maintainability": {
-      "evidenceHint": "Call out user-visible workflow changes and follow-up risk."
+    "security": {
+      "evidenceHint": "Mention auth, secrets, permissions, and sensitive-data handling explicitly."
     },
-    "operability": {
-      "evidenceHint": "Mention rollback or release notes for automation-facing changes."
+    "dependency": {
+      "evidenceHint": "Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."
+    },
+    "performance": {
+      "evidenceHint": "Mention latency, throughput, or hotspot validation in evidence."
+    },
+    "concurrency": {
+      "evidenceHint": "Mention concurrency, contention, or load validation in evidence."
+    },
+    "understanding": {
+      "evidenceHint": "Explain the main tradeoffs so future maintainers can follow the change."
+    },
+    "continuity": {
+      "evidenceHint": "Mention reuse targets and any deliberate continuity break in evidence."
+    },
+    "observability": {
+      "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
     }
   },
   "languagePlugins": {
-    "javascript": ["@agent-guardrails/plugin-ts"]
+    "javascript": [
+      "@agent-guardrails/plugin-ts"
+    ]
   },
   "criticalPaths": [
-    "lib/commands/",
-    "templates/",
-    ".github/workflows/"
+    "src/auth/",
+    "src/billing/",
+    "src/contracts/"
   ],
   "runtimeSurfaces": [
-    "bin/",
-    "lib/",
-    "templates/",
-    ".github/workflows/"
+    "src/",
+    "infra/"
   ],
   "performanceSensitiveAreas": [
-    "lib/commands/check.js",
-    "tests/install-smoke.js",
-    ".github/workflows/"
+    "src/billing/",
+    "src/cache/",
+    "src/queue/"
   ],
   "review": {
     "includeEvidenceSummary": true

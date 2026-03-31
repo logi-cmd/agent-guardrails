@@ -1,8 +1,35 @@
 把 `agent-guardrails` 作为 OpenHands 在此仓库中的 guardrail 层。
 
-- 开始编辑前先阅读 `AGENTS.md`、`docs/PROJECT_STATE.md` 和 `README.md`。
-- 先运行 `agent-guardrails plan --task "<task>"` 写入任务契约。只有在任务特别窄或风险更高时，再补更严格的参数。
-- 除非显式更新任务范围，否则实现要严格限制在契约内。
-- 如果行为变化了，要补测试，并更新 `.agent-guardrails/evidence/current-task.md`，写清任务名、执行过的命令、关键结果和残余风险或 `none`。
-- 完成前运行 `agent-guardrails check --base-ref origin/main --commands-run "npm test" --review`。
-- `agent-guardrails check --json` 用于自动化或 CI，不是默认本地路径。
+## 强制：守卫检查
+
+**告诉用户"任务完成"之前，必须运行：**
+
+```bash
+agent-guardrails check --base-ref HEAD~1
+```
+
+**强制规则：**
+- 如果发现问题 → **必须停下修复。不要告诉用户"完成"。**
+- 如果没有问题 → 在总结中包含检查结果。
+- 如果命令不存在 → 告诉用户先运行 `npx agent-guardrails setup`。
+
+**不运行此命令 = 任务未完成。**
+
+## 强制：任务契约
+
+如果 `.agent-guardrails/task-contract.json` 存在：
+
+- **必须** 停留在声明的范围内（允许的路径、预期的文件）。
+- **必须** 运行契约中列出的所需命令。
+- **必须** 更新 `.agent-guardrails/evidence/current-task.md`，写明执行过的命令、关键结果和残余风险。
+
+## 强制：工作规则
+
+- **必须** 开始编辑前先阅读 `AGENTS.md`、`docs/PROJECT_STATE.md` 和 `README.md`。
+- **必须** 优先沿用现有仓库结构，不要轻易新建抽象。
+- **必须** 保持改动小且可 review。
+- **必须** 如果 `check` 失败，先修范围或测试覆盖，不要直接放大改动范围。
+
+## MCP（可选）
+
+如果 OpenHands 已连接 `agent-guardrails mcp`，可以使用 `check_after_edit` 获得即时反馈。但 CLI 检查始终是必需的。
