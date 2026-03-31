@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.8 - 2026-03-31
+
+Minimize project pollution release: smart file handling during installation.
+
+### Changed
+
+- **`AGENTS.md`**: Now appended (not skipped) when file already exists, using HTML markers (`<!-- agent-guardrails:start -->` / `<!-- agent-guardrails:end -->`) for easy identification and removal
+- **`.github/workflows/`**: Only created if no existing CI workflow files are detected
+- **`.agent-guardrails/` internal files**: Use force mode (safe to overwrite templates)
+- **Adapter files**: Still use create mode (never overwrite user files)
+
+### Internal
+
+- **`lib/utils.js`**: `writeText()` now supports `append` and `appendMarker` options
+- **`lib/commands/init.js`**: Refactored to classify writes by type (create/append/force)
+- **`lib/i18n.js`**: Added `appended` and `ciDetected` translations for en and zh-CN
+
 ## 0.7.7 - 2026-03-31
 
 GUI removal release: Removed GUI Dashboard in favor of MCP-based chat feedback.
