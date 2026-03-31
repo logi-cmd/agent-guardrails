@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.7.5 - 2026-03-31
+
+Active guardrails release: MCP tool responses now include human-readable summaries so check results appear directly in the AI chat. New `check_after_edit` tool provides instant post-edit feedback.
+
+### MCP Server (`lib/mcp/server.js`)
+
+- **Human-readable tool responses**: `start_agent_native_loop`, `check_after_edit`, and `finish_agent_native_loop` now return a human-readable text block as the FIRST content block, followed by JSON data. This makes guardrail results visible in the user's chat dialog without the agent needing to parse JSON.
+- **New helper**: `createHumanReadableJsonResult(data, humanSummary)` — produces a two-block content array (text first, JSON second).
+- **New tool**: `check_after_edit` — cache-first instant feedback after file edits. Reads `daemon-result.json` directly via `fs` (< 2s), falls back to `executeCheck()` if no daemon result is available. Returns human-readable status for clean / issues-found / stale / no-config states.
+- **Restored tool definition**: `suggest_task_contract` was accidentally removed from `TOOL_DEFINITIONS` in a previous edit; restored to its correct position.
+
+### Templates
+
+- **Base AGENTS.md** (`templates/base/AGENTS.md`): Added "CRITICAL: Post-Edit Validation" section instructing agents to call `check_after_edit` after each file edit.
+- **All 8 adapter templates** updated to include `check_after_edit` step in the MCP workflow:
+  - Claude Code, Cursor, Codex, Gemini, OpenCode, OpenHands, OpenClaw, Windsurf
+
+### Tests
+
+- **`tests/mcp.test.js`**: Updated tool list assertion to include `check_after_edit`; added basic `check_after_edit` handler test.
+
 ## 0.7.4 - 2026-03-31
 
 Verification release: Verified all 8 agent adapters have correct MCP config formats. Added missing adapter documentation.

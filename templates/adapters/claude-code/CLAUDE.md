@@ -15,7 +15,9 @@ Use `agent-guardrails` as the repo-local guardrail layer for this project.
    - `read_repo_guardrails`
    - `start_agent_native_loop`
    - implement inside the declared scope
-   - `finish_agent_native_loop`
+   4. **MUST call `check_after_edit`** after EVERY file edit — this catches scope violations and guardrail issues immediately.
+   5. If `check_after_edit` returns "issues" (errors): **STOP and fix before proceeding.** Do NOT continue editing. If clean: proceed with the next edit or finish.
+   6. Before telling user "task done" → call `finish_agent_native_loop`
 2. If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
 3. Implement only within the task contract unless you update the scope first.
 4. If behavior changes, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.

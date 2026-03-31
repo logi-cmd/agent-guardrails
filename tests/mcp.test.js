@@ -155,6 +155,7 @@ export async function run() {
       "read_repo_guardrails",
       "suggest_task_contract",
       "start_agent_native_loop",
+      "check_after_edit",
       "finish_agent_native_loop",
       "run_guardrail_check",
       "summarize_review_risks",
@@ -218,6 +219,14 @@ export async function run() {
     assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.futureMaintenanceRisks), true);
     assert.equal(typeof finishLoopResponse.result.structuredContent.reviewerSummary.costHints, "object");
     assert.equal(Array.isArray(finishLoopResponse.result.structuredContent.reviewerSummary.costHints.entries), true);
+
+    const checkAfterEditResponse = await client.request("tools/call", {
+      name: "check_after_edit",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.equal(typeof checkAfterEditResponse.result.structuredContent.status, "string");
+    assert.equal(checkAfterEditResponse.result.content[0].type, "text");
+    assert.equal(Array.isArray(checkAfterEditResponse.result.structuredContent.newFindings), true);
 
     const checkResponse = await client.request("tools/call", {
       name: "run_guardrail_check",

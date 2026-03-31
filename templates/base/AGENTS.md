@@ -15,7 +15,21 @@ Before writing code, read:
   1. `read_repo_guardrails`
   2. `start_agent_native_loop`
   3. implement inside the declared scope
-  4. `finish_agent_native_loop`
+  4. **MUST call `check_after_edit` after EVERY file edit** — this catches scope violations and guardrail issues immediately
+  5. `finish_agent_native_loop`
+
+## CRITICAL: Post-Edit Validation
+
+**MUST call `check_after_edit` IMMEDIATELY after every file edit (Write, Edit, MultiEdit).**
+- Uses daemon cache for fast feedback (< 2 seconds).
+- If issues are found: **STOP and fix before proceeding.** Do NOT continue editing.
+- If clean: proceed with the next edit or next step.
+
+**Workflow:**
+1. Make edit → call `check_after_edit` → read result
+2. If issues → fix them → call `check_after_edit` again
+3. If clean → continue to next edit or finish
+4. Before telling user "task done" → call `finish_agent_native_loop`
 - If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session, then keep the implementation inside that contract.
 - When the task is narrow or risky, add `--intended-files`, `--allowed-change-types`, `--allow-paths`, or `--required-commands` so the contract matches the smallest viable slice.
 - Prefer existing patterns over new abstractions.
