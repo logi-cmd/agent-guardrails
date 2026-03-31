@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.6 - 2026-03-31
+
+Template hardening release: `check_after_edit` instructions strengthened across all 9 template files. Clarified that MCP chat feedback is the only real-time guardrail channel.
+
+### Templates
+
+- **All 8 adapter templates** + **base AGENTS.md** updated with:
+  - Explicit statement: `check_after_edit` is the **ONLY** way guardrail results appear in the AI chat
+  - Daemon GUI is explicitly labeled as secondary display only
+  - New rule: when user says they modified files manually, agent must call `check_after_edit` to validate
+  - New rule: do NOT batch multiple edits before checking — check after EACH edit
+  - New rule: do NOT tell user "done" without calling `finish_agent_native_loop`
+- **Claude Code adapter** (`templates/adapters/claude-code/CLAUDE.md`): Fixed broken numbering (3→4→5→6 was malformed)
+
 ## 0.7.5 - 2026-03-31
 
 Active guardrails release: MCP tool responses now include human-readable summaries so check results appear directly in the AI chat. New `check_after_edit` tool provides instant post-edit feedback.
