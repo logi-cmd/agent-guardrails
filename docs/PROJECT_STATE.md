@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-03-30 (v0.6.1 released)
+Last updated: 2026-03-31 (v0.7.5 released)
 
 ## Goal
 
@@ -8,46 +8,25 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.6.1** — GUI Dashboard + Tier-1 Auto-Fix：可视化 + 自动修复 + Windows 修复
+**v0.7.5** — Active Guardrails: MCP 响应包含人类可读摘要 + check_after_edit 工具
 
-### Key Features (v0.6.1)
-- ✅ Windows 守护进程修复：修复 Windows 上 daemon 启动失败问题
-- ✅ 改进 spawn 逻辑：Windows 平台兼容性优化
+### Key Features (v0.7.5)
+- ✅ MCP 工具响应现在包含人类可读摘要作为第一个内容块 — 检查结果直接显示在聊天中
+- ✅ 新增 `check_after_edit` 工具 — 编辑后即时反馈（< 2s）
+- ✅ 8 个适配器模板全部更新包含 check_after_edit 步骤
+- ✅ 恢复 `suggest_task_contract` 工具定义
+- ✅ 测试覆盖新增工具
 
-### Key Features (v0.6.0)
+### Key Features (v0.7.4)
+- ✅ 验证所有 8 个 Agent 适配器的 MCP 配置格式
+- ✅ 补全缺失的适配器文档
 
-### Key Features (v0.6.0)
-- ✅ GUI Dashboard: 浏览器实时显示检测结果 (SSE 推送)
-- ✅ Tier-1 Auto-Fix: 自动修复安全级别问题 (evidence/测试/gitignore)
-- ✅ 验证与回滚: 修复失败自动回滚，零副作用
-- ✅ --no-gui 选项: 可禁用 GUI 仅后台运行
-- ✅ Daemon 配置: 支持 .agent-guardrails/daemon.json 配置
+### Key Features (v0.7.3)
+- ✅ 修复 OpenClaw 和 Windsurf MCP 配置路径
 
-### Key Features (v0.5.0 已上线)
-- ✅ 8 Agent Hook 注入: Claude Code / Cursor / Codex / Gemini / OpenHands / OpenClaw / OpenCode / Windsurf
-- ✅ Rough-Intent Mode: 模糊意图解析 + 框架检测 + 路径推断准确率提升
-- ✅ 13 种任务类型自动识别 (新增 deploy/security/database)
-- ✅ 复合关键词匹配 (如"登录页面" → auth+ui)
-- ✅ 双语支持 (en, zh-CN)
-- ✅ MCP 工具: 10 个 (新增 explain_change, query_archaeology)
-- ✅ Real git diff 分析引擎: explain_change 从模板拼接升级为真实 diff 分析
-- ✅ 持久化考古数据: .agent-guardrails/archaeology.json 跨会话积累
-- ✅ 被动理解层: 自动变更解释、代码考古、精准提示
-- ✅ 诊断检测器: state-mgmt-complexity, async-logic-risk, performance-degradation
-- ✅ 全平台兼容: Windows / Linux / macOS (所有 hook 脚本均为 .cjs)
-
-### Key Features (8 Agent 支持)
-- ✅ 8 Agent Hook 注入: Claude Code / Cursor / Codex / Gemini / OpenHands / OpenClaw / OpenCode / Windsurf
-- ✅ Rough-Intent Mode: 模糊意图解析 + 框架检测 + 路径推断准确率提升
-- ✅ 13 种任务类型自动识别 (新增 deploy/security/database)
-- ✅ 复合关键词匹配 (如"登录页面" → auth+ui)
-- ✅ 双语支持 (en, zh-CN)
-- ✅ MCP 工具: 10 个 (新增 explain_change, query_archaeology)
-- ✅ Real git diff 分析引擎: explain_change 从模板拼接升级为真实 diff 分析
-- ✅ 持久化考古数据: .agent-guardrails/archaeology.json 跨会话积累
-- ✅ 被动理解层: 自动变更解释、代码考古、精准提示
-- ✅ 诊断检测器: state-mgmt-complexity, async-logic-risk, performance-degradation
-- ✅ 全平台兼容: Windows / Linux / macOS (所有 hook 脚本均为 .cjs)
+### Key Features (v0.7.0-v0.7.2)
+- ✅ 8 Agent MCP 配置统一
+- ✅ 适配器文档完善
 
 ### AI 集成方向 (已讨论，待实施)
 - 开源版本 = 规则引擎 (门控 + 理解)
@@ -55,24 +34,21 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current focus
 
-v0.6.1 已发布（修复 Windows daemon 问题），下一步重点：
-1. 收集 GUI 和 Auto-Fix 的用户反馈
-2. 考虑添加更多 Tier-1 修复规则（如 import 修复）
-3. 评估是否需要 Tier-2 建议修复（需要用户确认）
-4. 扩大社区影响力，推广 GUI 功能
-5. 监控 v0.6.1 的稳定性反馈
+v0.7.5 已发布（Active Guardrails — 人类可读 MCP 响应 + check_after_edit），下一步重点：
+1. 收集 Active Guardrails 的用户反馈
+2. 评估 v0.8 开发方向（更强的被动理解层或 Agent 工作流增强）
+3. 修复 pre-existing 测试失败（plugin-ts, benchmark boundary-violation）
+4. 考虑技术博客或社区推广
 
-## Done recently (v0.6.x)
+## Done recently (v0.7.x)
 
-- v0.6.1: Windows daemon 修复 — 修复 Windows 上守护进程启动失败问题
-- v0.6.1: spawn 逻辑优化 — Windows 平台兼容性改进
-- v0.6.1: npm 发布 agent-guardrails@0.6.1 + GitHub tag v0.6.1
-- v0.6.0: GUI Dashboard — 浏览器实时显示检测结果，支持暗色主题
-- v0.6.0: Tier-1 Auto-Fix — 自动修复安全级别问题（evidence/测试stub/gitignore）
-- v0.6.0: 修复验证与回滚 — 修复失败自动回滚，确保零副作用
-- v0.6.0: daemon.json 配置支持 — 可配置 autoFix, watchPaths, checkInterval
-- v0.6.0: --no-gui 选项 — 禁用 GUI 仅后台运行
-- v0.6.0: GUI 实时显示 Auto-Fix 结果 — 显示已应用/失败的修复项
+- v0.7.5: Active Guardrails — MCP 响应包含人类可读摘要 + check_after_edit 工具
+- v0.7.5: 8 个适配器模板更新 + 测试覆盖
+- v0.7.5: npm 发布 agent-guardrails@0.7.5 + GitHub tag v0.7.5
+- v0.7.4: 验证所有 8 个 Agent 适配器 MCP 配置格式 + 补全文档
+- v0.7.4: npm 发布 agent-guardrails@0.7.4 + GitHub tag v0.7.4
+- v0.7.3: 修复 OpenClaw 和 Windsurf MCP 配置路径
+- v0.7.3: npm 发布 agent-guardrails@0.7.3 + GitHub tag v0.7.3
 
 ## Done recently (v0.5.x)
 
@@ -267,17 +243,17 @@ v0.6.1 已发布（修复 Windows daemon 问题），下一步重点：
 
 ## Next step
 
-v0.5.0 已发布 (npm + GitHub tag)，所有功能测试通过，代码已推送到远程。下一步重点：
-1. 手动创建 GitHub Release (由于 GH_TOKEN 缺失，需访问 https://github.com/logi-cmd/agent-guardrails/releases/new?tag=v0.5.0)
-2. 收集用户反馈 (explain_change, query_archaeology 的实际体验)
-3. 评估 v0.6 开发方向 (项目级理解层增强) 或 v0.7 AI 集成方向
+v0.7.5 已发布 (npm + GitHub tag)，所有功能测试通过，代码已推送到远程。下一步重点：
+1. 收集 Active Guardrails 用户反馈
+2. 评估 v0.8 开发方向
+3. 修复 pre-existing 测试失败（plugin-ts, benchmark）
 4. 考虑技术博客或社区推广
 
 ## Handoff
 
 Default rule: when a meaningful milestone lands, end the project-thread update with:
 
-- `What changed`: v0.5.0 发布完成 (npm + git tag)，运行时文件已从 git 跟踪中移除，.gitignore 已更新
-- `Revenue Path`: 继续推广获取用户反馈
-- `Commercial risk`: GitHub Release 需手动创建，AI 集成方向待讨论
-- `What I need next`: 用户反馈收集或 v0.6 开发方向决策
+- `What changed`: v0.7.5 发布完成 — Active Guardrails（MCP 人类可读响应 + check_after_edit 工具）
+- `Revenue Path`: 继续推广获取用户反馈，Active Guardrails 是用户体验的关键改进
+- `Commercial risk`: 无特殊风险
+- `What I need next`: 用户反馈收集或 v0.8 开发方向决策

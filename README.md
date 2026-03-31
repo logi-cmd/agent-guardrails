@@ -14,7 +14,7 @@
 - 🛡 **保护路径** - 关键文件不被触碰
 - 🧠 **被动理解层** - 自动解释变更、代码考古、精准提示
 - 🐛 **诊断检测器** - 状态管理混乱、异步逻辑风险、性能退化
-- 🖥️ **GUI Dashboard** - 浏览器实时显示检测结果 (v0.6.0)
+- 💬 **聊天反馈** - 检查结果直接显示在 AI 对话框中
 - 🔧 **自动修复** - Tier-1 问题自动修复，零副作用 (v0.6.0)
 
 ## How it works
@@ -623,7 +623,7 @@ The first recommended MCP flow is:
 Run guardrails automatically in the background while you code:
 
 ```bash
-# Start the daemon (background mode) - opens GUI automatically
+# Start the daemon (background mode)
 agent-guardrails start
 
 # Check daemon status
@@ -632,26 +632,9 @@ agent-guardrails status
 # Stop the daemon
 agent-guardrails stop
 
-# Run without GUI (headless mode)
-agent-guardrails start --no-gui
-
 # Run in foreground (useful for debugging or Docker)
 agent-guardrails start --foreground
 ```
-
-### 🖥️ GUI Dashboard
-
-When you start the daemon, a browser window automatically opens showing a real-time dashboard:
-
-![GUI Dashboard](docs/images/gui-dashboard-demo.html)
-
-**Features**:
-- **Real-time updates**: See check results instantly as you code
-- **Dark theme**: Easy on the eyes during long coding sessions
-- **Summary cards**: Error/warning/info counts at a glance
-- **Findings list**: Detailed issue descriptions with severity levels
-- **Auto-fix status**: Shows which Tier-1 issues were automatically fixed
-- **Connection indicator**: Know when the daemon is running
 
 ### 🔧 Auto-Fix (Tier 1)
 
@@ -673,7 +656,7 @@ The daemon monitors file changes and automatically runs guardrail checks:
 2. Debounces checks (5 second interval)
 3. Runs guardrail check automatically
 4. Applies Tier-1 auto-fixes if enabled
-5. Updates GUI in real-time via SSE
+5. Writes results to `.agent-guardrails/daemon-result.json` (read by `check_after_edit` MCP tool)
 6. Logs to `.agent-guardrails/daemon.log`
 
 ### Configuration (`.agent-guardrails/daemon.json`)
@@ -696,25 +679,22 @@ The daemon monitors file changes and automatically runs guardrail checks:
 
 ### Use Cases
 
-- **Local development**: Get instant visual feedback while coding
-- **CI/CD integration**: Run in containers with `--foreground --no-gui`
+- **Local development**: Focus on coding, let guardrails watch your back
+- **CI/CD integration**: Run in containers with `--foreground`
 - **Team guardrails**: Shared daemon config in repo
-- **Vibe coding**: Focus on coding, let guardrails watch your back
 
 ### Daemon vs Manual Check
 
 | Feature | Daemon Mode | Manual Check |
 |---------|-------------|--------------|
 | Continuous monitoring | ✅ | ❌ |
-| GUI Dashboard | ✅ | ❌ |
 | Auto-Fix | ✅ | ❌ |
-| Real-time feedback | ✅ | ❌ |
 | Run on demand | ❌ | ✅ |
 | Best for | Active development | Pre-commit/CI |
 
 ### MCP Integration / MCP 集成
 
-AI agents can read daemon results via the `read_daemon_status` MCP tool:
+AI agents read daemon results via the `check_after_edit` MCP tool after code changes, getting instant feedback including findings, auto-fix status, and risk summary — all displayed directly in the chat dialog.
 
 ```json
 {
@@ -726,8 +706,6 @@ AI agents can read daemon results via the `read_daemon_status` MCP tool:
   }
 }
 ```
-
-The agent calls `read_daemon_status` after code changes to get the latest guardrail result, including findings, auto-fix status, and risk summary.
 
 ---
 
@@ -764,17 +742,17 @@ This creates:
 #### 3. Start Daemon Mode / 启动守护进程
 
 ```bash
-# Start with GUI (recommended) / 启动并打开 GUI（推荐）
+# Start the daemon / 启动守护进程
 agent-guardrails start
 
-# The browser will automatically open showing the dashboard
-# 浏览器会自动打开显示 Dashboard
+# The daemon monitors files and runs checks automatically
+# 守护进程会监控文件并自动运行检查
 ```
 
 **What happens**:
 1. ✅ Daemon starts monitoring files in background
-2. ✅ Browser opens with real-time GUI dashboard
-3. ✅ Auto-fix automatically handles Tier-1 issues
+2. ✅ Auto-fix automatically handles Tier-1 issues
+3. ✅ Results are cached for instant `check_after_edit` MCP feedback
 4. ✅ You code normally while guardrails watches
 
 #### 4. Daily Workflow / 日常工作流
@@ -785,11 +763,8 @@ agent-guardrails start
 # Start once, code freely / 启动一次，自由编码
 agent-guardrails start
 
-# The GUI updates in real-time as you work
-# GUI 会实时更新你的改动
-
-# When done, check the dashboard for any issues
-# 完成后，查看 Dashboard 是否有问题
+# AI agents get instant feedback via check_after_edit MCP tool
+# AI agent 通过 check_after_edit 工具获取即时反馈
 
 # Stop when finished / 完成后停止
 agent-guardrails stop
@@ -808,23 +783,22 @@ agent-guardrails plan --task "Add user authentication"
 agent-guardrails check --review
 ```
 
-#### 5. Understanding the Dashboard / 理解 Dashboard
+#### 5. Understanding Check Results / 理解检查结果
 
-The GUI Dashboard shows:
+Guardrail results appear directly in the AI chat dialog when agents call `check_after_edit`:
 
 | Section | Description | 说明 |
 |---------|-------------|------|
-| **Status Badge** | Overall check result | 整体检查结果 |
-| **Auto-Fix Panel** | Tier-1 fixes applied | 已应用的自动修复 |
+| **Status** | Overall check result | 整体检查结果 |
+| **Auto-Fix** | Tier-1 fixes applied | 已应用的自动修复 |
 | **Summary** | Error/warning/info counts | 错误/警告/信息统计 |
 | **Findings** | Detailed issue list | 详细问题列表 |
-| **Connection** | Daemon connection status | 守护进程连接状态 |
 
-**Status Colors**:
-- 🟢 Green / 绿色: All clear / 一切正常
-- 🔴 Red / 红色: Errors found / 发现错误
-- 🟡 Yellow / 黄色: Warnings / 警告
-- 🔵 Blue / 蓝色: Info only / 仅信息
+**Status Icons**:
+- ✅ All clear / 一切正常
+- ❌ Errors found / 发现错误
+- ⚠️ Warnings / 警告
+- ℹ️ Info only / 仅信息
 
 #### 6. Auto-Fix Explained / 自动修复说明
 
@@ -867,13 +841,13 @@ The GUI Dashboard shows:
 
 #### 8. Troubleshooting / 故障排除
 
-**Problem: GUI doesn't open / GUI 没有打开**
+**Problem: Daemon not running / 守护进程未运行**
 ```bash
 # Check if daemon is running / 检查 daemon 是否运行
 agent-guardrails status
 
-# Try manual URL / 尝试手动打开
-# Open browser to: http://127.0.0.1:<port>
+# Start if needed / 如需启动
+agent-guardrails start
 ```
 
 **Problem: Auto-fix not working / 自动修复不工作**
@@ -889,7 +863,6 @@ cat .agent-guardrails/daemon.json
 ```bash
 # Adjust watch paths in daemon.json / 调整监听路径
 # Add ignore patterns / 添加忽略模式
-# Use --no-gui for headless mode / 使用 --no-gui 无界面模式
 ```
 
 ---

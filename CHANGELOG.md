@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.7.7 - 2026-03-31
+
+GUI removal release: Removed GUI Dashboard in favor of MCP-based chat feedback.
+
+### Removed
+
+- **GUI Dashboard** (`lib/daemon/gui-server.js`) — deleted
+- **Diagnostic page** (`lib/daemon/gui-diagnostic.html`) — deleted
+- **Demo page** (`docs/images/gui-dashboard-demo.html`) — deleted
+- **`--no-gui` flag** — no longer needed, daemon is now always headless
+- **`openBrowser()` function** — removed from `lib/daemon/worker.js`
+- **GUI server import and startup logic** — removed from `lib/daemon/worker.js`
+- **`guiServer` parameter** — removed from `createCheckRunner()`
+
+### Changed
+
+- **Daemon mode** — now always runs headless, results cached in `daemon-result.json`
+- **README** — removed all GUI Dashboard sections, updated daemon docs to focus on MCP chat feedback
+- **`lib/daemon/worker.js`** — cleaned up imports (removed `exec`, fixed `spawnSync` ESM import)
+
+### What Replaced It
+
+Guardrail results now appear directly in the AI chat dialog via:
+- `check_after_edit` MCP tool — instant feedback after file edits
+- `finish_agent_native_loop` MCP tool — summary at task completion
+
 ## 0.7.6 - 2026-03-31
 
 Template hardening release: `check_after_edit` instructions strengthened across all 9 template files. Clarified that MCP chat feedback is the only real-time guardrail channel.
