@@ -18,18 +18,42 @@ Before writing code, read:
   4. **MUST call `check_after_edit` after EVERY file edit** — this catches scope violations and guardrail issues immediately
   5. `finish_agent_native_loop`
 
-## CRITICAL: Post-Edit Validation
+## CRITICAL: Post-Edit Validation (DO NOT SKIP)
+
+**This is the ONLY way guardrail results appear in your chat.** The daemon GUI is a secondary display — you MUST call `check_after_edit` to see real-time feedback.
+
+### Rule 1: After YOUR edits — call immediately
 
 **MUST call `check_after_edit` IMMEDIATELY after every file edit (Write, Edit, MultiEdit).**
+
 - Uses daemon cache for fast feedback (< 2 seconds).
 - If issues are found: **STOP and fix before proceeding.** Do NOT continue editing.
 - If clean: proceed with the next edit or next step.
 
-**Workflow:**
+### Rule 2: After USER edits — check on their behalf
+
+When the user says they modified files manually, or you see uncommitted changes:
+
+1. Call `check_after_edit` to validate their changes
+2. Report the result in the chat: what passed, what failed, what needs attention
+3. Do NOT assume their changes are safe — verify
+
+### Rule 3: Never skip validation
+
+- **Do NOT** batch multiple edits before checking — check after EACH edit
+- **Do NOT** assume small changes are safe — check EVERY change
+- **Do NOT** tell the user "done" without calling `finish_agent_native_loop`
+- **Do NOT** rely on the daemon GUI — it is a secondary display, not your feedback channel
+
+### Workflow
+
+```
 1. Make edit → call `check_after_edit` → read result
 2. If issues → fix them → call `check_after_edit` again
 3. If clean → continue to next edit or finish
 4. Before telling user "task done" → call `finish_agent_native_loop`
+```
+
 - If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session, then keep the implementation inside that contract.
 - When the task is narrow or risky, add `--intended-files`, `--allowed-change-types`, `--allow-paths`, or `--required-commands` so the contract matches the smallest viable slice.
 - Prefer existing patterns over new abstractions.
