@@ -96,6 +96,31 @@ agent-guardrails setup --agent claude-code
 - `opencode` - OpenCode
 - `windsurf` - Windsurf
 
+**设置会自动完成：**
+- ✅ 生成 `.agent-guardrails/config.json`
+- ✅ 生成/追加 `AGENTS.md`（告诉 AI 怎么用）
+- ✅ 注入 git pre-commit hook（commit 时自动检查）
+- ✅ 生成 AI 工具配置文件（可选 MCP）
+
+**3. 开始使用**
+
+AI 读取 `AGENTS.md` 后会自动在完成任务时运行：
+```bash
+agent-guardrails check --base-ref HEAD~1
+```
+
+检查结果直接显示在聊天中。Git hook 提供兜底拦截。
+
+你可以用其他 Agent：
+- `claude-code` - Claude Code
+- `cursor` - Cursor Editor
+- `codex` - OpenAI Codex CLI
+- `gemini` - Gemini CLI
+- `openhands` - OpenHands
+- `openclaw` - OpenClaw
+- `opencode` - OpenCode
+- `windsurf` - Windsurf
+
 **注意**： `setup` 会在项目根目录生成配置文件，输出使用指南。
 
 请复制输出的配置片段到 粘贴到你的 AI 工具中。
@@ -488,6 +513,18 @@ For the current most opinionated happy path, start with:
 agent-guardrails setup --agent claude-code
 ```
 
+**Setup automatically:**
+- ✅ Generates `.agent-guardrails/config.json`
+- ✅ Creates/appends `AGENTS.md` (tells AI what to do)
+- ✅ Injects git pre-commit hook (auto-check on commit)
+- ✅ Creates AI tool config (MCP optional)
+
+**How it works:**
+
+1. AI reads `AGENTS.md` → knows to run check before finishing
+2. AI runs `agent-guardrails check --base-ref HEAD~1` → result shows in chat
+3. Git hook catches any missed checks → blocks bad commits
+
 如果你只知道一个大概方向，也可以直接这样说：
 
 - `先帮我看看这个仓库最小能改哪里，尽量别扩大范围，最后告诉我还有什么风险。`
@@ -620,21 +657,37 @@ The first recommended MCP flow is:
 
 ## Daemon Mode / 守护进程模式
 
-Run guardrails automatically in the background while you code:
+Setup 后自动生效，不需要手动启动。
+
+### Git Hook（自动拦截）
+
+`setup` 会自动注入 `.git/hooks/pre-commit`：
+- 每次 commit 前自动运行 `agent-guardrails check --base-ref HEAD~1`
+- 有问题的 commit 会被拦截（可用 `--no-verify` 跳过）
 
 ```bash
-# Start the daemon (background mode)
-agent-guardrails start
-
-# Check daemon status
-agent-guardrails status
-
-# Stop the daemon
-agent-guardrails stop
-
-# Run in foreground (useful for debugging or Docker)
-agent-guardrails start --foreground
+$ git commit -m "fix: auth"
+🛡️ 3 issues found - commit blocked
+Fix the issues or skip with: git commit --no-verify
 ```
+
+### AI 自动检查（聊天可见）
+
+`AGENTS.md` 告诉 AI 在完成任务时运行：
+```bash
+agent-guardrails check --base-ref HEAD~1
+```
+
+结果直接显示在 AI 聊天中。
+
+### 双保险机制
+
+| 保险 | 触发方式 | 输出位置 |
+|------|---------|---------|
+| Git Hook | commit 时 | 终端（拦截 commit） |
+| AI 运行 | 完成任务时 | 聊天对话框 |
+
+**至少有一条生效。**
 
 ### 🔧 Auto-Fix (Tier 1)
 
@@ -711,107 +764,78 @@ AI agents read daemon results via the `check_after_edit` MCP tool after code cha
 
 ## User Guide / 使用指南
 
-### 完整使用流程 (Bilingual Guide)
+### 完整使用流程
 
-#### 1. Installation / 安装
+#### 1. 安装
 
 ```bash
-# Global install / 全局安装
 npm install -g agent-guardrails
-
-# Or use npx without installing / 或使用 npx 无需安装
-npx agent-guardrails <command>
 ```
 
-#### 2. Project Setup / 项目设置
+#### 2. 项目设置
 
 ```bash
-# Enter your project / 进入项目目录
 cd your-project
-
-# Initialize guardrails / 初始化 guardrails
 agent-guardrails setup --agent claude-code
 ```
 
-This creates:
-- `.agent-guardrails/config.json` - Project configuration
-- `.agent-guardrails/daemon.json` - Daemon configuration (with autoFix enabled)
-- `.agent-guardrails/evidence/` - Evidence directory for task tracking
-- `AGENTS.md` - Agent instructions
+自动完成：
+- `.agent-guardrails/config.json` — 项目配置
+- `.agent-guardrails/evidence/` — 任务证据目录
+- `AGENTS.md` — 告诉 AI 怎么用（追加，不覆盖）
+- `.git/hooks/pre-commit` — Git hook（自动检查）
 
-#### 3. Start Daemon Mode / 启动守护进程
+#### 3. 日常工作流
 
+**不需要任何额外操作。**
+
+AI 读取 `AGENTS.md` 后，完成任务时自动运行：
 ```bash
-# Start the daemon / 启动守护进程
-agent-guardrails start
-
-# The daemon monitors files and runs checks automatically
-# 守护进程会监控文件并自动运行检查
+agent-guardrails check --base-ref HEAD~1
 ```
 
-**What happens**:
-1. ✅ Daemon starts monitoring files in background
-2. ✅ Auto-fix automatically handles Tier-1 issues
-3. ✅ Results are cached for instant `check_after_edit` MCP feedback
-4. ✅ You code normally while guardrails watches
+Git hook 在 commit 时提供兜底拦截。
 
-#### 4. Daily Workflow / 日常工作流
-
-**Option A: Daemon Mode (Recommended) / 守护进程模式（推荐）**
-
+**手动检查（可选）：**
 ```bash
-# Start once, code freely / 启动一次，自由编码
-agent-guardrails start
-
-# AI agents get instant feedback via check_after_edit MCP tool
-# AI agent 通过 check_after_edit 工具获取即时反馈
-
-# Stop when finished / 完成后停止
-agent-guardrails stop
+agent-guardrails check --base-ref HEAD~1
 ```
 
-**Option B: Manual Check / 手动检查模式**
+#### 4. 理解检查结果
+
+| 结果 | 含义 |
+|------|------|
+| ✅ scope clean | AI 只改了允许的文件 |
+| ✅ tests updated | 测试已更新/运行 |
+| ❌ scope-drift | AI 改了超出范围的文件 |
+| ❌ missing-test | 行为变更没有测试覆盖 |
+| ⚠️ new-abstraction | 检测到可能的并行抽象 |
+
+#### 5. 完整工作流（可选）
 
 ```bash
-# Plan your task / 计划任务
+# 计划任务（可选，让 AI 更聚焦）
 agent-guardrails plan --task "Add user authentication"
 
-# Make your changes / 进行改动
+# 进行改动
 # ... code ...
 
-# Check before merge / merge 前检查
-agent-guardrails check --review
+# 检查（AI 自动运行，也可手动）
+agent-guardrails check --base-ref HEAD~1
 ```
 
-#### 5. Understanding Check Results / 理解检查结果
+#### 6. 自动修复（Tier 1）
 
-Guardrail results appear directly in the AI chat dialog when agents call `check_after_edit`:
+**自动应用：**
+- ✅ 创建缺失的 evidence 文件
+- ✅ 为新源文件创建测试 stub
+- ✅ 更新 .gitignore
+- ✅ 填充 evidence 模板
 
-| Section | Description | 说明 |
-|---------|-------------|------|
-| **Status** | Overall check result | 整体检查结果 |
-| **Auto-Fix** | Tier-1 fixes applied | 已应用的自动修复 |
-| **Summary** | Error/warning/info counts | 错误/警告/信息统计 |
-| **Findings** | Detailed issue list | 详细问题列表 |
-
-**Status Icons**:
-- ✅ All clear / 一切正常
-- ❌ Errors found / 发现错误
-- ⚠️ Warnings / 警告
-- ℹ️ Info only / 仅信息
-
-#### 6. Auto-Fix Explained / 自动修复说明
-
-**Tier 1 (Auto-Applied) / 第一级（自动应用）**:
-- ✅ Creates missing evidence files
-- ✅ Creates test stubs for new source files
-- ✅ Updates .gitignore
-- ✅ Populates evidence templates
-
-**Tier 2 & 3 (Not Auto-Applied) / 第二、三级（不自动应用）**:
-- ❌ Business logic fixes
-- ❌ Architecture changes
-- ❌ Code refactoring
+**不自动应用：**
+- ❌ 业务逻辑修复
+- ❌ 架构变更
+- ❌ 代码重构
 
 **Safety Guarantee / 安全保证**:
 - All Tier-1 fixes are reversible
