@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.1 - 2026-04-01
+
+Template language strengthened: AI now treats guardrail checks as mandatory, not optional.
+
+### Changed
+
+- **AGENTS.md and all adapter templates**: Changed "Prefer" to "MUST prefer", added explicit "MANDATORY: Guardrail Check" section with "FAILURE TO RUN THIS COMMAND = INCOMPLETE WORK"
+- **i18n tests**: Updated assertions to match new mandatory language
+
+### What This Means for Users
+
+AI agents using the updated templates will now treat `agent-guardrails check --base-ref HEAD~1` as a required step, not an optional suggestion.
+
 ## 0.8.0 - 2026-03-31
 
 CLI-first release: Guardrail checks work without MCP configuration.
