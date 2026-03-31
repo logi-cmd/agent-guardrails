@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.8.0 - 2026-03-31
+
+CLI-first release: Guardrail checks work without MCP configuration.
+
+### Changed
+
+- **`AGENTS.md` template**: Rewritten to CLI-first. Instructions now use `agent-guardrails check --base-ref HEAD~1` instead of MCP tools. MCP remains optional.
+- **All 8 adapter templates**: Rewritten to CLI-first. Each adapter now requires only `agent-guardrails check --base-ref HEAD~1` before finishing.
+- **`setup` command**: Now automatically injects git pre-commit hook on every setup.
+- **`init` command**: Now automatically injects git pre-commit hook on every init.
+
+### Added
+
+- **Git pre-commit hook** (`templates/base/hooks/pre-commit.cjs`): Runs `agent-guardrails check --base-ref HEAD~1` before each commit. Commits with issues are blocked (skip with `--no-verify`).
+- **`writeText` append mode**: Supports appending to existing files with HTML markers.
+
+### What This Means for Users
+
+After this update, users can install guardrails with:
+```bash
+cd my-project
+npx agent-guardrails setup --agent claude-code
+```
+
+No MCP configuration required. The AI reads `AGENTS.md` and runs `agent-guardrails check --base-ref HEAD~1` before finishing. Git hook provides a backup.
+
 ## 0.7.8 - 2026-03-31
 
 Minimize project pollution release: smart file handling during installation.

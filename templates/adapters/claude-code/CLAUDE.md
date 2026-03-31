@@ -11,30 +11,27 @@ Use `agent-guardrails` as the repo-local guardrail layer for this project.
 
 ## Working Flow
 
-1. If Claude Code is connected to `agent-guardrails mcp`, prefer the canonical MCP flow:
-   - `read_repo_guardrails`
-   - `start_agent_native_loop`
-   - implement inside the declared scope
-   - **MUST call `check_after_edit`** after EVERY file edit — this catches scope violations and guardrail issues immediately.
-   - If `check_after_edit` returns "issues" (errors): **STOP and fix before proceeding.** Do NOT continue editing. If clean: proceed with the next edit or finish.
-   - Before telling user "task done" → call `finish_agent_native_loop`
-2. If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
-3. Implement only within the task contract unless you update the scope first.
-4. If behavior changes, include tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
-5. Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime with the commands that actually ran.
+1. Before finishing any task, run: `agent-guardrails check --base-ref HEAD~1`
+2. If issues found: **STOP and fix before telling user "done"**
+3. If clean: include the check result in your summary
 
-## Post-Edit Validation
+## Task Contract (when available)
 
-**`check_after_edit` is the ONLY way guardrail results appear in the chat.** The daemon GUI is a secondary display — always call `check_after_edit` for real-time feedback.
+If `.agent-guardrails/task-contract.json` exists:
+- Stay inside the declared scope
+- Run the required commands listed in the contract
+- Update `.agent-guardrails/evidence/current-task.md`
 
-- Call `check_after_edit` IMMEDIATELY after every file edit (Write, Edit, MultiEdit).
-- When the user says they modified files manually, call `check_after_edit` to validate their changes and report the result.
-- Do NOT batch multiple edits before checking — check after EACH edit.
-- Do NOT tell the user "done" without calling `finish_agent_native_loop`.
+## MCP (Optional)
+
+If Claude Code is connected to `agent-guardrails mcp`, you may also use:
+- `check_after_edit` after every edit for instant feedback
+- `start_agent_native_loop` / `finish_agent_native_loop` for structured sessions
+
+But the CLI check is always required regardless of MCP.
 
 ## Rules
 
 - Prefer the existing repo structure over new abstractions.
 - Keep changes small and reviewable.
 - If `check` fails, fix scope or test coverage before widening the change.
-- Use `agent-guardrails check --json` for automation or CI, not as the default local workflow.

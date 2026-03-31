@@ -1,22 +1,25 @@
 Use `agent-guardrails` as the repo-local guardrail layer for Windsurf.
 
+## Working Flow
+
+1. Before finishing any task, run: `agent-guardrails check --base-ref HEAD~1`
+2. If issues found: **STOP and fix before telling user "done"**
+3. If clean: include the check result in your summary
+
+## Task Contract (when available)
+
+If `.agent-guardrails/task-contract.json` exists:
+- Stay inside the declared scope
+- Run the required commands listed in the contract
+- Update `.agent-guardrails/evidence/current-task.md`
+
+## MCP (Optional)
+
+If Windsurf is connected to `agent-guardrails mcp`, you may also use `check_after_edit` for instant feedback. But the CLI check is always required.
+
+## Rules
+
 - Read `AGENTS.md`, `docs/PROJECT_STATE.md`, and `README.md` before editing.
-- If Windsurf is connected to `agent-guardrails mcp`, prefer:
-  1. `read_repo_guardrails`
-  2. `start_agent_native_loop`
-  3. implement inside the declared scope
-  4. **MUST call `check_after_edit`** after EVERY file edit — this catches scope violations and guardrail issues immediately.
-  5. If `check_after_edit` returns "issues" (errors): **STOP and fix before proceeding.** Do NOT continue editing. If clean: proceed with the next edit or finish.
-  6. Before telling user "task done" → call `finish_agent_native_loop`
-
-**`check_after_edit` is the ONLY way guardrail results appear in the chat.** The daemon GUI is a secondary display — always call `check_after_edit` for real-time feedback.
-
-- Call `check_after_edit` IMMEDIATELY after every file edit (Write, Edit, MultiEdit).
-- When the user says they modified files manually, call `check_after_edit` to validate their changes and report the result.
-- Do NOT batch multiple edits before checking — check after EACH edit.
-- Do NOT tell the user "done" without calling `finish_agent_native_loop`.
-- If you are driving the runtime manually, run `agent-guardrails plan --task "<task>"` to bootstrap the task contract and session.
-- Stay inside the task contract unless you explicitly widen the scope first.
-- If behavior changes, add or update tests and update `.agent-guardrails/evidence/current-task.md` with the task name, commands run, notable results, and residual risk or `none`.
-- Before finishing, run the `agent-guardrails check ... --review` command recommended by the runtime and report the commands that actually ran.
-- Use `agent-guardrails check --json` for CI or automation, not as the primary local loop.
+- Prefer the existing repo structure over new abstractions.
+- Keep changes small and reviewable.
+- If `check` fails, fix scope or test coverage before widening the change.

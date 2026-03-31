@@ -43,7 +43,7 @@ export async function run() {
   );
 
   assert.equal(config.preset, "nextjs");
-  assert.match(output, /agent-guardrails plan --task "<task>"/);
+  assert.match(output, /agent-guardrails plan --task/);
   assert.doesNotMatch(output, /--allow-paths/);
   assert.match(output, /\.agent-guardrails\/evidence\/current-task\.md/);
   assert.match(output, /--commands-run "npm test" --review/);
@@ -67,8 +67,7 @@ export async function run() {
     openhandsTemplate,
     openclawTemplate
   ]) {
-    assert.match(content, /agent-guardrails plan --task "<task>"/);
+    assert.match(content, /agent-guardrails check/);
     assert.match(content, /\.agent-guardrails\/evidence\/current-task\.md/);
-    assert.match(content, /check .*--review|runtime recommended by the runtime|recommended by the runtime/);
   }
 }
