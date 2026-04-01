@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.9.0 - 2026-04-01
+
+Enforce command: Injects guardrail instructions into agent auto-read files for system-level compliance.
+
+### Added
+
+- **`enforce` command**: Injects guardrail check instructions into each agent's auto-read instruction files (CLAUDE.md, GEMINI.md, .cursor/rules/, .windsurf/rules/, .agents/skills/, etc.) — 8 agents supported
+- **`unenforce` command**: Safely removes enforced instructions, preserving any user content that existed before
+- **Bilingual templates**: English and Chinese enforce templates for all 8 agents
+- **Idempotent**: Running `enforce` twice is safe — detects already-enforced files and skips
+
+### What This Means for Users
+
+Previously, AGENTS.md rules were just "file content" that AI might or might not follow. With `enforce`, the guardrail check instruction is injected directly into each agent's system-level instruction file, which is automatically read at a higher priority than AGENTS.md.
+
+```bash
+# Enforce for all agents
+agent-guardrails enforce --all
+
+# Enforce for a specific agent
+agent-guardrails enforce --agent claude-code
+
+# Remove enforcement
+agent-guardrails unenforce --all
+```
+
 ## 0.8.1 - 2026-04-01
 
 Template language strengthened: AI now treats guardrail checks as mandatory, not optional.
