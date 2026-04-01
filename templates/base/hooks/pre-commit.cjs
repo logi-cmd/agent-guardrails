@@ -1,17 +1,12 @@
 #!/usr/bin/env node
-/**
- * Git pre-commit hook for agent-guardrails.
- * Installed by: agent-guardrails setup / init
- * 
- * Runs guardrail checks before each commit.
- * Exit 0 = commit allowed, Exit 1 = commit blocked.
- * 
- * Skip with: git commit --no-verify
- */
 
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const repoRoot = path.resolve(__dirname, "..", "..", "..");
 const configPath = path.join(repoRoot, ".agent-guardrails", "config.json");
