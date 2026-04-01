@@ -37,7 +37,6 @@ export async function run() {
   const readme = read("README.md");
   const roadmap = read("docs/ROADMAP.md");
   const benchmarks = read("docs/BENCHMARKS.md");
-  const commercialization = read("docs/COMMERCIALIZATION.md");
   const proof = read("docs/PROOF.md");
   const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
   const pilot = read("docs/REAL_REPO_PILOT.md");
@@ -46,7 +45,6 @@ export async function run() {
   const workflow = read(".github/workflows/guardrails.yml");
   const templateWorkflow = read("templates/base/workflows/agent-guardrails.yml");
   const zhReadme = read("docs/zh-CN/README.md");
-  const zhStrategy = read("docs/zh-CN/PRODUCT_STRATEGY.md");
   const adapterDocs = [
     read("adapters/codex/README.md"),
     read("adapters/claude-code/README.md"),
@@ -60,44 +58,24 @@ export async function run() {
   assert.match(packageJson.bugs.url, /^https:\/\/github\.com\//);
   assert.equal(packageJson.bin["agent-guardrails"], "bin/agent-guardrails.js");
 
-  assert.match(readme, /## Start Here \//);
-  assert.match(readme, /## Quick Start \//);
-  assert.match(readme, /lives in a real repo and needs to be trusted/);
-  assert.match(readme, /## Who This Is For \//);
-  assert.match(readme, /## Who This Is Not For \//);
-  assert.match(readme, /## Why This Is Different \//);
-  assert.match(readme, /## Current Language Support \//);
-  assert.match(readme, /\*\*Deepest support:\*\* JavaScript \/ TypeScript/);
-  assert.match(readme, /\*\*Baseline runtime support:\*\* Next\.js, Python\/FastAPI, monorepos/);
-  assert.match(readme, /Language expansion is now an active product priority/);
-  assert.match(readme, /examples\/python-fastapi-demo/);
-  assert.match(readme, /npm run demo:python-fastapi/);
-  assert.match(readme, /## What This Catches \//);
-  assert.match(readme, /docs\/PROOF\.md/);
-  assert.match(readme, /## Setup Details \//);
-  assert.match(readme, /## CLI Fallback Quick Start/);
-  assert.ok(readme.indexOf("## Setup Details /") < readme.indexOf("## CLI Fallback Quick Start"));
+  assert.match(readme, /## Quick Start/);
+  assert.match(readme, /## 核心工作流/);
+  assert.match(readme, /## Before vs After/);
+  assert.match(readme, /## 三层保障机制/);
+  assert.match(readme, /## 与竞品对比/);
+  assert.match(readme, /## CLI 命令速查/);
   assert.match(readme, /agent-guardrails setup --agent <your-agent>/);
-  assert.match(readme, /agent-guardrails setup --agent claude-code/);
-  assert.match(readme, /agent-guardrails setup --agent cursor --preset nextjs/);
-  assert.match(readme, /setup.*auto-writes.*config file/);
-  assert.match(readme, /start_agent_native_loop/);
-  assert.match(readme, /finish_agent_native_loop/);
-  assert.match(readme, /## What This Proves/);
-  assert.match(readme, /## Open Source vs Pro/);
-  assert.match(readme, /## Benchmarks/);
-  assert.match(readme, /## Commercialization/);
-  assert.match(readme, /## Chinese Docs/);
-  assert.equal((readme.match(/## Current Language Support \//g) || []).length, 1);
-  assert.match(readme, /docs\/WORKFLOWS\.md/);
-  assert.doesNotMatch(readme, /## FAQ/);
-  assert.doesNotMatch(readme, /## CLI Commands/);
-  assert.doesNotMatch(readme, /## Presets/);
-  assert.match(readme, /setup.*会在项目根目录生成配置文件/);
-  assert.match(readme, /请复制输出的配置片段/);
+  assert.match(readme, /agent-guardrails enforce --all/);
+  assert.match(readme, /agent-guardrails unenforce --all/);
+  assert.match(readme, /CLAUDE\.md/);
+  assert.match(readme, /L1.*enforce/i);
+  assert.match(readme, /L2.*AGENTS\.md/i);
+  assert.match(readme, /L3.*pre-commit hook/i);
+  assert.match(readme, /## 文档/);
+  assert.match(readme, /docs\/ROADMAP\.md/);
+  assert.match(readme, /MIT/);
 
   assert.match(zhReadme, /中文/);
-  assert.match(zhStrategy, /产品策略/);
 
   assert.match(roadmap, /## Phase 1 \(Shipped\)/);
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);
@@ -119,14 +97,6 @@ export async function run() {
   assert.match(benchmarks, /npm run demo:pattern-drift/);
   assert.match(benchmarks, /npm run demo:boundary-violation/);
   assert.match(benchmarks, /npm run demo:source-test-relevance/);
-
-  assert.match(commercialization, /## OSS Core/);
-  assert.match(commercialization, /## Pro Local/);
-  assert.match(commercialization, /## Pro Cloud/);
-  assert.match(commercialization, /Python as the next credible expansion path/);
-  assert.match(commercialization, /deploy-readiness judgment/i);
-  assert.match(commercialization, /post-deploy maintenance summaries/i);
-  assert.match(commercialization, /deployment orchestration and provider adapters/i);
 
   assert.match(proof, /What this catches that normal AI coding workflows miss/i);
   assert.match(proof, /## 1\. Scope catch/);

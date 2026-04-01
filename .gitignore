@@ -25,3 +25,11 @@ opencode.json
 CLAUDE.md
 plugins/plugin-ts/package-lock.json
 plugins/plugin-ts/test-ast-parser.js
+
+# Commercial / strategy docs — not for public repo
+docs/PRO_TIER_STRATEGY.md
+docs/COMMERCIALIZATION.md
+docs/MARKET_RESEARCH.md
+docs/OSS_PRO_BOUNDARY.md
+docs/PRODUCT_STRATEGY.md
+docs/zh-CN/PRODUCT_STRATEGY.md

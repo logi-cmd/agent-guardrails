@@ -35,7 +35,7 @@ agent-guardrails plan --task "给订单服务补退款状态流转" --lang zh-CN
 agent-guardrails check --base-ref origin/main --commands-run "npm test" --review --lang zh-CN
 ```
 
-更多产品方向与后续规划，见：
+更多信息：
 
 - [英文 README](../../README.md)
-- [产品策略（中文）](./PRODUCT_STRATEGY.md)
+- [Roadmap](../ROADMAP.md)

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-01 (v0.8.1 work in progress)
+Last updated: 2026-04-01 (v0.9.1 preparation)
 
 ## Goal
 
@@ -8,37 +8,42 @@ Build the production-safety layer for AI coding workflows, with an open-source m
 
 ## Current Version
 
-**v0.8.1** — Adapter templates strengthened with mandatory language (MUST/STOP/FAILURE = INCOMPLETE)
+**v0.9.0** — Enforce/unenforce commands for 8 agents, README rewrite
 
-### Key Features (v0.7.5)
-- ✅ MCP 工具响应现在包含人类可读摘要作为第一个内容块 — 检查结果直接显示在聊天中
-- ✅ 新增 `check_after_edit` 工具 — 编辑后即时反馈（< 2s）
-- ✅ 8 个适配器模板全部更新包含 check_after_edit 步骤
-- ✅ 恢复 `suggest_task_contract` 工具定义
-- ✅ 测试覆盖新增工具
+### Key Features (v0.9.0)
+- ✅ `enforce` — Inject guardrail instructions into agent system-level auto-read files (CLAUDE.md, GEMINI.md, etc.)
+- ✅ `unenforce` — Safely remove injected content, preserving user's original files
+- ✅ 8 agent support: claude-code, cursor, opencode, codex, gemini, windsurf, openhands, openclaw
+- ✅ Enforce always uses English templates (AI understands English best)
+- ✅ README rewritten — enforce-first, 166 lines, clean structure
+- ✅ Three-layer enforcement: L1 enforce > L2 AGENTS.md > L3 pre-commit hook
 
-### Key Features (v0.7.4)
-- ✅ 验证所有 8 个 Agent 适配器的 MCP 配置格式
-- ✅ 补全缺失的适配器文档
+### Key Features (v0.8.x)
+- ✅ CLI-first architecture with daemon-hook unification
+- ✅ AGENTS.md + adapter templates strengthened with mandatory language
+- ✅ Shared-result-reader for <100ms hook response
 
-### Key Features (v0.7.3)
-- ✅ 修复 OpenClaw 和 Windsurf MCP 配置路径
-
-### Key Features (v0.7.0-v0.7.2)
-- ✅ 8 Agent MCP 配置统一
-- ✅ 适配器文档完善
-
-### AI 集成方向 (已讨论，待实施)
-- 开源版本 = 规则引擎 (门控 + 理解)
-- 付费版本 = AI 增强 + 修复建议 + 跨仓库分析
+### Key Features (v0.7.x)
+- ✅ MCP tools: check_after_edit, explain_change, query_archaeology
+- ✅ 8 agent adapters with MCP config
+- ✅ Active Guardrails — MCP responses include human-readable summaries
 
 ## Current focus
 
-v0.8.0 已发布，daemon-hook 统一架构已实现。下一步重点：
-1. 收集 Active Guardrails 的用户反馈
-2. 评估 v0.9 开发方向
-3. 修复 pre-existing 测试失败（plugin-ts, benchmark）
-4. 考虑技术博客或社区推广
+v0.9.0 已发布。下一步重点：
+1. 发布 v0.9.1 — 包含 release.test.js 修复、plugin-ts 依赖修复、.gitignore 商业敏感文档清理
+2. 写技术博客获取前 100 用户
+3. Pro Tier 策略已就绪（docs/PRO_TIER_STRATEGY.md，已 gitignore），待有用户反馈后启动开发
+
+## Done recently (v0.9.x)
+
+- v0.9.0: enforce/unenforce 命令 — 8 agent 系统级指令注入与安全移除
+- v0.9.0: enforce 总是使用英文模板（locale: null）— AI 理解英文最佳
+- v0.9.0: README 重写 — 166 行，enforce-first，三层保障机制
+- v0.9.1-prep: release.test.js 适配新 README
+- v0.9.1-prep: plugin-ts 依赖修复 — npm install @typescript-eslint/parser
+- v0.9.1-prep: .gitignore 商业敏感文档 — 移除 6 个策略/定价/竞品分析文件
+- v0.9.1-prep: zh-CN/README.md 修复 — 移除对已 gitignore 文件的引用
 
 ## Done recently (v0.8.x)
 
@@ -255,16 +260,14 @@ v0.8.0 已发布，daemon-hook 统一架构已实现。下一步重点：
 
 ## Next step
 
-v0.8.1 模板强化已完成。下一步重点：
-1. 修复 plugin-ts 依赖问题 — `npm install @typescript-eslint/parser`，发布新版本
-2. 测试 AI 行为 — 验证强化后的模板是否让 AI 自动运行检查
-3. 考虑技术博客或社区推广
+v0.9.0 已发布，v0.9.1 准备中。下一步：
+1. 发布 v0.9.1（release.test.js + plugin-ts + .gitignore 清理）
+2. 写 1-2 篇技术博客获取前 100 用户
+3. 收集用户反馈后启动 Pro Tier 开发
 
 ## Handoff
 
-Default rule: when a meaningful milestone lands, end the project-thread update with:
-
-- `What changed`: AGENTS.md +8 个 adapter 模板全部改为强制语气，AI 应把 guardrail check 视为必选项
-- `Revenue Path`: 模板强化后，AI 应自动运行检查，提升用户体验
-- `Commercial risk`: 无特殊风险
-- `What I need next`: 修复 plugin-ts 依赖问题，发布新版本，测试 AI 行为
+- `What changed`: enforce/unenforce 命令、README 重写、商业敏感文档 gitignore
+- `Revenue Path`: OSS v0.9.x 获取用户 → 技术博客引流 → 用户反馈驱动 Pro 开发
+- `Commercial risk`: Pro 策略文档已 gitignore，不会泄露到公开仓库
+- `What I need next`: 发布 v0.9.1，开始写技术博客
