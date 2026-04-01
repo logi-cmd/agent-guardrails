@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.9.1 - 2026-04-01
+
+### Fixed
+
+- release.test.js updated to match rewritten enforce-first README
+- plugin-ts dependencies installed (@typescript-eslint/parser)
+- zh-CN/README.md fixed reference to removed PRODUCT_STRATEGY doc
+
+### Changed
+
+- 6 commercial/strategy docs removed from public repo (gitignored, local files preserved): PRO_TIER_STRATEGY, COMMERCIALIZATION, MARKET_RESEARCH, OSS_PRO_BOUNDARY, PRODUCT_STRATEGY
+- PROJECT_STATE.md updated to v0.9.0
+
 ## 0.9.0 - 2026-04-01
 
 Enforce command: Injects guardrail instructions into agent auto-read files for system-level compliance.
