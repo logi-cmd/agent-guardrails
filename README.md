@@ -94,6 +94,30 @@ Keep the AI focused by creating a task contract first:
 agent-guardrails plan --task "Add user authentication"
 ```
 
+## Engineering Harness Priorities
+
+The product is moving toward **runtime-backed guardrails**, so the most important maintenance work is not adding more heuristics blindly — it is tightening the harness that controls them. The following priorities come from a harness-engineering audit across 8 dimensions (execution loop, agent topology, context management, failure recovery, hook completeness, evaluation design, loop detection, tool boundaries).
+
+**Critical (fix before next release):**
+
+- close the Bash file-write bypass — hooks must cover `sed`, `tee`, `echo >` via the Bash tool, not just Write/Edit
+- add loop detection to prevent infinite MCP tool calls or redundant daemon checks
+- wire up session expiry cleanup to prevent memory leaks in long-running daemons
+- replace silent `null` returns with structured errors; add a circuit breaker for failing checks
+
+**Important (next sprint):**
+
+- make every shipped detector visible in review output
+- ensure safety-critical tests actually run in the default `npm test` path
+- add round-trip coverage for `enforce` / `unenforce`
+- add a false-positive suppression layer before review output
+- keep release-facing docs and package version in sync
+- keep CI fast and reproducible with cache-aware setup and lightweight static checks
+
+**Principle**: prefer lightweight, reproducible checks over opaque "smart" behavior. Every harness component must justify itself against an observed failure mode.
+
+If you are contributing, treat these as first-class product work, not just internal cleanup.
+
 ## Before vs After
 
 | Before | After |
@@ -136,6 +160,17 @@ agent-guardrails plan --task "Add user authentication"
 | `start` | Start daemon |
 | `stop` | Stop daemon |
 | `status` | Show daemon status |
+
+## Maintainer Verification Loop
+
+For meaningful changes, the repo should be verifiable with a small repeatable loop:
+
+```bash
+npm test
+agent-guardrails check --review
+```
+
+When changing setup, enforce, hooks, or release-facing behavior, also verify the relevant generated files and docs stay aligned with the shipped version.
 
 ## Install & Update
 

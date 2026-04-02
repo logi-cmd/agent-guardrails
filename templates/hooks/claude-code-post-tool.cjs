@@ -55,7 +55,7 @@ async function main() {
   }
 
   const toolName = input.tool_name;
-  if (!["Write", "Edit", "MultiEdit"].includes(toolName)) {
+  if (!["Write", "Edit", "MultiEdit", "Bash"].includes(toolName)) {
     process.exit(0);
   }
 
