@@ -38,16 +38,6 @@ Gemini CLI should prefer:
 
 - `GEMINI.md`
 
-## Pilot checklist
-
-When you run the broader external pilot pass, record the Gemini CLI result with [docs/pilots/gemini.md](../../docs/pilots/gemini.md).
-
-For Gemini CLI, the key questions are:
-
-- does setup still leave only one meaningful manual step
-- is the MCP config location explanation specific enough
-- does the runtime summary feel materially better than a plain Gemini CLI chat loop
-
 ## Fallback
 
 If you need the manual runtime path, use:

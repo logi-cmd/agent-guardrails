@@ -56,20 +56,21 @@ export async function runInstallSmoke() {
 
   run(
     process.execPath,
-    [binaryPath, "init", repoDir, "--preset", "node-service", "--adapter", "codex,claude-code,cursor,openhands,openclaw"],
+    [binaryPath, "init", repoDir, "--preset", "node-service", "--adapter", "codex,claude-code,cursor,gemini,opencode"],
     appDir,
     npmEnv
   );
 
   assertFileExists(path.join(repoDir, "AGENTS.md"));
   assertFileExists(path.join(repoDir, "CLAUDE.md"));
-  assertFileExists(path.join(repoDir, "OPENCLAW.md"));
+  assertFileExists(path.join(repoDir, "GEMINI.md"));
   assertFileExists(path.join(repoDir, ".cursor", "rules", "agent-guardrails.mdc"));
-  assertFileExists(path.join(repoDir, ".agents", "skills", "agent-guardrails.md"));
+  assertFileExists(path.join(repoDir, ".codex", "instructions.md"));
 
   const agentsContent = fs.readFileSync(path.join(repoDir, "AGENTS.md"), "utf8");
   assert.match(agentsContent, /\.agent-guardrails\/evidence\/current-task\.md/);
-  assert.match(agentsContent, /recommended by the runtime|check .*--review/);
+  assert.match(agentsContent, /agent-guardrails check --base-ref HEAD~1/);
+  assert.match(agentsContent, /Definition Of Done|完成定义/);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {

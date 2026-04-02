@@ -2,8 +2,6 @@
 
 Claude Code works best with `agent-guardrails` when the repo is set up once and the rest of the workflow stays in chat.
 
-This is still the primary path in the broader five-entry external pilot.
-
 ## Setup
 
 ```bash
@@ -14,6 +12,9 @@ agent-guardrails setup --agent claude-code
 
 - auto-initialize the repo if needed
 - seed `CLAUDE.md`
+- install `.agent-guardrails/hooks/claude-code-pre-tool.cjs`
+- install `.agent-guardrails/hooks/claude-code-post-tool.cjs`
+- register hooks in `.claude/settings.json`
 - auto-write `.mcp.json` (no paste step needed)
 - give you one recommended first chat message
 
@@ -34,26 +35,16 @@ Claude Code should prefer:
 
 `suggest_task_contract` and `run_guardrail_check` still exist, but they are lower-level building blocks rather than the main first-run story.
 
-## Pilot checklist
-
-When you run the first real external pilot, capture the result with [docs/pilots/claude-code.md](../../docs/pilots/claude-code.md).
-
-The success bar is:
-
-- the user can get from install to first chat without hand-writing a contract
-- MCP config paste is the only remaining manual setup step
-- Claude Code stays on the canonical MCP flow
-- the reviewer-friendly summary is understandable without explaining detector terms first
-
-After the five planned pilots are complete, roll the result into [docs/pilots/SUMMARY.md](../../docs/pilots/SUMMARY.md).
-
 ## Repo-local helper file
 
 `setup` seeds:
 
 - `CLAUDE.md`
+- `.agent-guardrails/hooks/claude-code-pre-tool.cjs`
+- `.agent-guardrails/hooks/claude-code-post-tool.cjs`
+- `.claude/settings.json`
 
-That file reinforces the same runtime-backed workflow inside the repo.
+These files reinforce the same runtime-backed workflow inside the repo and install deterministic Claude Code hooks for file-write interception.
 
 ## Fallback
 

@@ -36,16 +36,6 @@ Codex should prefer this flow:
 
 `suggest_task_contract` and `run_guardrail_check` remain available as lower-level MCP tools, but they are not the default first-run path.
 
-## Pilot checklist
-
-When you run the broader external pilot pass, record the Codex result with [docs/pilots/codex.md](../../docs/pilots/codex.md).
-
-For Codex, the key questions are:
-
-- does the setup-first path still feel lighter than dropping straight to CLI
-- is the MCP config location clear enough without extra hand-holding
-- does the reviewer summary add enough value to keep the runtime in the loop
-
 ## Fallback
 
 If you need to debug the runtime manually, fall back to:

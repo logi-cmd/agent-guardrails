@@ -49,16 +49,12 @@ export async function run() {
     assert.match(output, /First chat message/);
     assert.match(output, /You will get/);
     assert.match(output, /Next step/);
-    assert.match(output, /Pilot record file/);
-    assert.match(output, /Cross-entry pilot summary/);
     assert.match(output, /start_agent_native_loop/);
     assert.match(output, /finish_agent_native_loop/);
     assert.match(output, /```/);
     assert.ok(result.mcp.snippet.length > 0);
     assert.ok(result.mcp.targetLocationDescription.length > 0);
     assert.ok(result.firstChatPrompt.length > 0);
-    assert.ok(result.pilot.recordPath.endsWith(`${agent}.md`));
-    assert.equal(result.pilot.summaryPath, "docs/pilots/SUMMARY.md");
     if (expectsPaste) {
       assert.ok(result.remainingManualStep.includes("paste the MCP snippet"));
     } else {
@@ -67,6 +63,22 @@ export async function run() {
 
     if (helperFile) {
       assert.equal(fs.existsSync(path.join(tempDir, helperFile)), true);
+    }
+
+    if (agent === "opencode") {
+      assert.equal(fs.existsSync(path.join(tempDir, ".opencode", "plugins", "guardrails.js")), true);
+    }
+
+    if (agent === "claude-code") {
+      assert.equal(fs.existsSync(path.join(tempDir, ".claude", "settings.json")), true);
+      assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "hooks", "claude-code-pre-tool.cjs")), true);
+      assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "hooks", "claude-code-post-tool.cjs")), true);
+      const settings = JSON.parse(fs.readFileSync(path.join(tempDir, ".claude", "settings.json"), "utf8"));
+      assert.equal(Array.isArray(settings.hooks.PreToolUse), true);
+      assert.equal(Array.isArray(settings.hooks.PostToolUse), true);
+      assert.match(JSON.stringify(settings), /Write\|Edit\|MultiEdit/);
+      assert.match(JSON.stringify(settings), /claude-code-pre-tool\.cjs/);
+      assert.match(JSON.stringify(settings), /claude-code-post-tool\.cjs/);
     }
   }
 
@@ -123,8 +135,6 @@ export async function run() {
   assert.equal(Array.isArray(parsed.canonicalFlow), true);
   assert.ok(parsed.mcp.snippet.length > 0);
   assert.equal(Array.isArray(parsed.completedSteps), true);
-  assert.equal(typeof parsed.pilot.recordPath, "string");
-  assert.equal(parsed.pilot.summaryPath, "docs/pilots/SUMMARY.md");
   assert.ok(parsed.remainingManualStep.length > 0);
 
   await assert.rejects(

@@ -44,6 +44,8 @@ export async function run() {
   const workflow = read(".github/workflows/guardrails.yml");
   const templateWorkflow = read("templates/base/workflows/agent-guardrails.yml");
   const zhReadme = read("docs/zh-CN/README.md");
+  const claudePreHookTemplate = read("templates/hooks/claude-code-pre-tool.cjs");
+  const claudePostHookTemplate = read("templates/hooks/claude-code-post-tool.cjs");
   const adapterDocs = [
     read("adapters/codex/README.md"),
     read("adapters/claude-code/README.md"),
@@ -131,6 +133,10 @@ export async function run() {
   assert.match(workflow, /npm pack --dry-run/);
   assert.match(workflow, /node \.\/tests\/install-smoke\.js/);
   assert.match(templateWorkflow, /npx agent-guardrails check/);
+  assert.match(claudePreHookTemplate, /permissionDecision/);
+  assert.match(claudePreHookTemplate, /PreToolUse/);
+  assert.match(claudePostHookTemplate, /systemMessage/);
+  assert.match(claudePostHookTemplate, /agent-guardrails", "check/);
 
   for (const content of adapterDocs) {
     assert.match(content, /agent-guardrails setup --agent/);

@@ -38,16 +38,6 @@ Cursor should prefer:
 
 - `.cursor/rules/agent-guardrails.mdc`
 
-## Pilot checklist
-
-When you run the broader external pilot pass, record the Cursor result with [docs/pilots/cursor.md](../../docs/pilots/cursor.md).
-
-For Cursor, the key questions are:
-
-- does setup stay clear enough for a heavy vibe-coding user to reach first chat quickly
-- is MCP config paste still the main blocker
-- does the reviewer summary feel worth keeping versus falling back to raw chat output
-
 ## Fallback
 
 If you need the manual runtime path, use:

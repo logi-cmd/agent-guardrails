@@ -34,7 +34,6 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(tempDir, "GEMINI.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, "CLAUDE.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, ".cursor", "rules", "agent-guardrails.mdc")), true);
-  assert.equal(fs.existsSync(path.join(tempDir, ".opencode", "rules", "agent-guardrails.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, "docs", "PROJECT_STATE.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "config.json")), true);
 
@@ -54,17 +53,12 @@ export async function run() {
     path.join(tempDir, ".cursor", "rules", "agent-guardrails.mdc"),
     "utf8"
   );
-  const opencodeTemplate = fs.readFileSync(
-    path.join(tempDir, ".opencode", "rules", "agent-guardrails.md"),
-    "utf8"
-  );
   const geminiTemplate = fs.readFileSync(path.join(tempDir, "GEMINI.md"), "utf8");
 
   for (const content of [
     agentsTemplate,
     claudeTemplate,
     cursorTemplate,
-    opencodeTemplate,
     geminiTemplate
   ]) {
     assert.match(content, /agent-guardrails check/);

@@ -11,7 +11,8 @@ agent-guardrails setup --agent opencode
 `setup` will:
 
 - auto-initialize the repo if needed
-- seed `.opencode/rules/agent-guardrails.md`
+- seed `AGENTS.md`
+- install `.opencode/plugins/guardrails.js`
 - auto-write `opencode.json` (no paste step needed)
 - give you one recommended first chat message
 
@@ -32,26 +33,14 @@ OpenCode should prefer:
 
 `suggest_task_contract` and `run_guardrail_check` still exist, but they are lower-level building blocks rather than the main first-run story.
 
-## Pilot checklist
-
-When you run the first real external pilot, capture the result with [docs/pilots/opencode.md](../../docs/pilots/opencode.md).
-
-The success bar is:
-
-- the user can get from install to first chat without hand-writing a contract
-- MCP config is auto-written (no paste step needed)
-- OpenCode stays on the canonical MCP flow
-- the reviewer-friendly summary is understandable without explaining detector terms first
-
-After the planned pilots are complete, roll the result into [docs/pilots/SUMMARY.md](../../docs/pilots/SUMMARY.md).
-
 ## Repo-local helper file
 
 `setup` seeds:
 
-- `.opencode/rules/agent-guardrails.md`
+- `AGENTS.md`
+- `.opencode/plugins/guardrails.js`
 
-That file reinforces the same runtime-backed workflow inside the repo.
+These files reinforce the same runtime-backed workflow inside the repo and install the OpenCode plugin for auto-trigger checks.
 
 ## Fallback
 
