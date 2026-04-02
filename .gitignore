@@ -26,7 +26,8 @@ CLAUDE.md
 plugins/plugin-ts/package-lock.json
 plugins/plugin-ts/test-ast-parser.js
 
-# Commercial / strategy docs — not for public repo
+# Internal / commercial docs — not for public repo
+docs/RUNTIME_PIVOT_PLAN.md
 docs/PRO_TIER_STRATEGY.md
 docs/COMMERCIALIZATION.md
 docs/MARKET_RESEARCH.md

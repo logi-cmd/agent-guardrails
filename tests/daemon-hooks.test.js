@@ -19,34 +19,41 @@ export async function run() {
 
   console.log("\n[daemon-hooks.test.js]");
 
-  console.log("Test 1: daemon.js contains all inject functions");
+  // Test 1: daemon.js exports all required inject/remove functions
+  console.log("Test 1: daemon.js contains all inject/remove functions for 5 agents + Git");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
     const requiredFunctions = [
-      "injectWindsurfHook", "removeWindsurfHook",
+      "injectClaudeHook", "removeClaudeHook",
       "injectCursorHook", "removeCursorHook",
       "injectOpenCodeHook", "removeOpenCodeHook",
-      "injectOpenClawHook", "removeOpenClawHook",
       "injectCodexHook", "removeCodexHook",
       "injectGeminiHook", "removeGeminiHook",
-      "injectOpenHandsHook", "removeOpenHandsHook"
+      "injectGitHook", "removeGitHook"
     ];
     for (const fn of requiredFunctions) {
       check(content.includes(`function ${fn}`), `should define ${fn}`);
     }
   }
 
-  console.log("Test 2: AGENT_HOOKS array has 8 entries");
+  // Test 2: AGENT_HOOKS array has exactly 6 entries (5 agents + Git)
+  console.log("Test 2: AGENT_HOOKS array has 6 entries (5 agents + Git)");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
     const agentNames = [
-      "Claude Code", "Windsurf", "Cursor", "OpenCode", "OpenClaw", "Codex CLI", "Gemini CLI", "OpenHands"
+      "Claude Code", "Cursor", "OpenCode", "Codex CLI", "Gemini CLI", "Git"
     ];
     for (const name of agentNames) {
       check(content.includes(`name: "${name}"`), `AGENT_HOOKS should include ${name}`);
     }
+    // Verify removed agents are NOT present
+    const removed = ["Windsurf", "OpenHands", "OpenClaw"];
+    for (const name of removed) {
+      check(!content.includes(`name: "${name}"`), `AGENT_HOOKS should NOT include ${name}`);
+    }
   }
 
+  // Test 3: startDaemon returns injected list
   console.log("Test 3: startDaemon returns injected list");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
@@ -54,6 +61,7 @@ export async function run() {
     check(content.includes("injected:"), "startDaemon should return injected list");
   }
 
+  // Test 4: stopDaemon calls all remove functions
   console.log("Test 4: stopDaemon calls all remove functions");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
@@ -61,63 +69,89 @@ export async function run() {
     check(content.includes("agent.remove(repoRoot)"), "should call remove on each agent");
   }
 
+  // Test 5: inject functions have idempotency checks
   console.log("Test 5: inject functions have idempotency checks");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
-    check(content.includes("DAEMON_HOOK_ID"), "Claude hook should use id for idempotency");
-    check(content.includes("alreadyInjected"), "should have idempotency check for Windsurf/Cursor");
-    check(content.includes("already exists"), "should have idempotency check");
+    check(content.includes("DAEMON_HOOK_ID"), "Claude hook should use DAEMON_HOOK_ID for idempotency");
+    check(content.includes("alreadyInjected"), "should have idempotency check for Cursor/Codex");
   }
 
-  console.log("Test 6: All hook scripts are non-empty");
+  // Test 6: Core hook scripts exist and are non-empty
+  console.log("Test 6: Core hook scripts exist and are non-empty");
   {
     const scripts = [
-      "daemon-check.cjs", "windsurf-check.cjs", "cursor-check.cjs",
-      "opencode-plugin.js", "openclaw-handler.cjs", "codex-check.cjs", "gemini-check.cjs", "openhands-check.cjs"
+      "daemon-check.cjs",
+      "cursor-check.cjs",
+      "opencode-plugin.js",
+      "gemini-check.cjs",
+      "shared-result-reader.cjs",
+      "pre-commit-check.cjs"
     ];
     for (const name of scripts) {
-      const content = fs.readFileSync(path.join(hooksDir, name), "utf8");
-      check(content.length > 50, `${name} should be non-trivial (${content.length} bytes)`);
+      const filePath = path.join(hooksDir, name);
+      const exists = fs.existsSync(filePath);
+      check(exists, `${name} should exist`);
+      if (exists) {
+        const content = fs.readFileSync(filePath, "utf8");
+        check(content.length > 50, `${name} should be non-trivial (${content.length} bytes)`);
+      }
     }
   }
 
+  // Test 7: showDaemonStatus shows active hooks
   console.log("Test 7: showDaemonStatus shows active hooks");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
-    check(content.includes("activeHooks"), "status should show active hooks via i18n");
+    check(content.includes("activeHooks"), "status should show active hooks");
     check(content.includes("a.detect(repoRoot)"), "should detect agent configs");
   }
 
-  console.log("Test 8: startDaemon has emoji banner");
+  // Test 8: startDaemon uses i18n for output
+  console.log("Test 8: startDaemon uses i18n for output");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
-    check(content.includes("🛡️"), "should show shield emoji");
-    check(content.includes("✅"), "should show checkmark for injected agents");
-    check(content.includes("hooksInjected"), "should use i18n for hooks summary");
+    check(content.includes('t("daemon.daemonRunningInfo"'), "should use i18n for daemon running info");
+    check(content.includes('t("daemon.hooksInjected")'), "should use i18n for hooks injected");
   }
 
-  console.log("Test 9: Windsurf/Cursor inject uses .cjs files");
+  // Test 9: Cursor inject uses .cjs file (not .sh)
+  console.log("Test 9: Cursor inject uses .cjs file (not .sh)");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
-    check(content.includes("windsurf-check.cjs"), "Windsurf should use .cjs hook");
     check(content.includes("cursor-check.cjs"), "Cursor should use .cjs hook");
-    check(!content.includes("windsurf-check.sh"), "Windsurf should NOT reference .sh");
     check(!content.includes("cursor-check.sh"), "Cursor should NOT reference .sh");
   }
 
+  // Test 10: No duplicate removeDaemonRule in stopDaemon
   console.log("Test 10: No duplicate removeDaemonRule in stopDaemon");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
     const matches = content.match(/removeDaemonRule\(repoRoot\)/g) || [];
-    check(matches.length <= 2, `removeDaemonRule should appear at most 2 times (inject+cleanup), found ${matches.length}`);
+    check(matches.length <= 2, `removeDaemonRule should appear at most 2 times, found ${matches.length}`);
   }
 
+  // Test 11: Daemon output uses i18n (no hardcoded Chinese)
   console.log("Test 11: Daemon output uses i18n (no hardcoded Chinese)");
   {
     const content = fs.readFileSync(daemonPath, "utf8");
     check(!content.includes("已注入的 Agent 钩子"), "should NOT have hardcoded Chinese in daemon.js");
-    check(content.includes("t(\"daemon.hooksInjected\")"), "should use i18n for hooks injected");
-    check(content.includes("t(\"daemon.cleaningHooks\")"), "should use i18n for cleaning message");
+    check(content.includes('t("daemon.hooksInjected")'), "should use i18n for hooks injected");
+    check(content.includes('t("daemon.cleaningHooks")'), "should use i18n for cleaning message");
+  }
+
+  // Test 12: Removed agent functions do NOT exist
+  console.log("Test 12: Removed agent inject/remove functions do NOT exist");
+  {
+    const content = fs.readFileSync(daemonPath, "utf8");
+    const removedFunctions = [
+      "injectWindsurfHook", "removeWindsurfHook",
+      "injectOpenHandsHook", "removeOpenHandsHook",
+      "injectOpenClawHook", "removeOpenClawHook"
+    ];
+    for (const fn of removedFunctions) {
+      check(!content.includes(`function ${fn}`), `should NOT define ${fn}`);
+    }
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);

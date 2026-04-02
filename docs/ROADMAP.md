@@ -7,7 +7,7 @@ The current public release already includes the core scaffold:
 - stable `init`, `plan`, and `check`
 - task contracts for scope, intended files, change types, required commands, evidence files, and risk metadata
 - presets for common repo shapes
-- first-pass adapters for Codex, Claude Code, Cursor, OpenHands, and OpenClaw
+- first-pass adapters for Claude Code, Cursor, OpenCode, Codex, and Gemini CLI
 - a bounded-scope demo and install smoke validation
 - GitHub Actions templates for initialized repos
 - review-oriented `check --review` output built from the same guardrail findings as local and CI checks
@@ -48,7 +48,7 @@ Smart layer goes live with real diff analysis, persistent archaeology, and repo 
 - repo structure analysis with framework detection (Next.js/Express/FastAPI/Django)
 - 3 new task types: deploy/security/database + compound keyword matching
 - MCP structured output for `explain_change` and `query_archaeology`
-- 8-agent support with templates and daemon hooks
+- 5-agent support with templates and daemon hooks
 
 ## Phase 5 (Next)
 

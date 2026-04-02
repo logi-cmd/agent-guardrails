@@ -25,16 +25,16 @@ export async function run() {
   const output = await captureLogs(() =>
     runInit({
       positional: [tempDir],
-      flags: { preset: "nextjs", adapter: "codex,claude-code,cursor,openhands,openclaw", lang: "en" },
+      flags: { preset: "nextjs", adapter: "codex,claude-code,cursor,gemini,opencode", lang: "en" },
       locale: "en"
     })
   );
 
   assert.equal(fs.existsSync(path.join(tempDir, "AGENTS.md")), true);
-  assert.equal(fs.existsSync(path.join(tempDir, "OPENCLAW.md")), true);
+  assert.equal(fs.existsSync(path.join(tempDir, "GEMINI.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, "CLAUDE.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, ".cursor", "rules", "agent-guardrails.mdc")), true);
-  assert.equal(fs.existsSync(path.join(tempDir, ".agents", "skills", "agent-guardrails.md")), true);
+  assert.equal(fs.existsSync(path.join(tempDir, ".opencode", "rules", "agent-guardrails.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, "docs", "PROJECT_STATE.md")), true);
   assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "config.json")), true);
 
@@ -54,18 +54,18 @@ export async function run() {
     path.join(tempDir, ".cursor", "rules", "agent-guardrails.mdc"),
     "utf8"
   );
-  const openhandsTemplate = fs.readFileSync(
-    path.join(tempDir, ".agents", "skills", "agent-guardrails.md"),
+  const opencodeTemplate = fs.readFileSync(
+    path.join(tempDir, ".opencode", "rules", "agent-guardrails.md"),
     "utf8"
   );
-  const openclawTemplate = fs.readFileSync(path.join(tempDir, "OPENCLAW.md"), "utf8");
+  const geminiTemplate = fs.readFileSync(path.join(tempDir, "GEMINI.md"), "utf8");
 
   for (const content of [
     agentsTemplate,
     claudeTemplate,
     cursorTemplate,
-    openhandsTemplate,
-    openclawTemplate
+    opencodeTemplate,
+    geminiTemplate
   ]) {
     assert.match(content, /agent-guardrails check/);
     assert.match(content, /\.agent-guardrails\/evidence\/current-task\.md/);

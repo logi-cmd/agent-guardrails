@@ -55,9 +55,9 @@ agent-guardrails init . --preset node-service
 |-------|------|
 | Claude Code | `--agent claude-code` |
 | Cursor | `--agent cursor` |
+| OpenCode | `--agent opencode` |
 | Codex | `--agent codex` |
-| OpenHands | `--agent openhands` |
-| OpenClaw | `--agent openclaw` |
+| Gemini CLI | `--agent gemini` |
 
 ### 2.3 选择 Preset
 

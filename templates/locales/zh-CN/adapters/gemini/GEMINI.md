@@ -1,4 +1,15 @@
-把 `agent-guardrails` 作为 OpenHands 在此仓库中的 guardrail 层。
+# Gemini CLI 项目记忆
+
+把 `agent-guardrails` 作为这个项目的 repo-local guardrail 层。
+
+## 强制：先阅读
+
+编辑前，先阅读：
+
+1. `AGENTS.md`
+2. `docs/PROJECT_STATE.md`
+3. `README.md`
+4. 本次任务要修改的目标文件
 
 ## 强制：守卫检查
 
@@ -25,11 +36,11 @@ agent-guardrails check --base-ref HEAD~1
 
 ## 强制：工作规则
 
-- **必须** 开始编辑前先阅读 `AGENTS.md`、`docs/PROJECT_STATE.md` 和 `README.md`。
+- **必须** 保持任务小且可 review。
 - **必须** 优先沿用现有仓库结构，不要轻易新建抽象。
-- **必须** 保持改动小且可 review。
-- **必须** 如果 `check` 失败，先修范围或测试覆盖，不要直接放大改动范围。
+- **必须** 行为变化时包含测试。
+- **必须** 在放大改动范围之前，先修范围或测试覆盖问题。
 
 ## MCP（可选）
 
-如果 OpenHands 已连接 `agent-guardrails mcp`，可以使用 `check_after_edit` 获得即时反馈。但 CLI 检查始终是必需的。
+如果 Gemini CLI 已连接 `agent-guardrails mcp`，可以使用 `check_after_edit` 获得即时反馈。但 CLI 检查始终是必需的。

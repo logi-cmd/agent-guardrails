@@ -48,9 +48,7 @@ export async function run() {
   const adapterDocs = [
     read("adapters/codex/README.md"),
     read("adapters/claude-code/README.md"),
-    read("adapters/cursor/README.md"),
-    read("adapters/openhands/README.md"),
-    read("adapters/openclaw/README.md")
+    read("adapters/cursor/README.md")
   ];
 
   assert.doesNotMatch(packageJson.repository.url, /example/);
@@ -59,11 +57,11 @@ export async function run() {
   assert.equal(packageJson.bin["agent-guardrails"], "bin/agent-guardrails.js");
 
   assert.match(readme, /## Quick Start/);
-  assert.match(readme, /## 核心工作流/);
+  assert.match(readme, /## Core Workflow/);
   assert.match(readme, /## Before vs After/);
-  assert.match(readme, /## 三层保障机制/);
-  assert.match(readme, /## 与竞品对比/);
-  assert.match(readme, /## CLI 命令速查/);
+  assert.match(readme, /## Three-layer Enforcement/);
+  assert.match(readme, /## Competitor Comparison/);
+  assert.match(readme, /## CLI Reference/);
   assert.match(readme, /agent-guardrails setup --agent <your-agent>/);
   assert.match(readme, /agent-guardrails enforce --all/);
   assert.match(readme, /agent-guardrails unenforce --all/);
@@ -71,7 +69,7 @@ export async function run() {
   assert.match(readme, /L1.*enforce/i);
   assert.match(readme, /L2.*AGENTS\.md/i);
   assert.match(readme, /L3.*pre-commit hook/i);
-  assert.match(readme, /## 文档/);
+  assert.match(readme, /## Docs/);
   assert.match(readme, /docs\/ROADMAP\.md/);
   assert.match(readme, /MIT/);
 
@@ -155,8 +153,6 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "claude-code.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "cursor.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "codex.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openhands.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "openclaw.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "SUMMARY.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "plugins", "plugin-ts", "package.json")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "REAL_REPO_PILOT.md")), true);

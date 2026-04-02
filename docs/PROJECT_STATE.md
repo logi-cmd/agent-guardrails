@@ -1,61 +1,69 @@
 # Project State
 
-Last updated: 2026-04-01 (v0.9.1 preparation)
+Last updated: 2026-04-02 (v0.10.0)
 
 ## Goal
 
-Build the production-safety layer for AI coding workflows, with an open-source merge-gate baseline and a clear path toward agent-native automation.
+Pivot from CLI tool to agent-native runtime with system-level auto-trigger. L0 plugin/hook interception as primary enforcement, MCP + enforce as supplements.
 
 ## Current Version
 
-**v0.9.0** — Enforce/unenforce commands for 8 agents, README rewrite
+**v0.10.0** — Agent removal + runtime pivot preparation
 
-### Key Features (v0.9.0)
-- ✅ `enforce` — Inject guardrail instructions into agent system-level auto-read files (CLAUDE.md, GEMINI.md, etc.)
+### Key Features (v0.10.0)
+- ✅ 5 agent support: claude-code, cursor, opencode, codex, gemini
+- ✅ Removed Windsurf, OpenHands, OpenClaw — text-only agents incompatible with L0 auto-trigger
+- ✅ OpenCode plugin rewritten with correct named export API (`GuardrailsPlugin`)
+- ✅ Gemini adapter template added (zh-CN)
+- ✅ daemon.js cleaned — 5 agents + Git = 6 AGENT_HOOKS entries
+- ✅ All 15 test suites passing
+- ✅ RUNTIME_PIVOT_PLAN.md created (internal, gitignored)
+
+### Key Features (v0.9.x)
+- ✅ `enforce` — Inject guardrail instructions into agent system-level auto-read files
 - ✅ `unenforce` — Safely remove injected content, preserving user's original files
-- ✅ 8 agent support: claude-code, cursor, opencode, codex, gemini, windsurf, openhands, openclaw
 - ✅ Enforce always uses English templates (AI understands English best)
-- ✅ README rewritten — enforce-first, 166 lines, clean structure
-- ✅ Three-layer enforcement: L1 enforce > L2 AGENTS.md > L3 pre-commit hook
 
 ### Key Features (v0.8.x)
 - ✅ CLI-first architecture with daemon-hook unification
 - ✅ AGENTS.md + adapter templates strengthened with mandatory language
 - ✅ Shared-result-reader for <100ms hook response
 
-### Key Features (v0.7.x)
-- ✅ MCP tools: check_after_edit, explain_change, query_archaeology
-- ✅ 8 agent adapters with MCP config
-- ✅ Active Guardrails — MCP responses include human-readable summaries
-
 ## Current focus
 
-v0.9.0 已发布。下一步重点：
-1. 发布 v0.9.1 — 包含 release.test.js 修复、plugin-ts 依赖修复、.gitignore 商业敏感文档清理
-2. 写技术博客获取前 100 用户
-3. Pro Tier 策略已就绪（docs/PRO_TIER_STRATEGY.md，已 gitignore），待有用户反馈后启动开发
+v0.10.0 代码变更已完成，全部测试通过。下一步：
+1. **Phase 2**: Claude Code PreToolUse/PostToolUse hooks（`templates/hooks/claude-code-pre-tool.js` 等）
+2. **Phase 3**: Gemini CLI BeforeTool hooks, Codex hooks
+3. **Phase 4**: `agent-guardrails doctor` 命令 + setup 流程重写（auto-plugin-install）
+4. 写技术博客获取前 100 用户
+5. Pro Tier 策略已就绪（docs/PRO_TIER_STRATEGY.md，已 gitignore），待有用户反馈后启动开发
+
+## Done recently (v0.10.0)
+
+- agent removal: 从 daemon.js 移除 Windsurf/OpenClaw/OpenHands 的 AGENT_HOOKS 条目和 inject/remove 函数
+- agent removal: 从 init.js 移除 openclaw/openhands/windsurf adapter 映射
+- agent removal: 删除 5 个孤立 hook 脚本（windsurf-check.cjs/sh, openhands-check.cjs, openclaw-handler.cjs, cursor-check.sh）
+- agent removal: 重写 daemon-hooks.test.js 匹配 5-agent 结构
+- agent removal: 更新 release.test.js 移除已删除 agent 的断言
+- agent removal: README 8→5 agents，enforce 表格精简
+- agent removal: package.json v0.10.0，关键词更新（移除 windsurf/openhands，新增 opencode/gemini）
+- agent removal: CHANGELOG.md 新增 v0.10.0 条目（breaking change 通知）
+- opencode plugin: 重写 opencode-plugin.js 为正确的 named export API
+- gemini: 新增 zh-CN adapter 模板
+- 全部 15 个测试套件通过
 
 ## Done recently (v0.9.x)
 
-- v0.9.0: enforce/unenforce 命令 — 8 agent 系统级指令注入与安全移除
-- v0.9.0: enforce 总是使用英文模板（locale: null）— AI 理解英文最佳
-- v0.9.0: README 重写 — 166 行，enforce-first，三层保障机制
-- v0.9.1-prep: release.test.js 适配新 README
-- v0.9.1-prep: plugin-ts 依赖修复 — npm install @typescript-eslint/parser
-- v0.9.1-prep: .gitignore 商业敏感文档 — 移除 6 个策略/定价/竞品分析文件
-- v0.9.1-prep: zh-CN/README.md 修复 — 移除对已 gitignore 文件的引用
+- v0.9.0: enforce/unenforce 命令 — agent 系统级指令注入与安全移除
+- v0.9.0: enforce 总是使用英文模板（locale: null）
+- v0.9.0: README 重写 — enforce-first，三层保障机制
+- v0.9.1: release.test.js 修复、plugin-ts 依赖修复、.gitignore 商业敏感文档清理
 
 ## Done recently (v0.8.x)
 
-- v0.8.1: AGENTS.md 模板强化 —"Prefer"→"MUST prefer"，新增"MANDATORY: Guardrail Check"章节，明确"FAILURE TO RUN THIS COMMAND = INCOMPLETE WORK"
-- v0.8.1: 全部 8 个 adapter 模板强化 — claude-code、windsurf、gemini、codex、openclaw、openhands、opencode 统一使用强制语气
-- v0.8.0: Daemon-Hook 统一架构 — daemon 做唯一检查引擎，hooks 读 daemon-result.json 而非独立跑检查
-- v0.8.0: shared-result-reader 模块 — cache-first + fallback 模式，hook 延迟从 1-4s 降到 <100ms
-- v0.8.0: worker.js status 标记 — "running"/"completed" 防并发读取
-- v0.8.0: 8 个 hook 文件重构为 thin delivery 层（daemon-check、cursor、windsurf、gemini、codex、openhands、openclaw、opencode）
-- v0.8.0: daemon-check.cjs 补齐 i18n 支持
-- v0.8.0: 集成测试 — shared-result-reader.test.js、daemon-check.test.js、daemon-hooks.test.js
-- v0.8.0: npm 发布 agent-guardrails@0.8.0 + GitHub tag v0.8.0
+- v0.8.1: AGENTS.md 模板强化，8 adapter 模板统一强制语气
+- v0.8.0: Daemon-Hook 统一架构，shared-result-reader <100ms 响应
+- v0.8.0: npm 发布 agent-guardrails@0.8.0
 
 ## Done recently (v0.7.x)
 
@@ -250,24 +258,22 @@ v0.9.0 已发布。下一步重点：
 
 ## Blockers
 
-- Manual approval state and sign-off are still documentation-level concepts rather than first-class contract fields
-- Proof-of-value now includes documented sandbox chats for Claude Code, Codex, and OpenClaw, plus sandbox setup completion for Cursor and OpenHands, and the remaining MCP paste friction has now been reduced with repo-local config support where possible
-- The pilot summary now shows three completed sandbox chats and two setup-only entries, which is enough to judge the setup-first release gate
-- Agent-native entrypoints now exist through the OSS MCP loop, but continuity is still heuristic and does not yet use module history or repo-learned reuse patterns
-- The first-run path is now setup-first, but the stronger proof story is still TS/JS-heavy and Python does not yet have an equally convincing proof slice
-- Production-profile, rollback, and observability fields now exist, but they still stop at review-time guidance rather than a fully explicit deploy-readiness or post-deploy maintenance surface
-- The README now includes the passive understanding layer (被动理解层) documentation, but user feedback on these new features is still pending
+- L0 auto-trigger (plugin/hook interception) 尚未实现 — Phase 2-4 of RUNTIME_PIVOT_PLAN
+- OpenCode enforce 路径仍然写入 `.opencode/rules/` 而非 `AGENTS.md`（需 Phase 1 完成修复）
+- Agent-native 入口已有 MCP loop，但连续性仍是启发式而非模块历史学习
 
 ## Next step
 
-v0.9.0 已发布，v0.9.1 准备中。下一步：
-1. 发布 v0.9.1（release.test.js + plugin-ts + .gitignore 清理）
-2. 写 1-2 篇技术博客获取前 100 用户
-3. 收集用户反馈后启动 Pro Tier 开发
+v0.10.0 agent removal 完成。下一步：
+1. 实现 Phase 2: Claude Code PreToolUse/PostToolUse hooks
+2. 实现 Phase 3: Gemini CLI + Codex hooks
+3. 实现 Phase 4: `doctor` 命令 + setup 流程重写
+4. 写技术博客获取前 100 用户
+5. 收集用户反馈后启动 Pro Tier 开发
 
 ## Handoff
 
-- `What changed`: enforce/unenforce 命令、README 重写、商业敏感文档 gitignore
-- `Revenue Path`: OSS v0.9.x 获取用户 → 技术博客引流 → 用户反馈驱动 Pro 开发
+- `What changed`: 移除 3 个 text-only agent，OpenCode plugin 重写，5-agent 架构
+- `Revenue Path`: OSS v0.10.x auto-trigger → 技术博客引流 → 用户反馈 → Pro 开发
 - `Commercial risk`: Pro 策略文档已 gitignore，不会泄露到公开仓库
-- `What I need next`: 发布 v0.9.1，开始写技术博客
+- `What I need next`: 实现 RUNTIME_PIVOT_PLAN Phase 2 (Claude Code hooks)

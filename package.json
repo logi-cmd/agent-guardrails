@@ -1,6 +1,6 @@
 {
   "name": "agent-guardrails",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "mcpName": "io.github.logi-cmd/agent-guardrails",
   "description": "Production guardrails for AI coding agents",
   "type": "module",
@@ -57,8 +57,8 @@
     "codex",
     "cursor",
     "claude-code",
-    "windsurf",
-    "openhands",
+    "opencode",
+    "gemini",
     "ai-safety",
     "llm-guardrails"
   ],

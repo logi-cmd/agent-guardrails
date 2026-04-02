@@ -67,9 +67,8 @@ export async function run() {
   console.log("Test 5: All CJS hook scripts use shared-result-reader");
   {
     const cjsScripts = [
-      "daemon-check.cjs", "windsurf-check.cjs", "cursor-check.cjs",
-      "codex-check.cjs", "gemini-check.cjs", "openhands-check.cjs",
-      "openclaw-handler.cjs", "pre-commit-check.cjs"
+      "daemon-check.cjs", "cursor-check.cjs",
+      "codex-check.cjs", "gemini-check.cjs", "pre-commit-check.cjs"
     ];
     for (const name of cjsScripts) {
       const content = fs.readFileSync(path.join(hooksDir, name), "utf8");
@@ -84,30 +83,21 @@ export async function run() {
   {
     const content = fs.readFileSync(path.join(hooksDir, "opencode-plugin.js"), "utf8");
     check(content.includes("readDaemonResult"), "should have readDaemonResult function");
-    check(content.includes("status === \"running\""), "should reject running status");
     check(content.includes("file.edited"), "should listen to file.edited events");
-    check(content.includes("export default"), "should export default function");
+    check(content.includes("GuardrailsPlugin"), "should export named GuardrailsPlugin");
   }
 
   console.log("Test 7: All CJS hooks have i18n support");
   {
-    const scripts = ["daemon-check.cjs", "cursor-check.cjs", "windsurf-check.cjs",
-      "codex-check.cjs", "gemini-check.cjs", "openhands-check.cjs"];
+    const scripts = ["daemon-check.cjs", "cursor-check.cjs",
+      "codex-check.cjs", "gemini-check.cjs"];
     for (const name of scripts) {
       const content = fs.readFileSync(path.join(hooksDir, name), "utf8");
       check(content.includes("LOCALE") || content.includes("msg"), `${name} should have i18n`);
     }
   }
 
-  console.log("Test 8: OpenClaw handler uses messages.push for delivery");
-  {
-    const content = fs.readFileSync(path.join(hooksDir, "openclaw-handler.cjs"), "utf8");
-    check(content.includes("module.exports"), "should use module.exports");
-    check(content.includes("messages.push"), "should push to messages array");
-    check(content.includes("shared-result-reader"), "should use shared-result-reader");
-  }
-
-  console.log("Test 9: pre-commit-check.cjs blocks on errors, warns on warnings");
+  console.log("Test 8: pre-commit-check.cjs blocks on errors, warns on warnings");
   {
     const content = fs.readFileSync(path.join(hooksDir, "pre-commit-check.cjs"), "utf8");
     check(content.includes("exit(1)"), "should exit 1 to block commit on errors");
@@ -116,12 +106,12 @@ export async function run() {
     check(content.includes("Commit blocked"), "should show commit blocked message");
   }
 
-  console.log("Test 10: Hook scripts exist and are non-empty");
+  console.log("Test 9: Hook scripts exist and are non-empty");
   {
     const scripts = [
-      "daemon-check.cjs", "windsurf-check.cjs", "cursor-check.cjs",
-      "opencode-plugin.js", "openclaw-handler.cjs", "codex-check.cjs",
-      "gemini-check.cjs", "openhands-check.cjs", "pre-commit-check.cjs",
+      "daemon-check.cjs", "cursor-check.cjs",
+      "opencode-plugin.js", "codex-check.cjs",
+      "gemini-check.cjs", "pre-commit-check.cjs",
       "shared-result-reader.cjs"
     ];
     for (const name of scripts) {

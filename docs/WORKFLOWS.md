@@ -6,11 +6,11 @@ This page holds the deeper usage details that do not need to live on the README 
 
 | Tool | Seeded file | Local workflow support | Automation guidance support |
 | :-- | :-- | :-- | :-- |
-| Codex | `AGENTS.md` | Yes | Yes |
 | Claude Code | `CLAUDE.md` | Yes | Yes |
 | Cursor | `.cursor/rules/agent-guardrails.mdc` | Yes | Yes |
-| OpenHands | `.agents/skills/agent-guardrails.md` | Yes | Yes |
-| OpenClaw | `OPENCLAW.md` | Yes | Yes |
+| OpenCode | `AGENTS.md` | Yes | Yes |
+| Codex | `.codex/instructions.md` | Yes | Yes |
+| Gemini CLI | `GEMINI.md` | Yes | Yes |
 
 ## CLI commands
 
@@ -28,7 +28,7 @@ Seeds a repo with:
 Example:
 
 ```bash
-agent-guardrails init . --preset nextjs --adapter openclaw
+agent-guardrails init . --preset nextjs
 ```
 
 If you are not sure what to type, start with `setup --agent <name>`, then use the manual flow only when you want to debug or inspect the runtime directly.
@@ -143,11 +143,11 @@ Each preset adjusts file heuristics and recommended read-before-write paths whil
 
 The core workflow is generic, but `agent-guardrails` ships first-pass adapters for:
 
-- [Codex](../adapters/codex/README.md)
 - [Claude Code](../adapters/claude-code/README.md)
 - [Cursor](../adapters/cursor/README.md)
-- [OpenHands](../adapters/openhands/README.md)
-- [OpenClaw](../adapters/openclaw/README.md)
+- [OpenCode](../adapters/opencode/README.md)
+- [Codex](../adapters/codex/README.md)
+- [Gemini CLI](../adapters/gemini/README.md)
 
 For Codex, the default `AGENTS.md` workflow is already the main integration surface, so `--adapter codex` is a docs-level adapter rather than an extra seeded file.
 

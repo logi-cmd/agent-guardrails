@@ -33,19 +33,19 @@ async function initSeedsChineseTemplates() {
   const output = await captureLogs(() =>
     runInit({
       positional: [tempDir],
-      flags: { preset: "node-service", adapter: "claude-code,openclaw", lang: "zh-CN" },
+      flags: { preset: "node-service", adapter: "claude-code,gemini", lang: "zh-CN" },
       locale: "zh-CN"
     })
   );
 
   const agents = fs.readFileSync(path.join(tempDir, "AGENTS.md"), "utf8");
   const claude = fs.readFileSync(path.join(tempDir, "CLAUDE.md"), "utf8");
-  const openclaw = fs.readFileSync(path.join(tempDir, "OPENCLAW.md"), "utf8");
+  const gemini = fs.readFileSync(path.join(tempDir, "GEMINI.md"), "utf8");
 
   assert.match(output, /下一步：/);
   assert.match(agents, /强制：先阅读/);
   assert.match(claude, /强制：守卫检查/);
-  assert.match(openclaw, /强制：守卫检查/);
+  assert.match(gemini, /强制：守卫检查/);
 }
 
 async function planRespectsLocaleEnvAndOverride() {

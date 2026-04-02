@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.10.0 - 2026-04-02
+
+### Breaking Change
+
+Removed 3 agents (Windsurf, OpenHands, OpenClaw). Only 5 agents are now supported: `claude-code`, `cursor`, `opencode`, `codex`, `gemini`.
+
+### Why These Agents Were Removed
+
+- **Windsurf**: Only supports text injection (`.windsurfrules`), no runtime interception. Text-only enforcement is the exact problem agent-guardrails solves.
+- **OpenHands**: Requires Docker/sandbox environment, disproportionate maintenance cost for C-end focused product.
+- **OpenClaw**: Skills are load-time only, no runtime hook interception. Incompatible with auto-trigger architecture.
+
+### Changed
+
+- `supportedAdapters` reduced from 8 to 5 in `lib/utils.js`
+- Removed Windsurf/OpenHands/OpenClaw from `lib/setup/agents.js`, `lib/commands/init.js`, `lib/commands/daemon.js`
+- Removed their hook scripts: `windsurf-check.cjs`, `windsurf-check.sh`, `openhands-check.cjs`, `openclaw-handler.cjs`, `cursor-check.sh`
+- Removed their adapter directories: `adapters/windsurf/`, `adapters/openclaw/`, `adapters/openhands/`
+- Removed their pilot records: `docs/pilots/openclaw.md`, `docs/pilots/openhands.md`
+- Updated `adapters/README.md`, `docs/pilots/README.md`, `docs/pilots/SUMMARY.md` for 5 agents
+- Updated `docs/WORKFLOWS.md`, `docs/USER_GUIDE.md`, `docs/ROADMAP.md` — removed removed agent references
+- Updated `docs/zh-CN/README.md` — removed openclaw example
+- Updated all test files to match 5-agent structure
+- Added `gemini` adapter to `agents.js` with `user-global-config` target
+- Updated `opencode` adapter: helper files now include `AGENTS.md` + `.opencode/plugins/guardrails.js`
+- Created Chinese localization for Gemini adapter template
+
+### Added
+
+- `templates/locales/zh-CN/adapters/gemini/GEMINI.md` — Chinese Gemini adapter template
+- `installPluginFiles` function in `setup.js` — copies OpenCode plugin during setup
+- `lib/daemon/hooks/opencode-plugin.js` rewritten — named export `GuardrailsPlugin`, `tool.execute.before` scope blocking, `file.edited` event handler
+
 ## 0.9.1 - 2026-04-01
 
 ### Fixed
