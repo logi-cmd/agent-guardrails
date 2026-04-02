@@ -1,0 +1,31 @@
+天数,内容类型,平台,标题,CTA
+1,痛点共鸣,Reddit r/ClaudeAI,"你的AI Agent正在悄悄删文件吗？我统计了100次AI编码事故",npm install -g agent-guardrails
+2,方法教学,Dev.to,"3步给Claude Code加上安全护栏（5分钟配置）",GitHub star
+3,案例展示,Twitter/X,"我用guardrails拦截了一次 rm -rf /src 的AI操作，附截图",试试看
+4,对比分析,HackerNews,"对比测试：有guardrails vs 没有的10次AI编码",评论讨论
+5,互动讨论,Reddit r/cursor,"Cursor用户：你们怎么防止AI改不该改的文件？",分享经验
+6,价值输出,掘金,"AI编码安全最佳实践：2026年开发者必读指南",收藏
+7,情感故事,Reddit r/ClaudeAI,"从AI删库到安全感：我的guardrails之路",关注项目
+8,痛点共鸣,Twitter/X,"95%的AI编码事故可以在merge时被拦截。真的。",看数据
+9,方法教学,Dev.to,"如何用MCP给AI Agent加任务契约（含代码）",Fork
+10,案例展示,Reddit r/programming,"AI改了47个文件，我只需要看3个（guardrails实战）",试试
+11,对比分析,Medium,"Guardrails AI vs LlamaGuard vs Agent-Guardrails对比",选型参考
+12,互动讨论,Twitter/X,"投票：你的AI工具有没有闯过祸？",投票互动
+13,价值输出,掘金,"8个AI编码Agent统一安全管控方案",收藏
+14,情感故事,Reddit r/cursor,"我是如何从Cursor事故中活过来的",分享
+15,痛点共鸣,HackerNews,"AI编码的最大风险不是代码质量，是执行范围",讨论
+16,方法教学,Dev.to,"语义漂移检测：AI创建重复抽象的4种模式",学习
+17,案例展示,Twitter/X,"Before/After: 有guardrails的代码变更 vs 没有",对比
+18,对比分析,Reddit r/ClaudeAI,"Claude Code + guardrails 配置完整指南",收藏
+19,互动讨论,Reddit r/programming,"你的团队有AI编码安全策略吗？",讨论
+20,价值输出,Medium,"2026 AI编码安全报告：为什么你需要运行时护栏",转发
+21,情感故事,Dev.to,"一个rm -rf让我损失了3天工作量（以及如何避免）",吸取教训
+22,痛点共鸣,Twitter/X,"AI改了支付逻辑？guardrails说NO",看demo
+23,方法教学,掘金,"从0到1：给团队加AI编码安全层（图文教程）",跟着做
+24,案例展示,Reddit r/ClaudeAI,"guardrails v0.9.0 新功能演示：语义漂移检测",升级
+25,对比分析,HackerNews,"为什么事后Review不够：AI编码需要事前约束",讨论
+26,互动讨论,Twitter/X,"你最怕AI Agent做什么操作？",评论
+27,价值输出,Dev.to,"AI Agent安全：从理论到实践的完整指南",收藏
+28,情感故事,Medium,"开源6个月：agent-guardrails的成长故事",star
+29,痛点共鸣,Reddit r/programming,"代码review慢？可能是AI改动范围太大",优化
+30,综合总结,Twitter/X,"agent-guardrails 30天总结：从0到500用户的关键动作",关注
