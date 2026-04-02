@@ -4,7 +4,7 @@ Last updated: 2026-04-02 (v0.11.0)
 
 ## Current Version
 
-**v0.11.0** — OpenCode setup fixes + Claude Code write-interception hooks
+**v0.12.0** — Harness-engineering audit fixes
 
 ## Goal
 

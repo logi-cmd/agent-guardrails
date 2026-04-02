@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.12.0 - 2026-04-02
+
+### Harness Engineering Audit Fixes
+
+Based on a harness-engineering skill audit across 8 dimensions (execution loop, agent topology, context management, failure recovery, hook completeness, evaluation design, loop detection, tool boundaries).
+
+#### Critical
+
+- **Bash file-write interception**: Claude Code hooks now intercept `sed -i`, `tee`, `echo >`, `>>`, `mv`, `cp` via the Bash tool, closing the largest harness gap)
+
+#### High
+
+- **Circuit breaker**: Daemon worker stops retrying after 5 consecutive failures (60s cooldown)
+- **State-hash dedup**: Daemon skips re-check when file set unchanged since last successful check
+- **Structured errors**: Agent loop returns `{ error, true, code, "..." }` instead of `null`
+- **Session purge**: `purgeExpired()` now runs every 10 minutes, preventing memory leaks
+
+#### Medium
+
+- **Review buckets**: `continuity` and `performance` findings now appear in review output (previously silently dropped)
+
 ## 0.11.0 - 2026-04-02
 
 ### Phase 1: OpenCode Fixes
