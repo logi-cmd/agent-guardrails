@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.11.0 - 2026-04-02
+
+### Phase 1: OpenCode Fixes
+
+- Fixed `init.js`: Now writes to `AGENTS.md` (root level) instead of `.opencode/rules/agent-guardrails.md`
+- Fixed `setup.js`: Auto-installs plugin to `.opencode/plugins/guardrails.js`
+- Updated tests: `init.test.js`, `setup.test.js`, `install-smoke.js`
+- Removed pilot doc references from all adapter READMEs
+
+### Phase 2: Claude Code Hooks
+
+- Added `templates/hooks/claude-code-pre-tool.cjs` — PreToolUse hook for scope check before Write/Edit/MultiEdit
+- Added `templates/hooks/claude-code-post-tool.cjs` — PostToolUse hook for drift check after Write/Edit/MultiEdit
+- Updated `lib/setup/agents.js`: Added hook files to Claude Code `repoLocalHelperFiles`
+- Updated `lib/commands/setup.js`: Added `installAgentRuntimeFiles()` and `mergeClaudeSettings()` functions
+- Updated Claude Code adapter README with hook documentation
+
+### API Correction
+
+- Fixed internal plan: Claude Code API uses `exit 2 + hookSpecificOutput.permissionDecision: "deny"` instead of `{ decision: "block" }`
+
 ## 0.10.2 - 2026-04-02
 
 ### Docs Cleanup
