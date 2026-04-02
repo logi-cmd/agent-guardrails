@@ -197,4 +197,3 @@ This project is useful today as a repo-local guardrail layer, but it still has i
 - module boundaries still depend on explicit repo policy instead of automatic architecture inference
 - source-to-test relevance is heuristic and should be treated as reviewer guidance plus contract enforcement, not coverage proof
 - CI users still need to choose their canonical base ref, such as `origin/main`
-- the current pilot is documented in [docs/REAL_REPO_PILOT.md](./REAL_REPO_PILOT.md), and broader external pilots are still pending

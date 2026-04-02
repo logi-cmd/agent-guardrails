@@ -6,12 +6,14 @@ dist/
 .tmp-install-smoke/
 tmp-openclaw-init/
 agent-guardrails-*.tgz
+# Internal docs — kept locally, never pushed
 docs/PROJECT_STATE.md
 docs/RELEASE_CHECKLIST.md
 docs/PROMOTION.md
 docs/FAILURE_CASES.md
 docs/AUTOMATION_SPEC.md
 docs/design-philosophy.md
+docs/pilots/
 .agent-guardrails/daemon-info.json
 .agent-guardrails/daemon-result.json
 .agent-guardrails/daemon.log

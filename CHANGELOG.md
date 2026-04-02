@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.2 - 2026-04-02
+
+### Docs Cleanup
+
+- Slimmed PROJECT_STATE.md from 279 lines/25KB to 18 lines (removed historical changelog entries already in CHANGELOG.md)
+- Removed pilot records (docs/pilots/claude-code.md, codex.md, cursor.md)
+- Removed pilot templates (docs/PILOT_TEMPLATE.md, docs/PILOT_SUMMARY_TEMPLATE.md)
+- Removed REAL_REPO_PILOT.md
+- Removed docs/pilots/ directory entirely
+- Updated release.test.js to remove assertions for deleted pilot files
+- Updated WORKFLOWS.md to remove pilot reference
+- Final local docs: 19 files (10 public, 9 internal/gitignored)
+
 ## 0.10.1 - 2026-04-02
 
 ### Cleanup

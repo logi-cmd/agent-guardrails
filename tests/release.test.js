@@ -39,7 +39,6 @@ export async function run() {
   const benchmarks = read("docs/BENCHMARKS.md");
   const proof = read("docs/PROOF.md");
   const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
-  const pilot = read("docs/REAL_REPO_PILOT.md");
   const troubleshooting = read("docs/TROUBLESHOOTING.md");
   const workflows = read("docs/WORKFLOWS.md");
   const workflow = read(".github/workflows/guardrails.yml");
@@ -121,9 +120,6 @@ export async function run() {
   assert.match(semanticArchitecture, /boundary violation/i);
   assert.match(semanticArchitecture, /source-to-test relevance/i);
 
-  assert.match(pilot, /boundary-violation-forbidden-import/);
-  assert.match(pilot, /source-test-relevance-missed-expected-targets/);
-  assert.doesNotMatch(pilot, /cmd \/c npm\.cmd/);
   assert.match(troubleshooting, /npx agent-guardrails help/);
   assert.match(troubleshooting, /origin\/master/);
 
@@ -144,18 +140,10 @@ export async function run() {
     assert.match(content, /agent-guardrails plan --task "<task>"/);
   }
 
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_TEMPLATE.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PILOT_SUMMARY_TEMPLATE.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "PROOF.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "WORKFLOWS.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "examples", "python-fastapi-demo", "README.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "README.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "claude-code.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "cursor.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "codex.md")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "pilots", "SUMMARY.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "plugins", "plugin-ts", "package.json")), true);
-  assert.equal(fs.existsSync(path.join(repoRoot, "docs", "REAL_REPO_PILOT.md")), true);
 
   const publishDryRun = runNpmPublishDryRun();
   assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);
