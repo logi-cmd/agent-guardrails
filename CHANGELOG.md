@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.1 - 2026-04-02
+
+### Cleanup
+
+- Removed 12 old release notes (v0.7.x–v0.9.1) — consolidated into CHANGELOG
+- Removed 2 legacy release files (RELEASE_0.1.3.md, RELEASE_0.2.0.md)
+- Removed docs/images/ directory (no longer referenced)
+- Removed internal dev docs from public repo: AUTOMATION_SPEC.md, FAILURE_CASES.md, PROMOTION.md, RELEASE_CHECKLIST.md, design-philosophy.md
+- Files kept locally via .gitignore but removed from remote tracking
+
 ## 0.10.0 - 2026-04-02
 
 ### Breaking Change

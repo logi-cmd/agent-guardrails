@@ -7,6 +7,11 @@ dist/
 tmp-openclaw-init/
 agent-guardrails-*.tgz
 docs/PROJECT_STATE.md
+docs/RELEASE_CHECKLIST.md
+docs/PROMOTION.md
+docs/FAILURE_CASES.md
+docs/AUTOMATION_SPEC.md
+docs/design-philosophy.md
 .agent-guardrails/daemon-info.json
 .agent-guardrails/daemon-result.json
 .agent-guardrails/daemon.log
