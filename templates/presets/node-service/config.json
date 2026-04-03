@@ -49,7 +49,13 @@
     "sourceExtensions": [".js", ".mjs", ".cjs", ".ts"],
     "testRoots": ["test", "tests"],
     "testExtensions": [".js", ".ts"],
-    "testFileSignals": [".test.", ".spec."]
+    "testFileSignals": [".test.", ".spec."],
+    "mutation": {
+      "enabled": false,
+      "survivalThreshold": 50,
+      "maxMutations": 20,
+      "timeoutMs": 15000
+    }
   },
   "protectedAreas": [
     {

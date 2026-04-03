@@ -9,6 +9,7 @@
 - 🔍 **Drift detection** — catches parallel abstractions, interface changes
 - 🛡 **Protected paths** — critical files stay untouched
 - 🔧 **Auto-fix** — Tier-1 issues fixed automatically, zero side effects
+- 🧬 **Mutation testing** — optional lightweight built-in slice catches vacuous tests (config-gated, default-disabled)
 
 ## Who it is for
 
@@ -133,6 +134,9 @@ The product is moving toward **runtime-backed guardrails**, so the most importan
 - CI now uses cache-aware npm setup plus lightweight static verification
 - Gemini CLI setup now installs native BeforeTool / AfterTool hooks
 - `agent-guardrails doctor` provides a minimal OSS installation diagnostic path
+- **optional lightweight built-in mutation-testing slice** integrated into OSS check pipeline (config-gated, default-disabled, warning-only, baseline-first)
+- working-tree diff parsing fixed for correct path extraction
+- direct module test coverage for mutation detector, i18n messages, and `listChangedFiles()`
 
 **Still open:**
 

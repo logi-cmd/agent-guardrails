@@ -66,6 +66,10 @@ With the OSS baseline now functionally complete, focus shifts to broader proof, 
 - post-deploy maintenance summaries with operator next actions
 - homepage / proof / pricing packaging for overseas solo developers and small teams
 - clearer upgrade path from OSS trust layer to Pro Local efficiency layer
+- **mutation testing fully integrated** into OSS check pipeline with baseline-first, config-gated, warning-only behavior
+- **working-tree diff parsing fixed** for correct path extraction in reviewer output
+- **direct module test coverage** added for mutation detector, i18n messages, and `listChangedFiles()`
+- **reviewer warning reduction** — eliminated public surface drift, reduced async-risk warnings, tightened surface declarations
 
 ## Phase 6 (Later)
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.14.0 - 2026-04-04
+
+### Mutation Testing Integration + Reviewer Alignment
+
+Optional lightweight built-in mutation testing is now fully integrated into the OSS check pipeline. Working-tree diff parsing fixed. Test coverage enhanced. Reviewer warnings reduced.
+
+#### New features
+
+- **Mutation testing integrated** — `lib/check/mutation-tester.js` wired into OSS detector pipeline via `lib/check/detectors/oss.js`
+- **Baseline-first execution** — runs test command first; emits warning instead of misleading score if baseline fails
+- **Config-gated, default-disabled** — all presets include `checks.mutation` config (enabled: false)
+- **Warning-only output** — survivors produce `mutation-survivors-detected` warning, not blocker
+
+#### Fixes
+
+- **Working-tree diff parsing** — `lib/utils.js` `git status --porcelain` no longer truncates leading characters from paths
+- **Async risk in tests** — `tests/check.test.js` `captureLogs` converted from `.then()` chains to `async/await`
+
+#### Test coverage
+
+- Direct mutation detector test in `tests/check.test.js`
+- Direct `listChangedFiles()` porcelain parsing test in `tests/check.test.js`
+- Direct i18n mutation message export test in `tests/i18n.test.js`
+
+#### Reviewer alignment
+
+- Eliminated public surface drift warning by declaring full export surface in task contract
+- Reduced async-risk warnings from 5-layer to 0-layer `.then()` nesting
+- Tightened expected public surface and test target declarations
+
 ## 0.13.0 - 2026-04-03
 
 ### OSS Baseline Complete

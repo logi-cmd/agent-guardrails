@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { runCheck } from "../lib/commands/check.js";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
+import { ossDetectors } from "../lib/check/detectors/oss.js";
+import { listChangedFiles } from "../lib/utils.js";
 
 function captureLogs(run) {
   const original = console.log;
@@ -14,15 +17,14 @@ function captureLogs(run) {
     output += `${args.join(" ")}\n`;
   };
 
-  return Promise.resolve()
-    .then(run)
-    .then((value) => {
-      result = value;
+  return (async () => {
+    try {
+      result = await run();
       return { output, result };
-    })
-    .finally(() => {
+    } finally {
       console.log = original;
-    });
+    }
+  })();
 }
 
 async function initRepo(tempDir) {
@@ -881,6 +883,250 @@ async function checkLocalizesDetectorMessagesInChinese() {
   }
 }
 
+async function checkMutationTestingIsSilentWhenDisabled() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mutation-off-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "flag.js"), "export const enabled = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "flag.test.js"), "export const ok = true;\n", "utf8");
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = ["src/flag.js", "tests/flag.test.js"].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { "commands-run": "npm test" }, locale: "en" }))
+    );
+
+    assert.equal(result.ok, true);
+    assert.equal(
+      result.findings.some((finding) => finding.code === "mutation-survivors-detected"),
+      false,
+      "Mutation testing should not produce findings when disabled (default)"
+    );
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkMutationTestingWarnsOnSurvivingMutations() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mutation-on-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+
+  fs.writeFileSync(
+    path.join(tempDir, "src", "calc.js"),
+    [
+      "export const enabled = true;",
+      "export const total = 1 + 2;",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.writeFileSync(path.join(tempDir, "tests", "calc.test.js"), "export const ok = true;\n", "utf8");
+
+  fs.writeFileSync(path.join(tempDir, "_test_pass.cjs"), "process.exit(0);\n", "utf8");
+
+  updateConfig(tempDir, (config) => {
+    config.checks.mutation = {
+      enabled: true,
+      testCommand: "node _test_pass.cjs",
+      maxMutations: 10,
+      survivalThreshold: 90,
+      timeoutMs: 10000
+    };
+  });
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = ["src/calc.js", "tests/calc.test.js"].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { "commands-run": "npm test" }, locale: "en" }))
+    );
+
+    const mutationFinding = result.findings.find((f) => f.code === "mutation-survivors-detected");
+    assert.ok(mutationFinding, "Expected a mutation-survivors-detected finding when enabled and mutations survive");
+    assert.equal(mutationFinding.severity, "warning");
+    assert.equal(mutationFinding.category, "validation");
+    assert.match(mutationFinding.message, /surviving/i);
+    assert.ok(mutationFinding.files.length > 0, "Finding should reference source files with survivors");
+    assert.ok(
+      result.review.summary.validationIssues >= 1,
+      "Mutation survivors should appear in validation review bucket"
+    );
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkMutationTestingWarnsWhenBaselineFails() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mutation-baseline-fail-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "calc.js"), "export const enabled = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "calc.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "_test_fail.cjs"), "process.exit(1);\n", "utf8");
+
+  updateConfig(tempDir, (config) => {
+    config.checks.mutation = {
+      enabled: true,
+      testCommand: "node _test_fail.cjs",
+      maxMutations: 10,
+      timeoutMs: 10000
+    };
+  });
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = ["src/calc.js", "tests/calc.test.js"].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { "commands-run": "npm test" }, locale: "en" }))
+    );
+
+    const mutationFinding = result.findings.find((f) => f.code === "mutation-test-error");
+    assert.ok(mutationFinding, "Expected mutation-test-error finding when baseline test command fails");
+    assert.equal(mutationFinding.severity, "warning");
+    assert.equal(mutationFinding.category, "validation");
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkMutationTesterReturnsBaselineFailureDirectly() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mutation-unit-fail-"));
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "flag.js"), "export const enabled = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "fail.cjs"), "process.exit(1);\n", "utf8");
+
+  const { runMutationTests } = await import("../lib/check/mutation-tester.js");
+  const result = await runMutationTests({
+    repoRoot: tempDir,
+    changedFiles: ["src/flag.js"],
+    testCommand: "node fail.cjs",
+    maxMutations: 5,
+    timeoutMs: 5000
+  });
+
+  assert.equal(result.baselineOk, false);
+  assert.equal(result.total, 0);
+  assert.equal(result.score, null);
+  assert.equal(result.errors, 1);
+}
+
+async function checkMutationTesterCountsSurvivorsDirectly() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mutation-unit-pass-"));
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tempDir, "src", "math.js"),
+    [
+      "export const enabled = true;",
+      "export function total() {",
+      "  return 1 + 2;",
+      "}",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.writeFileSync(path.join(tempDir, "pass.cjs"), "process.exit(0);\n", "utf8");
+
+  const { runMutationTests } = await import("../lib/check/mutation-tester.js");
+  const result = await runMutationTests({
+    repoRoot: tempDir,
+    changedFiles: ["src/math.js"],
+    testCommand: "node pass.cjs",
+    maxMutations: 5,
+    timeoutMs: 5000
+  });
+
+  assert.equal(result.baselineOk, true);
+  assert.ok(result.total > 0);
+  assert.ok(result.survived >= 1);
+  assert.equal(typeof result.score, "number");
+}
+
+async function checkMutationOssDetectorWarnsOnSurvivorsDirectly() {
+  const detector = ossDetectors.find((item) => item.name === "mutation-test-quality");
+  assert.ok(detector, "Expected mutation-test-quality detector to be registered");
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-oss-detector-"));
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "flag.js"), "export const enabled = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "pass.cjs"), "process.exit(0);\n", "utf8");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: tempDir,
+      sourceFiles: ["src/flag.js"],
+      config: {
+        checks: {
+          mutation: {
+            enabled: true,
+            testCommand: "node pass.cjs",
+            maxMutations: 5,
+            survivalThreshold: 100,
+            timeoutMs: 5000
+          }
+        }
+      }
+    },
+    addFinding(finding) {
+      findings.push(finding);
+    },
+    t(key, values = {}) {
+      if (key === "findings.mutation-test-error") return "Mutation baseline failed.";
+      if (key === "actions.reviewMutationConfig") return "Review mutation config.";
+      if (key === "actions.reviewMutationSurvivors") return "Review mutation survivors.";
+      if (key === "findings.mutation-survivors-detected") {
+        return `${values.survived}/${values.total} mutations survived (${values.score}% kill rate). Sample: ${values.sample}`;
+      }
+      return key;
+    }
+  });
+
+  assert.equal(findings.some((finding) => finding.code === "mutation-survivors-detected"), true);
+}
+
+async function listChangedFilesKeepsLeadingCharacterFromGitPorcelain() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-changed-files-"));
+
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: tempDir, stdio: "ignore" });
+
+  fs.mkdirSync(path.join(tempDir, "docs"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "lib"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "docs", "notes.md"), "# notes\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "lib", "feature.js"), "export const feature = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "feature.test.js"), "export const ok = true;\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "seed"], { cwd: tempDir, stdio: "ignore" });
+
+  fs.writeFileSync(path.join(tempDir, "docs", "notes.md"), "# notes updated\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "lib", "feature.js"), "export const feature = false;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "feature.test.js"), "export const ok = false;\n", "utf8");
+
+  const result = listChangedFiles(tempDir);
+
+  assert.equal(result.error, null);
+  assert.deepEqual(result.files.sort(), ["docs/notes.md", "lib/feature.js", "tests/feature.test.js"]);
+}
+
 export async function run() {
   await checkFailsWithoutTests();
   await checkPassesWithTests();
@@ -903,4 +1149,11 @@ export async function run() {
   await checkAddsContinuityGuidanceForParallelAbstraction();
   await checkPrintsContinuityAndPerformanceReviewGroups();
   await checkLocalizesDetectorMessagesInChinese();
+  await checkMutationTestingIsSilentWhenDisabled();
+  await checkMutationTestingWarnsOnSurvivingMutations();
+  await checkMutationTestingWarnsWhenBaselineFails();
+  await checkMutationTesterReturnsBaselineFailureDirectly();
+  await checkMutationTesterCountsSurvivorsDirectly();
+  await checkMutationOssDetectorWarnsOnSurvivorsDirectly();
+  await listChangedFilesKeepsLeadingCharacterFromGitPorcelain();
 }

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { createTranslator, resolveLocale, supportedLocales } from "../lib/i18n.js";
 import { runCli } from "../lib/cli.js";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
@@ -96,8 +97,21 @@ async function planRespectsLocaleEnvAndOverride() {
   }
 }
 
+async function i18nExposesMutationMessages() {
+  assert.equal(supportedLocales.includes("zh-CN"), true);
+  assert.equal(resolveLocale("fr-FR"), "en");
+
+  const { t } = createTranslator("en");
+  const finding = t("findings.mutation-test-error");
+  const action = t("actions.reviewMutationSurvivors");
+
+  assert.match(finding, /mutation/i);
+  assert.match(action, /mutation/i);
+}
+
 export async function run() {
   await cliHelpSupportsChinese();
   await initSeedsChineseTemplates();
   await planRespectsLocaleEnvAndOverride();
+  await i18nExposesMutationMessages();
 }

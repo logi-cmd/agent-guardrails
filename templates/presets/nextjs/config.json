@@ -50,7 +50,13 @@
     "sourceExtensions": [".js", ".jsx", ".ts", ".tsx"],
     "testRoots": ["test", "tests"],
     "testExtensions": [".js", ".jsx", ".ts", ".tsx"],
-    "testFileSignals": [".test.", ".spec."]
+    "testFileSignals": [".test.", ".spec."],
+    "mutation": {
+      "enabled": false,
+      "survivalThreshold": 50,
+      "maxMutations": 20,
+      "timeoutMs": 15000
+    }
   },
   "protectedAreas": [
     {
