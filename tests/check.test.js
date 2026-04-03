@@ -760,6 +760,127 @@ async function checkAddsContinuityGuidanceForParallelAbstraction() {
   }
 }
 
+async function checkPrintsContinuityAndPerformanceReviewGroups() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-review-groups-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src", "state"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "src", "assets"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "state", "store.js"), "export const store = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "state", "reducer.js"), "export const reducer = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "state", "hook.js"), "export const useStore = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "assets", "large.png"), Buffer.alloc(300 * 1024, 1));
+  fs.writeFileSync(path.join(tempDir, "tests", "state.test.js"), "export const ok = true;\n", "utf8");
+
+  updateConfig(tempDir, (config) => {
+    config.checks.performance = { enabled: true };
+  });
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = [
+    "src/state/store.js",
+    "src/state/reducer.js",
+    "src/state/hook.js",
+    "src/assets/large.png",
+    "tests/state.test.js"
+  ].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { review: true }, locale: "en" }))
+    );
+
+    assert.ok(result.review.summary.continuityConcerns >= 1);
+    assert.ok(result.review.summary.performanceConcerns >= 1);
+    assert.ok(result.findings.length >= result.review.continuityConcerns.length);
+    assert.match(output, /Continuity concerns:/);
+    assert.match(output, /Performance concerns: [1-9]/);
+    assert.match(output, /Continuity concerns:/);
+    assert.match(output, /Performance concerns/);
+    assert.match(output, /3\+ files changed touch state management scope|State-related file modified/);
+    assert.match(output, /Large asset file added/);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkLocalizesDetectorMessagesInChinese() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-zh-detectors-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src", "state"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "src", "async"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "src", "assets"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "state", "store.js"), "export const store = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "state", "reducer.js"), "export const reducer = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "src", "state", "hook.js"), "export const useStore = true;\n", "utf8");
+  fs.writeFileSync(
+    path.join(tempDir, "src", "async", "workflow.js"),
+    [
+      "export function runWorkflow(task) {",
+      "  return Promise.resolve(task)",
+      "    .then((value) => value)",
+      "    .then((value) => value)",
+      "    .then((value) => value);",
+      "}",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.writeFileSync(path.join(tempDir, "src", "assets", "large.png"), Buffer.alloc(300 * 1024, 1));
+  fs.writeFileSync(path.join(tempDir, "tests", "state.test.js"), "export const ok = true;\n", "utf8");
+
+  updateConfig(tempDir, (config) => {
+    config.checks.performance = { enabled: true };
+  });
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = [
+    "src/state/store.js",
+    "src/state/reducer.js",
+    "src/state/hook.js",
+    "src/async/workflow.js",
+    "src/assets/large.png",
+    "tests/state.test.js"
+  ].join(path.delimiter);
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { review: true }, locale: "zh-CN" }))
+    );
+
+    assert.equal(result.findings.some((finding) => finding.code === "state-mgmt-complexity-multi-file"), true);
+    assert.equal(result.findings.some((finding) => finding.code === "async-risk-nested-then"), true);
+    assert.equal(result.findings.some((finding) => finding.code === "perf-degradation-large-asset"), true);
+    assert.match(
+      result.findings.find((finding) => finding.code === "state-mgmt-complexity-multi-file")?.message ?? "",
+      /同目录下 3\+ 文件变更涉及状态管理范围/
+    );
+    assert.match(
+      result.findings.find((finding) => finding.code === "async-risk-nested-then")?.message ?? "",
+      /在 src\/async\/workflow\.js 中检测到嵌套 \.then\(\) 链（3 层）/
+    );
+    assert.match(
+      result.findings.find((finding) => finding.code === "perf-degradation-large-asset")?.message ?? "",
+      /新增了大型资源文件/
+    );
+    assert.match(output, /连续性问题：/);
+    assert.match(output, /同目录下 3\+ 文件变更涉及状态管理范围|状态相关文件被修改：/);
+    assert.match(output, /在 src\/async\/workflow\.js 中检测到嵌套 \.then\(\) 链（3 层）/);
+    assert.match(output, /新增了大型资源文件/);
+    assert.match(output, /检测到异步逻辑风险模式，请确认已正确处理并发/);
+    assert.match(output, /检测到文件大幅增长，请确认是否需要拆分/);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
 export async function run() {
   await checkFailsWithoutTests();
   await checkPassesWithTests();
@@ -780,4 +901,6 @@ export async function run() {
   await checkPrintsReviewOutput();
   await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
+  await checkPrintsContinuityAndPerformanceReviewGroups();
+  await checkLocalizesDetectorMessagesInChinese();
 }

@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.13.0 - 2026-04-03
+
+### OSS Baseline Complete
+
+All 5 runtime/output harness gaps closed. OSS is now a fully functional merge gate.
+
+#### New features
+
+- **Continuity and performance findings** surface in `check --review` text output and summary
+- **Review finding suppression** — reduces redundant noise (e.g. overlapping continuity warnings) without hiding raw findings
+- **Bash tool interception** expanded to Claude daemon PostToolUse hooks
+- **Gemini CLI setup** installs native BeforeTool / AfterTool hooks
+- **`agent-guardrails doctor`** — minimal OSS installation diagnostic
+- **`enforce --all` / `unenforce --all`** — inject guardrail instructions into agent system-level files
+
+#### Improved
+
+- All OSS detector messages now use i18n-backed strings (en + zh-CN)
+- Performance findings include real file-size checks via `fs.statSync`
+- CI workflow uses cache-aware npm setup plus lightweight static verification
+
+#### Docs
+
+- Product positioning docs for overseas solo devs and small teams
+- Landing page copy, FAQ, DIY comparison, and pricing teaser
+- README updated with "Who it is for", "Why pay", and "Learn more" sections
+
 ## 0.12.0 - 2026-04-02
 
 ### Harness Engineering Audit Fixes

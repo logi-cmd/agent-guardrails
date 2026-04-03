@@ -12,8 +12,20 @@ agent-guardrails setup --agent gemini
 
 - auto-initialize the repo if needed
 - seed `GEMINI.md`
-- print the MCP snippet to paste into `~/.gemini/settings.json`
+- write `.gemini/settings.json` with MCP server config and BeforeTool/AfterTool hooks
+- install repo-local hook scripts for scope checking and post-edit verification
 - give you one recommended first chat message
+
+## Native hooks
+
+`setup` registers two Gemini CLI native hooks in `.gemini/settings.json`:
+
+| Hook | Event | Matcher | Purpose |
+|------|-------|---------|---------|
+| `gemini-pre-tool.cjs` | `BeforeTool` | `write_file\|replace\|edit\|run_shell_command` | Scope check before file writes |
+| `gemini-post-tool.cjs` | `AfterTool` | `write_file\|replace\|edit\|run_shell_command` | Post-check after file writes |
+
+Both hooks read the repo's `.agent-guardrails/config.json` and enforce allowed-paths scope. The pre-tool hook can deny out-of-scope writes. The post-tool hook surfaces guardrails findings as system messages.
 
 ## Recommended first chat
 
@@ -32,11 +44,14 @@ Gemini CLI should prefer:
 
 `suggest_task_contract` and `run_guardrail_check` remain available as lower-level MCP tools, but they are not the main first-run path.
 
-## Repo-local helper file
+## Repo-local helper files
 
 `setup` seeds:
 
 - `GEMINI.md`
+- `.agent-guardrails/hooks/gemini-pre-tool.cjs`
+- `.agent-guardrails/hooks/gemini-post-tool.cjs`
+- `.gemini/settings.json`
 
 ## Fallback
 

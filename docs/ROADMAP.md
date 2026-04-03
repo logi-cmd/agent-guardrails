@@ -50,21 +50,22 @@ Smart layer goes live with real diff analysis, persistent archaeology, and repo 
 - MCP structured output for `explain_change` and `query_archaeology`
 - 5-agent support with templates and daemon hooks
 
-## Phase 5 (Next)
+## Phase 5 (Current focus)
 
-With the smart layer shipped, focus shifts to broader proof and deeper language support.
+With the OSS baseline now functionally complete, focus shifts to broader proof, sharper packaging, and deeper language support.
 
 - clearer current language-support packaging in the docs and proof surface
 - Python as the next deeper ecosystem
 - ship a Python/FastAPI baseline proof slice before semantic-depth claims
 - a single proof asset for "what this catches that normal AI coding workflows miss"
 - early distribution through one proof page plus one sandbox-first trial path
-- expand diagnostic detector coverage beyond the initial three
 - refine code archaeology with module-level pattern learning
 - deploy-readiness verdicts
 - release and deploy checklist visibility
 - rollback and recovery guidance in production-shaped outputs
 - post-deploy maintenance summaries with operator next actions
+- homepage / proof / pricing packaging for overseas solo developers and small teams
+- clearer upgrade path from OSS trust layer to Pro Local efficiency layer
 
 ## Phase 6 (Later)
 

@@ -10,6 +10,28 @@
 - 🛡 **Protected paths** — critical files stay untouched
 - 🔧 **Auto-fix** — Tier-1 issues fixed automatically, zero side effects
 
+## Who it is for
+
+`agent-guardrails` is aimed first at **overseas solo developers and small teams** already using AI coding tools.
+
+- solo founders shipping real product code with Claude Code, Cursor, Codex, Gemini, or OpenCode
+- small product teams that want the same repo guardrails even when each developer uses a different agent
+- consultants and agencies that need safer AI-assisted changes across multiple client repos
+
+It is **not** primarily for one-off toy prompts or teams looking to replace their coding agent entirely.
+
+## Why pay if AI coding is already strong?
+
+AI coding tools already generate plenty of code. The paid opportunity is not "more code generation." It is:
+
+- **less manual setup** before each task
+- **faster trust decisions** at review time
+- **higher-signal repo-aware checks** than prompt text alone can provide
+- **lower maintenance drift** as AI edits accumulate over time
+- **safer deploy / rollback workflows** for people shipping without a large platform team
+
+OSS should remain a real merge gate. Paid tiers should help users get to a safe merge **faster, more consistently, and with less cognitive overhead**.
+
 ## Quick Start
 
 ```bash
@@ -98,21 +120,23 @@ agent-guardrails plan --task "Add user authentication"
 
 The product is moving toward **runtime-backed guardrails**, so the most important maintenance work is not adding more heuristics blindly — it is tightening the harness that controls them. The following priorities come from a harness-engineering audit across 8 dimensions (execution loop, agent topology, context management, failure recovery, hook completeness, evaluation design, loop detection, tool boundaries).
 
-**Critical (fix before next release):**
+**Recently shipped:**
 
-- close the Bash file-write bypass — hooks must cover `sed`, `tee`, `echo >` via the Bash tool, not just Write/Edit
-- add loop detection to prevent infinite MCP tool calls or redundant daemon checks
-- wire up session expiry cleanup to prevent memory leaks in long-running daemons
-- replace silent `null` returns with structured errors; add a circuit breaker for failing checks
+- Bash file-write interception now covers the Claude Code Bash tool path
+- MCP loop protection and daemon state-dedup guard against redundant checks
+- session expiry cleanup is wired up for long-running runtime state
+- structured runtime errors and circuit-breaker behavior replace silent failure paths
+- continuity / performance findings now surface in review output
+- lightweight reviewer-output suppression reduces redundant continuity noise without hiding raw findings
+- `enforce` / `unenforce` round-trip coverage runs in the default test path
+- release-facing docs and package version are checked for consistency
+- CI now uses cache-aware npm setup plus lightweight static verification
+- Gemini CLI setup now installs native BeforeTool / AfterTool hooks
+- `agent-guardrails doctor` provides a minimal OSS installation diagnostic path
 
-**Important (next sprint):**
+**Still open:**
 
-- make every shipped detector visible in review output
-- ensure safety-critical tests actually run in the default `npm test` path
-- add round-trip coverage for `enforce` / `unenforce`
-- add a false-positive suppression layer before review output
-- keep release-facing docs and package version in sync
-- keep CI fast and reproducible with cache-aware setup and lightweight static checks
+- keep Codex on the MCP/instructions fallback path until native hooks are stable beyond the current experimental Bash-only support
 
 **Principle**: prefer lightweight, reproducible checks over opaque "smart" behavior. Every harness component must justify itself against an observed failure mode.
 
@@ -126,6 +150,31 @@ If you are contributing, treat these as first-class product work, not just inter
 | "Tests probably passed?" | "Tests ran: 12 passed, 0 failed" |
 | "That looks like a new pattern" | "⚠️ Parallel abstraction detected" |
 | "Hope nothing breaks" | "✓ Safe to merge, residual risk: low" |
+
+## Why this beats a DIY plugin stack
+
+Many users already have Claude Code, Cursor, Codex, or Gemini plus custom prompts, hooks, and MCP tools.
+
+The reason to use `agent-guardrails` is not that those tools cannot generate code.
+It is that a DIY stack still leaves a lot of manual work around:
+
+- defining repo-safe boundaries before implementation
+- checking whether the diff stayed inside those boundaries
+- proving validation actually ran
+- summarizing residual risk for a human reviewer
+- keeping repeated AI edits from slowly fragmenting the repo
+
+`agent-guardrails` is strongest when users want to keep their current coding agent and add a repeatable trust layer on top.
+
+## Learn more
+
+If you want the product story, pricing story, and competitive framing in one place:
+
+- [Landing page copy](./docs/LANDING_PAGE_COPY.md)
+- [Pricing copy](./docs/PRICING_COPY.md)
+- [FAQ: Why buy this if I already have Claude / Cursor / Codex?](./docs/FAQ_WHY_BUY.md)
+- [DIY plugin stack vs agent-guardrails](./docs/DIY_VS_AGENT_GUARDRAILS.md)
+- [Proof: what this catches that normal AI coding workflows miss](./docs/PROOF.md)
 
 ## Three-layer Enforcement
 
@@ -156,7 +205,8 @@ If you are contributing, treat these as first-class product work, not just inter
 | `enforce --all` | Enforce rules (recommended) |
 | `unenforce --all` | Remove enforcement |
 | `plan --task "..."` | Create task contract |
-| `check --review` | Pre-merge check |
+| `check --review` | Run reviewer-facing guardrail check |
+| `doctor` | Diagnose current installation |
 | `start` | Start daemon |
 | `stop` | Stop daemon |
 | `status` | Show daemon status |

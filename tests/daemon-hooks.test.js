@@ -75,6 +75,7 @@ export async function run() {
     const content = fs.readFileSync(daemonPath, "utf8");
     check(content.includes("DAEMON_HOOK_ID"), "Claude hook should use DAEMON_HOOK_ID for idempotency");
     check(content.includes("alreadyInjected"), "should have idempotency check for Cursor/Codex");
+    check(content.includes('matcher: "Edit|Write|MultiEdit|Bash"'), "Claude daemon hook should include Bash matcher");
   }
 
   // Test 6: Core hook scripts exist and are non-empty

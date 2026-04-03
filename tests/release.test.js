@@ -46,10 +46,14 @@ export async function run() {
   const zhReadme = read("docs/zh-CN/README.md");
   const claudePreHookTemplate = read("templates/hooks/claude-code-pre-tool.cjs");
   const claudePostHookTemplate = read("templates/hooks/claude-code-post-tool.cjs");
+  const geminiPreHookTemplate = read("templates/hooks/gemini-pre-tool.cjs");
+  const geminiPostHookTemplate = read("templates/hooks/gemini-post-tool.cjs");
   const adapterDocs = [
     read("adapters/codex/README.md"),
     read("adapters/claude-code/README.md"),
-    read("adapters/cursor/README.md")
+    read("adapters/cursor/README.md"),
+    read("adapters/gemini/README.md"),
+    read("adapters/opencode/README.md")
   ];
 
   assert.doesNotMatch(packageJson.repository.url, /example/);
@@ -80,7 +84,7 @@ export async function run() {
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);
   assert.match(roadmap, /## Phase 3 \(Shipped\)/);
   assert.match(roadmap, /## Phase 4 \(Shipped/);
-  assert.match(roadmap, /## Phase 5 \(Next\)/);
+  assert.match(roadmap, /## Phase 5 \((Next|Current focus)\)/);
   assert.match(roadmap, /## Phase 6 \(Later\)/);
   assert.match(roadmap, /## Phase 7 \(Later\)/);
   assert.match(roadmap, /rough-intent mode/i);
@@ -132,11 +136,21 @@ export async function run() {
   assert.match(workflow, /npm run benchmark/);
   assert.match(workflow, /npm pack --dry-run/);
   assert.match(workflow, /node \.\/tests\/install-smoke\.js/);
+  assert.match(workflow, /cache: npm/);
+  assert.match(workflow, /static-verify/);
   assert.match(templateWorkflow, /npx agent-guardrails check/);
+  assert.match(templateWorkflow, /cache: npm/);
   assert.match(claudePreHookTemplate, /permissionDecision/);
   assert.match(claudePreHookTemplate, /PreToolUse/);
+  assert.match(claudePreHookTemplate, /Bash/);
+  assert.match(claudePreHookTemplate, /sed/);
+  assert.match(claudePreHookTemplate, /tee/);
   assert.match(claudePostHookTemplate, /systemMessage/);
   assert.match(claudePostHookTemplate, /agent-guardrails", "check/);
+  assert.match(geminiPreHookTemplate, /decision/);
+  assert.match(geminiPreHookTemplate, /write_file/);
+  assert.match(geminiPostHookTemplate, /systemMessage/);
+  assert.match(geminiPostHookTemplate, /agent-guardrails", "check/);
 
   for (const content of adapterDocs) {
     assert.match(content, /agent-guardrails setup --agent/);
@@ -150,6 +164,36 @@ export async function run() {
   assert.equal(fs.existsSync(path.join(repoRoot, "docs", "WORKFLOWS.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "examples", "python-fastapi-demo", "README.md")), true);
   assert.equal(fs.existsSync(path.join(repoRoot, "plugins", "plugin-ts", "package.json")), true);
+
+  // Version consistency: package.json version must match CHANGELOG top entry
+  const changelog = read("CHANGELOG.md");
+  const changelogTopVersion = changelog.match(/^## (\d+\.\d+\.\d+)/m);
+  assert.ok(changelogTopVersion, "CHANGELOG.md must have a version heading");
+  assert.equal(
+    packageJson.version,
+    changelogTopVersion[1],
+    `package.json version (${packageJson.version}) must match CHANGELOG top entry (${changelogTopVersion[1]})`
+  );
+
+  // Version consistency: package.json version must match PROJECT_STATE current version
+  const projectState = read("docs/PROJECT_STATE.md");
+  const stateVersionMatch = projectState.match(/\*\*v(\d+\.\d+\.\d+)\*\*/);
+  assert.ok(stateVersionMatch, "PROJECT_STATE.md must contain a **vX.Y.Z** current version line");
+  assert.equal(
+    packageJson.version,
+    stateVersionMatch[1],
+    `package.json version (${packageJson.version}) must match PROJECT_STATE current version (${stateVersionMatch[1]})`
+  );
+
+  // Version consistency: PROJECT_STATE last-updated line must not reference an older version
+  const stateUpdatedMatch = projectState.match(/Last updated:.*\(v(\d+\.\d+\.\d+)\)/);
+  if (stateUpdatedMatch) {
+    assert.equal(
+      packageJson.version,
+      stateUpdatedMatch[1],
+      `PROJECT_STATE "Last updated" references v${stateUpdatedMatch[1]} but package.json is ${packageJson.version}`
+    );
+  }
 
   const publishDryRun = runNpmPublishDryRun();
   assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);

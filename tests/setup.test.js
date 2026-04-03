@@ -8,7 +8,7 @@ const agentExpectations = [
   { agent: "codex", helperFile: null, expectsPaste: true },
   { agent: "claude-code", helperFile: "CLAUDE.md", expectsPaste: false },
   { agent: "cursor", helperFile: path.join(".cursor", "rules", "agent-guardrails.mdc"), expectsPaste: false },
-  { agent: "gemini", helperFile: "GEMINI.md", expectsPaste: true },
+  { agent: "gemini", helperFile: "GEMINI.md", expectsPaste: false },
   { agent: "opencode", helperFile: "AGENTS.md", expectsPaste: false }
 ];
 
@@ -76,9 +76,21 @@ export async function run() {
       const settings = JSON.parse(fs.readFileSync(path.join(tempDir, ".claude", "settings.json"), "utf8"));
       assert.equal(Array.isArray(settings.hooks.PreToolUse), true);
       assert.equal(Array.isArray(settings.hooks.PostToolUse), true);
-      assert.match(JSON.stringify(settings), /Write\|Edit\|MultiEdit/);
+      assert.match(JSON.stringify(settings), /Write\|Edit\|MultiEdit\|Bash/);
       assert.match(JSON.stringify(settings), /claude-code-pre-tool\.cjs/);
       assert.match(JSON.stringify(settings), /claude-code-post-tool\.cjs/);
+    }
+
+    if (agent === "gemini") {
+      assert.equal(fs.existsSync(path.join(tempDir, ".gemini", "settings.json")), true);
+      assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "hooks", "gemini-pre-tool.cjs")), true);
+      assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "hooks", "gemini-post-tool.cjs")), true);
+      const settings = JSON.parse(fs.readFileSync(path.join(tempDir, ".gemini", "settings.json"), "utf8"));
+      assert.equal(Array.isArray(settings.hooks.BeforeTool), true);
+      assert.equal(Array.isArray(settings.hooks.AfterTool), true);
+      assert.match(JSON.stringify(settings), /write_file\|replace\|edit\|run_shell_command/);
+      assert.match(JSON.stringify(settings), /gemini-pre-tool\.cjs/);
+      assert.match(JSON.stringify(settings), /gemini-post-tool\.cjs/);
     }
   }
 

@@ -20,6 +20,10 @@ const testModules = [
     path: "./check.test.js"
   },
   {
+    name: "enforce",
+    path: "./enforce.test.js"
+  },
+  {
     name: "plugin-ts",
     path: "./plugin-ts.test.js"
   },
@@ -58,6 +62,14 @@ const testModules = [
   {
     name: "release",
     path: "./release.test.js"
+  },
+  {
+    name: "config-validation",
+    path: "./config-validation.test.js"
+  },
+  {
+    name: "doctor",
+    path: "./doctor.test.js"
   }
 ];
 

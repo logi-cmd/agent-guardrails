@@ -16,8 +16,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-    env:
-      NPM_CONFIG_CACHE: ${{ github.workspace }}/.npm-cache
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +26,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+
+      - name: Static verification — repo shape
+        run: node ./tests/static-verify.js
 
       - name: Run unit and doc validation
         run: npm test

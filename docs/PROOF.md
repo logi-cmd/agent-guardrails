@@ -16,6 +16,20 @@ Use `agent-guardrails` when the code is already in a real repo and needs to be t
 | **Incidents prevented** | 95% of AI-related production issues caught at merge |
 | **Developer time saved** | 20-40 hours/month (less incident response) |
 
+## Why this is worth paying for even if AI coding is already strong
+
+Most early users will already have strong AI coding tools.
+
+The commercial value is not that `agent-guardrails` writes more code than Claude Code, Cursor, or Codex.
+The commercial value is that it makes AI-written code:
+
+- easier to trust
+- easier to review
+- easier to maintain after repeated AI sessions
+- safer to ship without building an internal workflow system
+
+That is especially relevant for solo developers, consultants, and small teams who already pay for AI generation but still carry the review and rollback burden themselves.
+
 ## Real-World Failure Cases
 
 See [FAILURE_CASES.md](./FAILURE_CASES.md) for documented cases where `agent-guardrails` would have prevented production incidents:

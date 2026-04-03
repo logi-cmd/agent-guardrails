@@ -6,7 +6,7 @@ import { PassThrough } from "node:stream";
 import { fileURLToPath } from "node:url";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
-import { startMcpServer } from "../lib/mcp/server.js";
+import { startMcpServer, LOOP_ORIENTED_TOOLS, DEFAULT_SESSION_CALL_LIMIT } from "../lib/mcp/server.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), "..");
@@ -274,4 +274,86 @@ export async function run() {
   }
 
   assert.equal(stderr.join("").trim(), "");
+
+  const limitInput = new PassThrough();
+  const limitOutput = new PassThrough();
+  const limitErrorOutput = new PassThrough();
+  const limitServerPromise = startMcpServer({
+    input: limitInput,
+    output: limitOutput,
+    errorOutput: limitErrorOutput,
+    repoRoot: tempDir,
+    sessionCallLimit: 3
+  });
+  const limitClient = createClient(limitOutput, limitInput);
+
+  try {
+    await limitClient.request("initialize", {
+      protocolVersion: "2024-11-05",
+      capabilities: {},
+      clientInfo: { name: "test-limit-client", version: "1.0.0" }
+    });
+    limitClient.notify("notifications/initialized");
+
+    const call1 = await limitClient.request("tools/call", {
+      name: "check_after_edit",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(call1.result, "call 1 should succeed");
+    assert.ok(call1.result.structuredContent, "call 1 should have structuredContent");
+
+    const call2 = await limitClient.request("tools/call", {
+      name: "check_after_edit",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(call2.result, "call 2 should succeed");
+
+    const call3 = await limitClient.request("tools/call", {
+      name: "check_after_edit",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(call3.result, "call 3 should succeed (at limit)");
+
+    const call4 = await limitClient.request("tools/call", {
+      name: "check_after_edit",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(call4.error, "call 4 should be rejected");
+    assert.equal(call4.error.code, -32020, "error code should be session call limit");
+    assert.equal(call4.error.data.limit, 3, "data.limit should be 3");
+    assert.equal(call4.error.data.current, 4, "data.current should be 4");
+    assert.equal(call4.error.data.tool, "check_after_edit");
+    assert.match(call4.error.message, /Session call limit exceeded/);
+
+    const guardResp = await limitClient.request("tools/call", {
+      name: "read_repo_guardrails",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(guardResp.result, "non-loop tools should still work after limit");
+    assert.equal(guardResp.result.structuredContent.preset, "node-service");
+
+    const otherBlocked = await limitClient.request("tools/call", {
+      name: "run_guardrail_check",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.ok(otherBlocked.error, "different loop tool should also be blocked");
+    assert.equal(otherBlocked.error.code, -32020);
+    assert.equal(otherBlocked.error.data.tool, "run_guardrail_check");
+  } finally {
+    limitInput.end();
+    await limitServerPromise;
+  }
+
+  assert.ok(LOOP_ORIENTED_TOOLS.has("check_after_edit"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("start_agent_native_loop"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("finish_agent_native_loop"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("run_guardrail_check"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("summarize_review_risks"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("explain_change"));
+  assert.ok(LOOP_ORIENTED_TOOLS.has("query_archaeology"));
+  assert.ok(!LOOP_ORIENTED_TOOLS.has("read_repo_guardrails"));
+  assert.ok(!LOOP_ORIENTED_TOOLS.has("suggest_task_contract"));
+  assert.ok(!LOOP_ORIENTED_TOOLS.has("plan_rough_intent"));
+  assert.ok(!LOOP_ORIENTED_TOOLS.has("read_daemon_status"));
+  assert.equal(DEFAULT_SESSION_CALL_LIMIT, 50);
 }
