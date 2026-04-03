@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" fill="#f8fafc" font-family="system-ui, sans-serif" font-size="26" font-weight="700">AI Agent Chat — Guardrails Auto-Trigger</text>
+  
+  <!-- Chat Window -->
+  <g transform="translate(100, 60)" filter="url(#shadow)">
+    <rect x="0" y="0" width="1000" height="620" rx="12" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+    
+    <!-- Title bar -->
+    <rect x="0" y="0" width="1000" height="40" rx="12" fill="#2d2d2d"/>
+    <rect x="0" y="20" width="1000" height="20" fill="#2d2d2d"/>
+    <circle cx="20" cy="20" r="6" fill="#ff5f56"/>
+    <circle cx="40" cy="20" r="6" fill="#ffbd2e"/>
+    <circle cx="60" cy="20" r="6" fill="#27c93f"/>
+    <text x="500" y="25" text-anchor="middle" fill="#999" font-family="system-ui, sans-serif" font-size="13">Claude Code — agent-guardrails demo</text>
+    
+    <!-- User message 1 -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="700" height="60" rx="12" fill="#2563eb"/>
+      <text x="16" y="25" fill="#fff" font-family="system-ui, sans-serif" font-size="13" font-weight="600">You</text>
+      <text x="16" y="45" fill="#e0e7ff" font-family="system-ui, sans-serif" font-size="14">Add user authentication with JWT tokens to the REST API</text>
+    </g>
+    
+    <!-- AI thinking -->
+    <g transform="translate(20, 135)">
+      <rect x="0" y="0" width="960" height="40" rx="8" fill="#2d2d2d" stroke="#404040" stroke-width="1"/>
+      <text x="16" y="25" fill="#a78bfa" font-family="system-ui, sans-serif" font-size="13">🤖 Claude Code is working...</text>
+      <circle cx="880" cy="20" r="4" fill="#a78bfa"><animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/></circle>
+      <circle cx="900" cy="20" r="4" fill="#a78bfa"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/></circle>
+      <circle cx="920" cy="20" r="4" fill="#a78bfa"><animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/></circle>
+    </g>
+    
+    <!-- Guardrails auto-trigger notification -->
+    <g transform="translate(20, 190)">
+      <rect x="0" y="0" width="960" height="120" rx="8" fill="#1a2332" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="16" y="25" fill="#22d3ee" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🛡 Agent Guardrails — Auto-Triggered</text>
+      <line x1="16" y1="35" x2="944" y2="35" stroke="#334155" stroke-width="1"/>
+      <text x="16" y="55" fill="#94a3b8" font-family="monospace" font-size="12">$ agent-guardrails check --base-ref HEAD~1</text>
+      <text x="16" y="75" fill="#34d399" font-family="monospace" font-size="12">✓ Scope: 4 files changed, all within allowed paths (src/, tests/)</text>
+      <text x="16" y="93" fill="#34d399" font-family="monospace" font-size="12">✓ Tests: npm test passed (24 passed, 0 failed)</text>
+      <text x="16" y="111" fill="#34d399" font-family="monospace" font-size="12">✓ Consistency: No parallel abstraction detected</text>
+    </g>
+    
+    <!-- AI response -->
+    <g transform="translate(20, 330)">
+      <rect x="0" y="0" width="960" height="200" rx="12" fill="#2d2d2d"/>
+      <text x="16" y="25" fill="#a78bfa" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Claude Code</text>
+      <text x="16" y="50" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="13">I've added JWT authentication to the REST API:</text>
+      <text x="16" y="75" fill="#34d399" font-family="monospace" font-size="12">+ src/auth/jwt.ts          — JWT token generation &amp; validation</text>
+      <text x="16" y="93" fill="#34d399" font-family="monospace" font-size="12">+ src/auth/middleware.ts   — Authentication middleware</text>
+      <text x="16" y="111" fill="#34d399" font-family="monospace" font-size="12">+ tests/auth.test.ts       — Auth flow tests (8 tests)</text>
+      <text x="16" y="129" fill="#fbbf24" font-family="monospace" font-size="12">~ src/routes/users.ts      — Protected /users endpoint</text>
+      <text x="16" y="155" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="13">All guardrail checks passed ✓. The changes are scoped to auth-related files only.</text>
+      <text x="16" y="175" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="13">Residual risk: low — ready for your review.</text>
+    </g>
+    
+    <!-- User message 2 -->
+    <g transform="translate(20, 550)">
+      <rect x="0" y="0" width="500" height="50" rx="12" fill="#2563eb"/>
+      <text x="16" y="20" fill="#fff" font-family="system-ui, sans-serif" font-size="13" font-weight="600">You</text>
+      <text x="16" y="38" fill="#e0e7ff" font-family="system-ui, sans-serif" font-size="13">Looks good, merge it</text>
+    </g>
+    
+    <!-- Merge badge -->
+    <g transform="translate(540, 555)">
+      <rect x="0" y="0" width="180" height="40" rx="20" fill="#22c55e"/>
+      <text x="90" y="25" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="15" font-weight="700">✓ Safe to Merge</text>
+    </g>
+  </g>
+</svg>

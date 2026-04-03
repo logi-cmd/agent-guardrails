@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <g stroke="#334155" stroke-width="0.5" opacity="0.3">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+  
+  <!-- Shield icon -->
+  <g transform="translate(540, 120)" filter="url(#glow)">
+    <path d="M60 0 L120 30 L120 90 C120 130 90 160 60 180 C30 160 0 130 0 90 L0 30 Z" fill="none" stroke="url(#accent)" stroke-width="3"/>
+    <path d="M45 90 L55 100 L75 75" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="380" text-anchor="middle" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800">Agent Guardrails</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="430" text-anchor="middle" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="400">Merge Gate for AI-Generated Code</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="480" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="300">Can you trust this AI change enough to merge it? Find out in 3 seconds.</text>
+  
+  <!-- Feature badges -->
+  <g transform="translate(200, 520)">
+    <rect x="0" y="0" width="160" height="36" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="80" y="23" text-anchor="middle" fill="#22d3ee" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🎯 Scope Validation</text>
+  </g>
+  <g transform="translate(400, 520)">
+    <rect x="0" y="0" width="160" height="36" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="80" y="23" text-anchor="middle" fill="#a78bfa" font-family="system-ui, sans-serif" font-size="14" font-weight="600">✅ Test Verification</text>
+  </g>
+  <g transform="translate(600, 520)">
+    <rect x="0" y="0" width="180" height="36" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="90" y="23" text-anchor="middle" fill="#f472b6" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🧬 Mutation Testing</text>
+  </g>
+  <g transform="translate(820, 520)">
+    <rect x="0" y="0" width="180" height="36" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="90" y="23" text-anchor="middle" fill="#34d399" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🛡 Protected Paths</text>
+  </g>
+</svg>

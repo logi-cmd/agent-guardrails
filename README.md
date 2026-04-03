@@ -1,6 +1,8 @@
 # Agent Guardrails
 
-**Can you trust this AI change enough to merge it? Find out in 3 seconds.**
+**[🇨🇳 中文版](./README.zh-CN.md)** | **[🇬🇧 English](./README.md)**
+
+![Agent Guardrails — Merge Gate for AI-Generated Code](./assets/hero-banner.svg)
 
 `agent-guardrails` is a **merge gate for AI-generated code**. It checks that AI changes match expectations *before* you merge.
 
@@ -48,6 +50,10 @@ agent-guardrails enforce --all
 ```
 
 Supports 5 agents: `claude-code`, `cursor`, `opencode`, `codex`, `gemini`.
+
+## How It Works
+
+![Core Workflow — Setup → Enforce → AI Codes → Check & Merge](./assets/workflow.svg)
 
 ## Core Workflow
 
@@ -102,6 +108,10 @@ agent-guardrails check --base-ref HEAD~1
 ```
 
 Results appear directly in the chat. The git pre-commit hook provides a safety net.
+
+![AI Agent Chat — Guardrails Auto-Trigger](./assets/agent-chat.svg)
+
+![Check Output — Review Mode](./assets/check-output.svg)
 
 **Manual check (optional):**
 
