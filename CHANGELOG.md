@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.2 - 2026-04-06
+
+### Docs: README cleanup
+
+Removed internal content not intended for public users from both English and Chinese READMEs:
+
+- Removed commercial strategy section ("Why pay if AI coding is already strong?")
+- Removed internal engineering notes ("Engineering Harness Priorities")
+- Removed maintainer development guide ("Maintainer Verification Loop")
+- Removed "Learn more" section with links to unpublished internal docs
+- Removed Docs links to unpublished files (Workflows, Roadmap, Contributing)
+- Removed geographic restriction ("overseas") from target audience description
+
 ## 0.14.1 - 2026-04-06
 
 ### Bug Fix: Parent Directory Detection
