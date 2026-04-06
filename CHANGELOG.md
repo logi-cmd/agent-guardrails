@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.14.1 - 2026-04-06
+
+### Bug Fix: Parent Directory Detection
+
+Fixed a bug where running `agent-guardrails check` (and other commands) inside a subdirectory of a larger git repository would incorrectly use the parent repository's `.git` for change detection. This caused the tool to report "no changes detected" even when files in the project had been modified.
+
+#### What changed
+
+- **`resolveGitRoot()` and `resolveRepoRoot()`** — new utilities in `lib/utils.js` that correctly determine the git repository root and the agent-guardrails project root using `git rev-parse --show-toplevel` with config-based fallback
+- **`listChangedFiles()` and `listChangedFilesFromBaseRef()`** — now execute git commands at the real git root and filter/relativize paths to the project directory, so changes are correctly scoped
+- **All CLI entry points** — `check`, `plan`, `doctor`, `setup`, `enforce`, `unenforce`, `mcp`, `start`, `stop`, `status` now use `resolveRepoRoot(process.cwd())` instead of bare `process.cwd()`
+- **`enforce.js`** — removed the buggy `findRepoRoot()` that walked up directory tree to find `.git` without verifying config location
+
+#### Cross-platform
+
+- Windows MSYS Git path normalization (`/c/Users/...` → `C:/Users/...`)
+- `path.delimiter` used for env var splitting (works on all platforms)
+- Path comparison normalized to `/` separators
+
+#### Tests
+
+- `listChangedFilesCorrectlyRelativizesSubdirectoryPaths` — parent repo + sub-directory scenario
+- `resolveRepoRootPrefersConfigAtStartDir` — cwd config takes priority
+- `resolveRepoRootFallsBackToGitRoot` — git root config as fallback
+
 ## 0.14.0 - 2026-04-04
 
 ### Mutation Testing Integration + Reviewer Alignment

@@ -7,7 +7,7 @@ import { runCheck } from "../lib/commands/check.js";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
 import { ossDetectors } from "../lib/check/detectors/oss.js";
-import { listChangedFiles } from "../lib/utils.js";
+import { listChangedFiles, resolveRepoRoot, resolveGitRoot } from "../lib/utils.js";
 
 function captureLogs(run) {
   const original = console.log;
@@ -1156,4 +1156,58 @@ export async function run() {
   await checkMutationTesterCountsSurvivorsDirectly();
   await checkMutationOssDetectorWarnsOnSurvivorsDirectly();
   await listChangedFilesKeepsLeadingCharacterFromGitPorcelain();
+  await listChangedFilesCorrectlyRelativizesSubdirectoryPaths();
+  await resolveRepoRootPrefersConfigAtStartDir();
+  await resolveRepoRootFallsBackToGitRoot();
+}
+
+async function listChangedFilesCorrectlyRelativizesSubdirectoryPaths() {
+  const parentDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-parent-"));
+
+  execFileSync("git", ["init"], { cwd: parentDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: parentDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: parentDir, stdio: "ignore" });
+
+  const subDir = path.join(parentDir, "sub-project");
+  fs.mkdirSync(path.join(subDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(subDir, "src", "main.js"), "export const main = true;\n", "utf8");
+  fs.writeFileSync(path.join(parentDir, "root-file.txt"), "root\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: parentDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "seed"], { cwd: parentDir, stdio: "ignore" });
+
+  fs.writeFileSync(path.join(subDir, "src", "main.js"), "export const main = false;\n", "utf8");
+  fs.writeFileSync(path.join(parentDir, "root-file.txt"), "root changed\n", "utf8");
+
+  const result = listChangedFiles(subDir);
+
+  assert.equal(result.error, null);
+  assert.deepEqual(result.files, ["src/main.js"]);
+  assert.equal(result.files.includes("root-file.txt"), false, "should not include files outside subdirectory");
+}
+
+async function resolveRepoRootPrefersConfigAtStartDir() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-resolve-1-"));
+
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+
+  const subDir = path.join(tempDir, "sub");
+  fs.mkdirSync(path.join(subDir, ".agent-guardrails"), { recursive: true });
+  fs.writeFileSync(path.join(subDir, ".agent-guardrails", "config.json"), JSON.stringify({ checks: {} }), "utf8");
+
+  const resolved = resolveRepoRoot(subDir);
+  assert.equal(resolved, subDir);
+}
+
+async function resolveRepoRootFallsBackToGitRoot() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-resolve-2-"));
+
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  fs.mkdirSync(path.join(tempDir, ".agent-guardrails"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, ".agent-guardrails", "config.json"), JSON.stringify({ checks: {} }), "utf8");
+
+  const subDir = path.join(tempDir, "sub");
+  fs.mkdirSync(subDir, { recursive: true });
+
+  const resolved = resolveRepoRoot(subDir);
+  assert.equal(resolved, tempDir, "should resolve to git root when config is there but not in subdirectory");
 }
