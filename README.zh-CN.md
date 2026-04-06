@@ -15,25 +15,13 @@
 
 ## 适用人群
 
-`agent-guardrails` 首要面向**已在使用 AI 编码工具的海外独立开发者和小型团队**。
+`agent-guardrails` 首要面向**已在使用 AI 编码工具的独立开发者和小型团队**。
 
 - 使用 Claude Code、Cursor、Codex、Gemini 或 OpenCode 交付真实产品代码的独立开发者
 - 希望每个开发者使用不同 agent 时仍能保持统一门禁的小型产品团队
 - 需要在多个客户仓库中更安全地进行 AI 辅助改动的顾问和外包团队
 
 它**不是**为一次性玩具 prompt 或想完全替换编码 agent 的团队设计的。
-
-## AI 编码已经很强了，为什么还要付费？
-
-AI 编码工具已经能生成大量代码。付费机会不在于"更多代码生成"，而在于：
-
-- 每次任务前**更少的手动配置**
-- 审查时**更快的信任决策**
-- 比纯 prompt 文本**更高信号强度的仓库感知检查**
-- AI 编辑累积时的**更低维护漂移**
-- 为没有大平台团队的人提供**更安全的部署/回滚工作流**
-
-OSS 应该保持真正的合并门禁。付费层级应该帮助用户**更快、更一致、更低认知负担**地达成安全合并。
 
 ## 快速开始
 
@@ -127,33 +115,6 @@ agent-guardrails check --review
 agent-guardrails plan --task "添加用户认证"
 ```
 
-## 工程Harness优先级
-
-产品正在向**运行时支持的门禁**方向发展，因此最重要的维护工作不是盲目添加更多启发式检查——而是收紧控制它们的 harness。以下优先级来自对 8 个维度（执行循环、agent 拓扑、上下文管理、故障恢复、hook 完整性、评估设计、循环检测、工具边界）的 harness-engineering 审计。
-
-**已交付：**
-
-- Bash 文件写入拦截现已覆盖 Claude Code Bash 工具路径
-- MCP 循环保护和 daemon 状态去重防止重复检查
-- session 过期清理已接入长时间运行的运行时状态
-- 结构化运行时错误和熔断行为替代了静默失败路径
-- 连续性/性能发现现在出现在审查输出中
-- 轻量审查输出抑制减少了冗余连续性噪音
-- `enforce` / `unenforce` 往返覆盖运行在默认测试路径中
-- 面向发布的文档和包版本一致性检查
-- CI 现在使用缓存感知的 npm 设置加轻量静态验证
-- Gemini CLI 设置现在安装原生 BeforeTool / AfterTool hooks
-- `agent-guardrails doctor` 提供最小 OSS 安装诊断路径
-- **可选轻量内置变异测试切片**已集成到 OSS 检查管道中（配置开关、默认关闭、仅警告、基线优先）
-- working-tree diff 解析修复，正确提取路径
-- 变异检测器、i18n 消息和 `listChangedFiles()` 的直接模块测试覆盖
-
-**仍开放：**
-
-- Codex 保持在 MCP/instructions 回退路径，直到原生 hook 支持稳定
-
-**原则**：优先轻量、可复现的检查，而非不透明的"智能"行为。每个 harness 组件必须针对观察到的故障模式证明自己的价值。
-
 ## 前后对比
 
 | 之前 | 之后 |
@@ -176,16 +137,6 @@ agent-guardrails plan --task "添加用户认证"
 - 防止重复 AI 编辑慢慢碎片化仓库
 
 当用户想保留当前编码 agent 并在上面叠加可复现的信任层时，`agent-guardrails` 最强。
-
-## 了解更多
-
-如果想一次性了解产品故事、定价策略和竞争对比：
-
-- [落地页文案](./docs/LANDING_PAGE_COPY.md)
-- [定价文案](./docs/PRICING_COPY.md)
-- [FAQ：我已经有 Claude / Cursor / Codex 了，为什么还要买这个？](./docs/FAQ_WHY_BUY.md)
-- [DIY 插件栈 vs agent-guardrails](./docs/DIY_VS_AGENT_GUARDRAILS.md)
-- [Proof：它能捕获到普通 AI 编码工作流遗漏的东西](./docs/PROOF.md)
 
 ## 三层强制
 
@@ -222,17 +173,6 @@ agent-guardrails plan --task "添加用户认证"
 | `stop` | 停止 daemon |
 | `status` | 显示 daemon 状态 |
 
-## 维护者验证循环
-
-对于有意义的改动，仓库应该可以通过一个小型可复现循环来验证：
-
-```bash
-npm test
-agent-guardrails check --review
-```
-
-当修改 setup、enforce、hooks 或面向发布的文档时，还应验证相关生成文件和文档与已发布版本保持一致。
-
 ## 安装与更新
 
 ```bash
@@ -246,10 +186,7 @@ npm update -g agent-guardrails
 ## 文档
 
 - [CHANGELOG](./CHANGELOG.md)
-- [工作流](./docs/WORKFLOWS.md)
 - [Proof](./docs/PROOF.md)
-- [路线图](./docs/ROADMAP.md)
-- [贡献指南](./CONTRIBUTING.md)
 
 ## 许可证
 
