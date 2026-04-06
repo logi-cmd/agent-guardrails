@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.14.4 - 2026-04-06
+
+### Fix: base-ref fallback when remote branch not found
+
+When `--base-ref` points to a non-existent ref (e.g. `origin/main` in a project without a remote), the check now falls back to `git diff HEAD` to detect working-tree changes instead of returning 0 files with an error.
+
+- Added fallback logic in `listChangedFilesFromBaseRef()`: tries `git diff HEAD` when the primary `baseRef...HEAD` diff fails
+- Added `base-ref-fallback` warning finding with actionable guidance (e.g. "add a remote for full baseline comparison")
+- Added i18n keys for the fallback warning in both English and Chinese
+
 ## 0.14.3 - 2026-04-06
 
 ### Docs: add prerequisites section
