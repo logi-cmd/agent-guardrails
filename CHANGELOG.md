@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.15.1 - 2026-04-06
+
+### Fix: suppress false config-or-migration warning for `.agent-guardrails/` files
+
+Files under `.agent-guardrails/` (e.g. `config.json`, `task-contract.json`, `evidence/`) are internal to agent-guardrails and were incorrectly classified as project config changes, triggering a `config-or-migration-change` warning on every `check` run.
+
+- Added `guardrails-internal` change type in `classifyChangeType()` — `.agent-guardrails/` paths now return `"guardrails-internal"` instead of `"config"`.
+- Removed `.agent-guardrails/` from the `config` classification branch.
+- Project config files (`package.json`, `tsconfig.json`, `.github/`, etc.) are completely unaffected.
+
 ## 0.15.0 - 2026-04-06
 
 ### New presets: static-frontend and generic
