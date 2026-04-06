@@ -23,13 +23,18 @@
 
 它**不是**为一次性玩具 prompt 或想完全替换编码 agent 的团队设计的。
 
+## 前置要求
+
+- **Node.js 18+**
+- **Git** — 项目必须是 git 仓库（`git init`）。所有变更检测都依赖 `git diff`。
+
 ## 快速开始
 
 ```bash
 # 1. 安装
 npm install -g agent-guardrails
 
-# 2. 在你的项目中设置
+# 2. 在你的项目中设置（必须是 git 仓库）
 cd your-repo
 agent-guardrails setup --agent claude-code
 

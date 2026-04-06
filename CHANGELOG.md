@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.3 - 2026-04-06
+
+### Docs: add prerequisites section
+
+Added a "Prerequisites" section to both English and Chinese READMEs clarifying that the project must be a git repository, since all change detection relies on `git diff`.
+
 ## 0.14.2 - 2026-04-06
 
 ### Docs: README cleanup

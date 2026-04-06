@@ -23,13 +23,18 @@
 
 It is **not** primarily for one-off toy prompts or teams looking to replace their coding agent entirely.
 
+## Prerequisites
+
+- **Node.js 18+**
+- **Git** — your project must be a git repository (`git init`). All change detection relies on `git diff`.
+
 ## Quick Start
 
 ```bash
 # 1. Install
 npm install -g agent-guardrails
 
-# 2. Set up in your project
+# 2. Set up in your project (must be a git repo)
 cd your-repo
 agent-guardrails setup --agent claude-code
 
