@@ -1127,6 +1127,206 @@ async function listChangedFilesKeepsLeadingCharacterFromGitPorcelain() {
   assert.deepEqual(result.files.sort(), ["docs/notes.md", "lib/feature.js", "tests/feature.test.js"]);
 }
 
+async function hardcodedSecretsDetectorWarnsOnApiKey() {
+  const detector = ossDetectors.find((d) => d.name === "hardcoded-secrets");
+  assert.ok(detector, "hardcoded-secrets detector should exist");
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "ag-security-secret-"));
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "test@test.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Test"], { cwd: tempDir, stdio: "ignore" });
+
+  const file = path.join(tempDir, "config.js");
+  fs.writeFileSync(file, 'const apiKey = "sk-ant-api03-fakekey12345678901234567890";\n', "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: tempDir,
+      changedFiles: ["config.js"],
+      policy: { security: { enabled: true, hardcodedSecrets: true } }
+    },
+    t(key, vars) {
+      if (key === "findings.secretsSafetyDetected") return `${vars.type} in ${vars.file}`;
+      if (key === "actions.secretsToEnvOrManager") return "Move secrets to env vars";
+      return key;
+    },
+    addFinding(finding) {
+      findings.push(finding);
+    }
+  });
+
+  assert.equal(findings.length > 0, true, "should detect at least one secret pattern");
+  assert.equal(findings[0].severity, "warning");
+  assert.equal(findings[0].code, "hardcoded-secrets");
+}
+
+async function hardcodedSecretsDetectorSkipsTestFiles() {
+  const detector = ossDetectors.find((d) => d.name === "hardcoded-secrets");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: "/tmp/fake",
+      changedFiles: ["config.test.js", "service.spec.ts"],
+      policy: { security: { enabled: true, hardcodedSecrets: true } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 0, "should skip test files");
+}
+
+async function hardcodedSecretsDetectorRespectsConfigGate() {
+  const detector = ossDetectors.find((d) => d.name === "hardcoded-secrets");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: "/tmp/fake",
+      changedFiles: ["config.js"],
+      policy: { security: { enabled: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 0, "should not run when security.enabled is false");
+
+  const findings2 = [];
+  await detector.run({
+    context: {
+      repoRoot: "/tmp/fake",
+      changedFiles: ["config.js"],
+      policy: { security: { enabled: true, hardcodedSecrets: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings2.push(finding); }
+  });
+
+  assert.equal(findings2.length, 0, "should not run when hardcodedSecrets is false");
+}
+
+async function unsafePatternsDetectorWarnsOnEval() {
+  const detector = ossDetectors.find((d) => d.name === "unsafe-patterns");
+  assert.ok(detector, "unsafe-patterns detector should exist");
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "ag-security-unsafe-"));
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "test@test.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Test"], { cwd: tempDir, stdio: "ignore" });
+
+  const file = path.join(tempDir, "danger.js");
+  fs.writeFileSync(file, "eval('user input');\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: tempDir,
+      changedFiles: ["danger.js"],
+      policy: { security: { enabled: true, unsafePatterns: true } }
+    },
+    t(key, vars) {
+      if (key === "findings.unsafePatternDetected") return `Unsafe in ${vars.file}: ${vars.patterns}`;
+      if (key === "actions.useSaferAlternative") return "Use safer alternatives";
+      return key;
+    },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].severity, "warning");
+  assert.equal(findings[0].code, "unsafe-patterns");
+}
+
+async function unsafePatternsDetectorRespectsConfigGate() {
+  const detector = ossDetectors.find((d) => d.name === "unsafe-patterns");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      repoRoot: "/tmp/fake",
+      changedFiles: ["danger.js"],
+      policy: { security: { enabled: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 0, "should not run when security.enabled is false");
+
+  const findings2 = [];
+  await detector.run({
+    context: {
+      repoRoot: "/tmp/fake",
+      changedFiles: ["danger.js"],
+      policy: { security: { enabled: true, unsafePatterns: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings2.push(finding); }
+  });
+
+  assert.equal(findings2.length, 0, "should not run when unsafePatterns is false");
+}
+
+async function sensitiveFileChangeDetectorWarnsOnEnvFiles() {
+  const detector = ossDetectors.find((d) => d.name === "sensitive-file-change");
+  assert.ok(detector, "sensitive-file-change detector should exist");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      changedFiles: [".env", "credentials.json", "server.key", "id_rsa"],
+      policy: { security: { enabled: true, sensitiveFiles: true } }
+    },
+    t(key, vars) {
+      if (key === "findings.sensitiveFileChanged") return `Sensitive: ${vars.files}`;
+      if (key === "actions.confirmNoRealCredentialsInGitignore") return "Check .gitignore";
+      return key;
+    },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].severity, "warning");
+  assert.equal(findings[0].code, "sensitive-file-change");
+  assert.ok(findings[0].files.includes(".env"));
+  assert.ok(findings[0].files.includes("credentials.json"));
+  assert.ok(findings[0].files.includes("server.key"));
+  assert.ok(findings[0].files.includes("id_rsa"));
+}
+
+async function sensitiveFileChangeDetectorRespectsConfigGate() {
+  const detector = ossDetectors.find((d) => d.name === "sensitive-file-change");
+
+  const findings = [];
+  await detector.run({
+    context: {
+      changedFiles: [".env"],
+      policy: { security: { enabled: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings.push(finding); }
+  });
+
+  assert.equal(findings.length, 0, "should not run when security.enabled is false");
+
+  const findings2 = [];
+  await detector.run({
+    context: {
+      changedFiles: [".env"],
+      policy: { security: { enabled: true, sensitiveFiles: false } }
+    },
+    t(key) { return key; },
+    addFinding(finding) { findings2.push(finding); }
+  });
+
+  assert.equal(findings2.length, 0, "should not run when sensitiveFiles is false");
+}
+
 export async function run() {
   await checkFailsWithoutTests();
   await checkPassesWithTests();
@@ -1155,6 +1355,13 @@ export async function run() {
   await checkMutationTesterReturnsBaselineFailureDirectly();
   await checkMutationTesterCountsSurvivorsDirectly();
   await checkMutationOssDetectorWarnsOnSurvivorsDirectly();
+  await hardcodedSecretsDetectorWarnsOnApiKey();
+  await hardcodedSecretsDetectorSkipsTestFiles();
+  await hardcodedSecretsDetectorRespectsConfigGate();
+  await unsafePatternsDetectorWarnsOnEval();
+  await unsafePatternsDetectorRespectsConfigGate();
+  await sensitiveFileChangeDetectorWarnsOnEnvFiles();
+  await sensitiveFileChangeDetectorRespectsConfigGate();
   await listChangedFilesKeepsLeadingCharacterFromGitPorcelain();
   await listChangedFilesCorrectlyRelativizesSubdirectoryPaths();
   await resolveRepoRootPrefersConfigAtStartDir();

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.16.0 - 2026-04-06
+
+### New: basic security hygiene warnings (OSS)
+
+Added three new warning-only detectors to catch the most common security issues introduced by AI coding agents:
+
+ - **Hardcoded secrets detection** — warns when diff contains potential API keys, passwords, tokens, and other credentials (uses regex matching, warning-only, does not block commits)
+ - **Unsafe pattern detection** — warns when diff contains `eval()`, `innerHTML`| `dangerouslySetInnerHTML`| `chmod 777`| `cors(*)`| `exec()`| `setTimeout(..., 0)` and similar patterns (warning-only)
+ - **Sensitive file change detection** — warns when `.env`, `credentials`, private key files, or `.htpasswd` are created or modified (warning-only, does not block commits)
+
+ All three detectors are config-gated (default: enabled) and produce warnings only, They do not replace dedicated security tools like Snyk or SonarQube/ CodeQL — they complement them existing scope/drift/test checks pipeline.
+
 ## 0.15.1 - 2026-04-06
 
 ### Fix: suppress false config-or-migration warning for `.agent-guardrails/` files

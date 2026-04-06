@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-06 (v0.15.1)
+Last updated: 2026-04-06 (v0.16.0)
 
 ## Current Version
 
-**v0.15.1** — Fix false config-or-migration warning for `.agent-guardrails/` files
+**v0.16.0** — Basic security hygiene warnings: hardcoded secrets, unsafe patterns, sensitive file changes
 
 ## Goal
 
@@ -22,6 +22,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - **base-ref fallback** (v0.14.4): when `--base-ref` points to a non-existent ref (e.g. `origin/main` without a remote), check falls back to `git diff HEAD` with an actionable warning instead of silently returning 0 files.
 - **`createFinding` runtime error fixed** (v0.14.5): missing import in `check.js` no longer crashes when base-ref fallback warning triggers.
 - **False config warning suppressed** (v0.15.1): `.agent-guardrails/` files now classified as `guardrails-internal` instead of `config`, eliminating the false `config-or-migration-change` warning on every check run.
+- **Basic security hygiene warnings** (v0.16.0): three new warning-only detectors — hardcoded secrets (API keys, passwords, tokens), unsafe code patterns (`eval()`, `innerHTML`, `chmod 777`), and sensitive file changes (`.env`, `credentials`, private keys). All are warning-only, never block, zero false-positive tolerance by default.
 - **README cleanup** (v0.14.2–0.14.3): removed internal strategy/engineering notes not intended for public users; added prerequisites section (must be a git repo); removed geographic restriction from target audience.
 - The OSS baseline includes Bash write interception, loop protection, daemon dedup, circuit-breaker behavior, continuity/performance review surfacing, i18n-backed baseline detector messages, a lightweight reviewer-output suppression layer, and an optional lightweight built-in mutation-testing slice.
 - Mutation testing is fully integrated into the OSS check pipeline with baseline-first execution, config-gated default-disabled behavior, and warning-only output.
