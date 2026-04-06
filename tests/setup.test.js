@@ -40,7 +40,7 @@ export async function run() {
 
     assert.equal(result.ok, true);
     assert.equal(result.initialization.autoInitialized, true);
-    assert.equal(result.initialization.preset, "node-service");
+    assert.equal(result.initialization.preset, "generic");
     assert.equal(fs.existsSync(path.join(tempDir, ".agent-guardrails", "config.json")), true);
     assert.match(output, /Agent Guardrails Setup/);
     assert.match(output, /Already done/);

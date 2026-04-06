@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "preset": "static-frontend",
+  "workflow": {
+    "planDefaults": {
+      "allowedPaths": [],
+      "requiredCommands": [],
+      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+    },
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE.md",
+      "README.md"
+    ],
+    "constraints": [
+      "Keep visual changes local and avoid broad style churn.",
+      "Prefer modifying existing CSS rules over adding new ones.",
+      "Keep HTML structure changes minimal and semantic."
+    ],
+    "definitionOfDone": [
+      "Visual changes respect existing design patterns.",
+      "The change stays within the configured file budget.",
+      "No unintended side effects on other pages or components."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 12,
+    "requireTestsWithSourceChanges": false,
+    "allowedPaths": [],
+    "consistency": {
+      "maxChangedFilesPerTask": 12,
+      "maxTopLevelEntries": 3,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": false,
+      "requireCommandsReported": false,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": [],
+    "sourceExtensions": [".html", ".css", ".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".svg", ".scss", ".less"],
+    "testRoots": [],
+    "testExtensions": [".js", ".ts"],
+    "testFileSignals": [".test.", ".spec."],
+    "mutation": {
+      "enabled": false,
+      "survivalThreshold": 50,
+      "maxMutations": 20,
+      "timeoutMs": 15000
+    }
+  },
+  "protectedAreas": [
+    {
+      "path": "index.html",
+      "label": "main entry page",
+      "minimumRiskLevel": "medium",
+      "requiresReviewNotes": true
+    }
+  ],
+  "productionProfiles": {
+    "default-frontend": {
+      "focus": ["correctness", "maintainability", "accessibility"],
+      "validationProfile": "standard"
+    }
+  },
+  "nfrPolicies": {
+    "performance": {
+      "evidenceHint": "Mention page load, render, or asset size impact in evidence."
+    },
+    "accessibility": {
+      "evidenceHint": "Mention a11y impact if HTML structure or interactive elements changed."
+    },
+    "understanding": {
+      "evidenceHint": "Explain the main tradeoffs so future maintainers can follow the change."
+    },
+    "continuity": {
+      "evidenceHint": "Mention reuse targets and any deliberate continuity break in evidence."
+    }
+  },
+  "languagePlugins": {},
+  "criticalPaths": ["index.html"],
+  "runtimeSurfaces": [],
+  "performanceSensitiveAreas": [],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}

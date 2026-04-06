@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.15.0 - 2026-04-06
+
+### New presets: static-frontend and generic
+
+Added two new presets to cover project types that previously had no suitable configuration:
+
+- **`static-frontend`** — for pure HTML/CSS/JS/Vue/Svelte frontend projects (no test commands required, sourceExtensions include `.html`, `.css`, `.vue`, `.svelte`, no protected areas for auth/billing)
+- **`generic`** — universal fallback preset for any project type (no assumptions about directory structure, test framework, or language)
+
+### Changed default preset from `node-service` to `generic`
+
+The `init` and `setup` commands now default to `generic` preset instead of `node-service`, so users with non-Node.js projects get a usable configuration out of the box.
+
 ## 0.14.5 - 2026-04-06
 
 ### Fix: createFinding runtime error

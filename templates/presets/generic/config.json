@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "preset": "generic",
+  "workflow": {
+    "planDefaults": {
+      "allowedPaths": [],
+      "requiredCommands": [],
+      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+    },
+    "readBeforeWrite": [
+      "AGENTS.md",
+      "README.md"
+    ],
+    "constraints": [
+      "Keep changes bounded and reviewable.",
+      "Prefer modifying existing files over creating new ones.",
+      "Match existing project conventions."
+    ],
+    "definitionOfDone": [
+      "The change stays within the configured file budget.",
+      "Project state is still accurate after meaningful work."
+    ]
+  },
+  "checks": {
+    "maxChangedFilesPerTask": 12,
+    "requireTestsWithSourceChanges": false,
+    "allowedPaths": [],
+    "consistency": {
+      "maxChangedFilesPerTask": 12,
+      "maxTopLevelEntries": 3,
+      "maxBreadthMultiplier": 2,
+      "warnOnBroadChanges": true
+    },
+    "correctness": {
+      "requireTestsWithSourceChanges": false,
+      "requireCommandsReported": false,
+      "requireEvidenceFiles": true
+    },
+    "risk": {
+      "requireReviewNotesForProtectedAreas": true,
+      "warnOnInterfaceChangesWithoutContract": true,
+      "warnOnConfigOrMigrationChanges": true
+    },
+    "sourceRoots": [],
+    "sourceExtensions": [".js", ".jsx", ".ts", ".tsx", ".py", ".rb", ".go", ".rs", ".java", ".html", ".css", ".scss", ".less", ".vue", ".svelte", ".php", ".c", ".cpp", ".h", ".m", ".sh", ".lua", ".swift"],
+    "testRoots": [],
+    "testExtensions": [".js", ".jsx", ".ts", ".tsx", ".py", ".rb", ".go", ".rs", ".java", ".swift"],
+    "testFileSignals": [".test.", ".spec.", "test_", "_test.", "_test."],
+    "mutation": {
+      "enabled": false,
+      "survivalThreshold": 50,
+      "maxMutations": 20,
+      "timeoutMs": 15000
+    }
+  },
+  "protectedAreas": [],
+  "productionProfiles": {},
+  "nfrPolicies": {
+    "security": {
+      "evidenceHint": "Mention auth, secrets, permissions, and sensitive-data handling explicitly."
+    },
+    "dependency": {
+      "evidenceHint": "Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."
+    },
+    "performance": {
+      "evidenceHint": "Mention performance, latency, or load impact in evidence."
+    },
+    "understanding": {
+      "evidenceHint": "Explain the main tradeoffs so future maintainers can follow the change."
+    },
+    "continuity": {
+      "evidenceHint": "Mention reuse targets and any deliberate continuity break in evidence."
+    }
+  },
+  "languagePlugins": {},
+  "criticalPaths": [],
+  "runtimeSurfaces": [],
+  "performanceSensitiveAreas": [],
+  "review": {
+    "includeEvidenceSummary": true
+  }
+}
