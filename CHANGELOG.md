@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.5 - 2026-04-06
+
+### Fix: createFinding runtime error
+
+Fixed `createFinding is not defined` error that occurred when the base-ref fallback warning was triggered during `check`. The `createFinding` function was used in `check.js` but not included in the import from `../check/finding.js`.
+
 ## 0.14.4 - 2026-04-06
 
 ### Fix: base-ref fallback when remote branch not found
