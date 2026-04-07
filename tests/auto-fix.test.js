@@ -137,6 +137,9 @@ async function runTests() {
   return failed === 0;
 }
 
-runTests().then(success => {
-  process.exit(success ? 0 : 1);
-});
+export async function run() {
+  const success = await runTests();
+  if (!success) {
+    throw new Error("Auto-fix tests failed");
+  }
+}

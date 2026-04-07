@@ -232,6 +232,7 @@ Controls how out-of-scope file changes are handled.
 | `unenforce --all` | Remove enforcement |
 | `plan --task "..."` | Create task contract |
 | `check --review` | Run reviewer-facing guardrail check |
+| `generate-agents` | Generate agent-specific config files |
 | `doctor` | Diagnose current installation |
 | `start` | Start daemon |
 | `stop` | Stop daemon |

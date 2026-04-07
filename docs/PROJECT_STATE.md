@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-07 (v0.18.1)
+Last updated: 2026-04-08 (v0.19.0)
 
 ## Current Version
 
-**v0.18.1** — OSS navigation features complete: warning recovery, suppress hints, Big Bang warning, scope expansion guidance, unified verdicts
+**v0.19.0** — Quality audit fixes: security hardening, code deduplication, i18n cleanup, test coverage improvement
 
 ## Goal
 

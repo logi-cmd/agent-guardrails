@@ -231,6 +231,7 @@ agent-guardrails plan --task "添加用户认证"
 | `unenforce --all` | 移除强制 |
 | `plan --task "..."` | 创建任务契约 |
 | `check --review` | 运行审查模式的门禁检查 |
+| `generate-agents` | 生成 agent 专用配置文件 |
 | `doctor` | 诊断当前安装 |
 | `start` | 启动 daemon |
 | `stop` | 停止 daemon |

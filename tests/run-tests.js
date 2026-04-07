@@ -40,6 +40,10 @@ const testModules = [
     path: "./agent-loop.test.js"
   },
   {
+    name: "auto-fix",
+    path: "./auto-fix.test.js"
+  },
+  {
     name: "mcp",
     path: "./mcp.test.js"
   },

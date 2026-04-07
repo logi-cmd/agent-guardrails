@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.0 - 2026-04-08
+
+### Fixed: Quality audit findings (P0+P1)
+
+- **P0**: `.gitignore` auto-fix had typo `.agent-guardrals` → `.agent-guardrails` — daemon.log was not being ignored
+- **P0**: `checkSyntax()` replaced `new Function()` with `node --check` subprocess — fixes ESM syntax validation and removes unsafe pattern
+- **P0**: `validator.js` replaced `exec()` with `execFileSync()` — eliminates shell injection surface
+- **P0**: Deleted dead code `getSuggestableIssues()` from fix/rules.js
+- **P1**: Extracted `toBoolean()` and `getParentScope()` to `utils.js` — eliminates 5 duplicate definitions
+- **P1**: `secrets-safety` detector now scans all files instead of stopping at first match
+- **P1**: `printTextResult()` migrated ~20 hardcoded strings to i18n system — new `check.*` keys in both locales
+- **P2**: Registered `auto-fix.test.js` in test runner
+- **P2**: Added `generate-agents` to README CLI Reference tables
+
 ## 0.18.1 - 2026-04-07
 
 ### Added: OSS navigation features complete
