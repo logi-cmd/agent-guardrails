@@ -24,11 +24,11 @@
     ]
   },
   "checks": {
-    "maxChangedFilesPerTask": 12,
+    "maxChangedFilesPerTask": 20,
     "requireTestsWithSourceChanges": false,
     "allowedPaths": [],
     "consistency": {
-      "maxChangedFilesPerTask": 12,
+      "maxChangedFilesPerTask": 20,
       "maxTopLevelEntries": 3,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true

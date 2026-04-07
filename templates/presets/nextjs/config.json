@@ -18,20 +18,22 @@
     "constraints": [
       "Preserve existing UI and routing patterns unless the task explicitly changes them.",
       "Prefer server/client boundaries already used in the repo.",
-      "Keep styling changes local and avoid broad visual churn."
+      "Keep styling changes local and avoid broad visual churn.",
+      "Run type-check (e.g. tsc --noEmit) alongside tests when the project uses TypeScript."
     ],
     "definitionOfDone": [
       "Behavioral UI changes include tests or targeted validation notes.",
+      "TypeScript errors are resolved or documented as known issues.",
       "The change respects the configured file budget.",
       "The implementation uses existing patterns for data loading and component structure."
     ]
   },
   "checks": {
-    "maxChangedFilesPerTask": 14,
+    "maxChangedFilesPerTask": 20,
     "requireTestsWithSourceChanges": true,
     "allowedPaths": [],
     "consistency": {
-      "maxChangedFilesPerTask": 14,
+      "maxChangedFilesPerTask": 20,
       "maxTopLevelEntries": 4,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true

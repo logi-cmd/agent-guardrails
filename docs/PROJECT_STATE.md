@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-06 (v0.16.0)
+Last updated: 2026-04-07 (v0.17.0)
 
 ## Current Version
 
-**v0.16.0** — Basic security hygiene warnings: hardcoded secrets, unsafe patterns, sensitive file changes
+**v0.17.0** — Composite scoring system, graduated verdicts, OSS debt cleanup
 
 ## Goal
 
@@ -23,6 +23,8 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - **`createFinding` runtime error fixed** (v0.14.5): missing import in `check.js` no longer crashes when base-ref fallback warning triggers.
 - **False config warning suppressed** (v0.15.1): `.agent-guardrails/` files now classified as `guardrails-internal` instead of `config`, eliminating the false `config-or-migration-change` warning on every check run.
 - **Basic security hygiene warnings** (v0.16.0): three new warning-only detectors — hardcoded secrets (API keys, passwords, tokens), unsafe code patterns (`eval()`, `innerHTML`, `chmod 777`), and sensitive file changes (`.env`, `credentials`, private keys). All are warning-only, never block, zero false-positive tolerance by default.
+- **Composite scoring system** (v0.17.0): upgraded binary pass/fail to a 0-100 trust score with graduated verdicts (safe-to-deploy / pass-with-concerns / needs-attention / high-risk / blocked). Configurable per-category weights, visual score bar in CLI and MCP output. Backward compatible — errors still cause exit code 1.
+- **OSS debt cleanup** (v0.17.0): removed TODO comments, synced self-repo config with template preset, removed dead code paths, removed reference to unpublished Python plugin, added type-check guidance to TS presets.
 - **README cleanup** (v0.14.2–0.14.3): removed internal strategy/engineering notes not intended for public users; added prerequisites section (must be a git repo); removed geographic restriction from target audience.
 - The OSS baseline includes Bash write interception, loop protection, daemon dedup, circuit-breaker behavior, continuity/performance review surfacing, i18n-backed baseline detector messages, a lightweight reviewer-output suppression layer, and an optional lightweight built-in mutation-testing slice.
 - Mutation testing is fully integrated into the OSS check pipeline with baseline-first execution, config-gated default-disabled behavior, and warning-only output.
@@ -87,7 +89,7 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 ## Known gaps
 
 - **Codex native hook path**: deferred until official support is stable beyond experimental Bash-only interception.
-- **Evaluation design**: Binary pass/fail with no composite scoring or configurable weights. Adequate for merge-gate use case but not for graduated enforcement.
+- **Evaluation design**: Upgraded from binary pass/fail to composite scoring with configurable weights and graduated verdicts. Score is informational; errors still cause exit code 1.
 - **Trust calipers**: partially shipped. An optional lightweight built-in mutation-testing slice (Caliper 3) is now shipped in OSS. Type-check and coverage gates remain trivial preset edits (not yet done). Full mutation integration, independent review, context handoff, and runtime smoke tests are still proposal-stage.
 - **Mutation testing in OSS**: the built-in tester applies basic mutations (boolean flips, operator swaps, literal replacements) to detect the most egregious cases of vacuous tests. It is config-gated, requires an explicit runnable `testCommand`, and skips to a warning if the baseline command fails. It improves evidence that tests are non-vacuous. It does not prove correctness or comprehensive coverage, and does not replace stronger tools like Stryker or mutmut.
 - **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis belongs to Pro.

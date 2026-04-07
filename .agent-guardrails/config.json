@@ -35,11 +35,11 @@
     ]
   },
   "checks": {
-    "maxChangedFilesPerTask": 12,
+    "maxChangedFilesPerTask": 20,
     "requireTestsWithSourceChanges": true,
     "allowedPaths": [],
     "consistency": {
-      "maxChangedFilesPerTask": 12,
+      "maxChangedFilesPerTask": 20,
       "maxTopLevelEntries": 3,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true
@@ -75,7 +75,13 @@
     "testFileSignals": [
       ".test.",
       ".spec."
-    ]
+    ],
+    "mutation": {
+      "enabled": false,
+      "survivalThreshold": 50,
+      "maxMutations": 20,
+      "timeoutMs": 15000
+    }
   },
   "protectedAreas": [
     {

@@ -17,7 +17,8 @@
     "constraints": [
       "Prefer touching one package or app slice at a time.",
       "Do not introduce cross-package coupling without explicit justification.",
-      "Keep shared-contract changes paired with downstream updates and tests."
+      "Keep shared-contract changes paired with downstream updates and tests.",
+      "Run type-check (e.g. tsc --noEmit) alongside tests when packages use TypeScript."
     ],
     "definitionOfDone": [
       "Changed packages remain bounded and reviewable.",
@@ -26,11 +27,11 @@
     ]
   },
   "checks": {
-    "maxChangedFilesPerTask": 16,
+    "maxChangedFilesPerTask": 24,
     "requireTestsWithSourceChanges": true,
     "allowedPaths": [],
     "consistency": {
-      "maxChangedFilesPerTask": 16,
+      "maxChangedFilesPerTask": 24,
       "maxTopLevelEntries": 4,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true

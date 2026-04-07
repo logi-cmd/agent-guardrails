@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.17.0 - 2026-04-07
+
+### New: composite scoring system
+
+The binary pass/fail evaluation is now supplemented with a 0-100 **trust score** and graduated verdicts. Every check run produces a score based on findings, displayed as a visual bar in CLI and MCP output.
+
+- **Trust score**: starts at 100, each error deducts 15 points, each warning deducts 5 points, clamped at 0
+- **Graduated verdicts**: safe-to-deploy (≥90) / pass-with-concerns (≥70) / needs-attention (≥40) / high-risk (<40) / blocked (any error)
+- **Score bar**: `📊 Trust Score: ████████░░ 80/100 (pass-with-concerns)` in all output channels
+- **Configurable weights**: optional `scoring.weights` in config.json per category (scope/validation/consistency/continuity/performance/risk), auto-normalized to sum to 100
+- **Backward compatible**: `ok` and exit code logic unchanged — errors still cause exit code 1
+
+### Chores: OSS debt cleanup
+
+- Removed 3 TODO comments (parser.js, CHANGELOG.md, fix/rules.js)
+- Synced self-repo config.json with template preset (maxChangedFilesPerTask 12→20, added mutation block)
+- Removed dead `getSuggestableIssues` export from fix/index.js (no tier2 rules exist)
+- Removed reference to unpublished `@agent-guardrails/plugin-python` from python-fastapi preset
+- Added type-check guidance to nextjs and monorepo preset constraints and definition-of-done
+
+## 0.16.1 - 2026-04-07
+
+### Changed: file budget severity downgraded to warning, default raised to 20
+
+The file-budget check (`changed-file-budget-exceeded`) now produces a **warning** instead of an **error**. The default `maxChangedFilesPerTask` is raised from 12 to 20 (monorepo preset: 24). This reflects real-world AI coding patterns where legitimate tasks sometimes exceed the old 12-file budget, and an error-level block was too aggressive.
+
+Changes:
+- `consistency-budgets` detector severity: `error` → `warning`
+- Default fallback in `policy.js`: `12` → `20`
+- Preset updates: `node-service` 12→20, `generic` 12→20, `nextjs` 14→20, `static-frontend` 12→20, `python-fastapi` 12→20, `monorepo` 16→24
+
 ## 0.16.0 - 2026-04-06
 
 ### New: basic security hygiene warnings (OSS)
@@ -637,7 +668,7 @@ Minor release focused on user experience improvement and Rough-Intent mode.
 
 - **README**: Added visual diagrams (workflow, before-after, rough-intent)
 - **i18n**: Added Rough-Intent translation keys for English and Chinese
-- **OSS/Pro Boundary**: Rough-Intent core is OSS; semantic inference is Pro (TODO)
+- **OSS/Pro Boundary**: Rough-Intent core is OSS; semantic inference is Pro
 
 ### Example Usage
 

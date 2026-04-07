@@ -26,11 +26,11 @@
     ]
   },
   "checks": {
-    "maxChangedFilesPerTask": 12,
+    "maxChangedFilesPerTask": 20,
     "requireTestsWithSourceChanges": true,
     "allowedPaths": [],
     "consistency": {
-      "maxChangedFilesPerTask": 12,
+      "maxChangedFilesPerTask": 20,
       "maxTopLevelEntries": 3,
       "maxBreadthMultiplier": 2,
       "warnOnBroadChanges": true
@@ -107,9 +107,7 @@
       "evidenceHint": "Mention logs, metrics, tracing, or monitoring impact in evidence."
     }
   },
-  "languagePlugins": {
-    "python": ["@agent-guardrails/plugin-python"]
-  },
+  "languagePlugins": {},
   "criticalPaths": ["app/api/", "app/auth/", "alembic/"],
   "runtimeSurfaces": ["app/", "alembic/"],
   "performanceSensitiveAreas": ["app/api/", "app/cache/", "app/queue/"],
