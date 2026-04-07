@@ -250,6 +250,7 @@ npm update -g agent-guardrails
 
 - [CHANGELOG](./CHANGELOG.md)
 - [Proof](./docs/PROOF.md)
+- [Roadmap](./docs/ROADMAP.md)
 
 ## 许可证
 
