@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-07 (v0.19.0)
+Last updated: 2026-04-07 (v0.18.1)
 
 ## Current Version
 
-**v0.19.0** — Pro tier first release: per-category score breakdown, auto file budget, smart change decomposition, context quality validation
+**v0.18.1** — OSS navigation features complete: warning recovery, suppress hints, Big Bang warning, scope expansion guidance, unified verdicts
 
 ## Goal
 
