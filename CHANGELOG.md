@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.19.0 - 2026-04-07
+
+### Added: Pro tier — first release
+
+Introduces the Pro tier with 4 features that reduce manual work and improve signal quality. Pro is activated by setting `pro.licenseKey` in `.agent-guardrails/config.json`.
+
+- **Per-category score breakdown**: Each of the 6 scoring categories (scope, validation, consistency, continuity, performance, risk) gets its own 0-100 score with visual bars. Displayed after the overall score bar in CLI output.
+- **Auto maxChangedFiles recommendation**: Analyzes repo size to recommend a reasonable file budget. Surfaced as a nextAction hint when the current budget differs from the recommendation.
+- **Smart change decomposition**: When a Big Bang change is detected, analyzes file grouping by top-level directory and suggests how to split into 2-4 focused batches with file lists and estimated line counts.
+- **Context quality validation**: Checks whether the AI had sufficient context (intended files, framework detection, test presence, evidence file) and scores context quality 0-100. Low scores generate actionable recommendations.
+
+### Architecture
+
+- New `lib/check/pro/` directory with 5 modules: tier detection, scoring, recommendations, context quality, orchestrator
+- Pro modules loaded via dynamic `import()` with try/catch fallback — OSS behavior is unchanged when Pro is not configured
+- `SEVERITY_PENALTY` exported from `scoring.js` for Pro module reuse
+- 6 new i18n keys in both English and Chinese
+
 ## 0.18.1 - 2026-04-07
 
 ### Added: OSS navigation features complete
