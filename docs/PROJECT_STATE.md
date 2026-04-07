@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-07 (v0.17.1)
+Last updated: 2026-04-07 (v0.18.1)
 
 ## Current Version
 
-**v0.17.1** — Phase 0 bug fixes: i18n locale, scoring weights, doc alignment
+**v0.18.1** — OSS navigation features complete: warning recovery, suppress hints, Big Bang warning, scope expansion guidance, unified verdicts
 
 ## Goal
 
@@ -26,6 +26,10 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - **Composite scoring system** (v0.17.0): upgraded binary pass/fail to a 0-100 trust score with graduated verdicts (safe-to-deploy / pass-with-concerns / needs-attention / high-risk / blocked). Configurable per-category weights, visual score bar in CLI and MCP output. Backward compatible — errors still cause exit code 1.
 - **OSS debt cleanup** (v0.17.0): removed TODO comments, synced self-repo config with template preset, removed dead code paths, removed reference to unpublished Python plugin, added type-check guidance to TS presets.
 - **Phase 0 bug fixes** (v0.17.1): scoring.js weights now actually affect scoring (was a functional bug); i18n English locale fixed (4 Chinese strings); CLI help i18n-backed; OSS_PRO_BOUNDARY.md trust score classification corrected; README feature list updated with v0.16.0 security + v0.17.0 scoring.
+- **Check output UX overhaul** (v0.18.0): `printTextResult()` completely rewritten — score bar + verdict at top, next actions prioritized, verdict-aware closing, collapsed details, cost awareness block.
+- **Graduated scope enforcement** (v0.18.0): Configurable `scope.violationSeverity` (error/warning), `scope.violationBudget` for minor overflow, acknowledged-skips for scope, graduated threshold in all 6 presets.
+- **OSS navigation features** (v0.18.1): Warning recovery guidance (9 new recovery templates), suppress/acknowledge hints on findings (`skipKey` field + CLI hint), Big Bang warning detector, scope expansion guidance in nextActions, unified verdict system.
+- **README Configuration docs** (v0.18.0+): Added complete Configuration section to both README.md and README.zh-CN.md covering scope, consistency, correctness, scoring, and risk settings.
 - **README cleanup** (v0.14.2–0.14.3): removed internal strategy/engineering notes not intended for public users; added prerequisites section (must be a git repo); removed geographic restriction from target audience.
 - The OSS baseline includes Bash write interception, loop protection, daemon dedup, circuit-breaker behavior, continuity/performance review surfacing, i18n-backed baseline detector messages, a lightweight reviewer-output suppression layer, and an optional lightweight built-in mutation-testing slice.
 - Mutation testing is fully integrated into the OSS check pipeline with baseline-first execution, config-gated default-disabled behavior, and warning-only output.
@@ -74,22 +78,22 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 11. Version consistency checks across release-facing docs — **DONE**
 12. Minimal static verification and cache-aware CI — **DONE**
 
-**Planned (check output UX — P0 usability):**
+**Shipped (check output UX — v0.18.0):**
 
-28. Verdict interpretation — one-line explanation after verdict — **PLANNED**
-29. Trust score bar in CLI output — `formatScoreBar()` exists but never called — **PLANNED**
-30. Next actions moved to top of output — **PLANNED**
-31. Verdict-aware closing message — replace misleading "All checks passed" — **PLANNED**
-32. Recovery guidance for warnings — extend `buildRecoveryGuidance()` — **PLANNED**
-33. Suppress/acknowledge hint for findings — **PLANNED**
+28. Verdict interpretation — one-line explanation after verdict — **DONE** (v0.18.0)
+29. Trust score bar in CLI output — `formatScoreBar()` now called — **DONE** (v0.18.0)
+30. Next actions moved to top of output — **DONE** (v0.18.0)
+31. Verdict-aware closing message — **DONE** (v0.18.0)
 
-**Planned (scope management — P0 practicality):**
+**Shipped (scope management — v0.18.0+v0.18.1):**
 
-34. Configurable scope violation severity (`scopeViolationSeverity`) — **PLANNED**
-35. acknowledged-skips extended to scope violations — **PLANNED**
-36. Basic graduated scope thresholds (warning → error at configurable file count) — **PLANNED**
-37. Big Bang warning with alternative guidance — **PLANNED**
-38. "How to expand scope" in nextActions — **PLANNED**
+32. Recovery guidance for warnings — **DONE** (v0.18.1)
+33. Suppress/acknowledge hint for findings — **DONE** (v0.18.1)
+34. Configurable scope violation severity — **DONE** (v0.18.0)
+35. acknowledged-skips extended to scope violations — **DONE** (v0.18.0)
+36. Basic graduated scope thresholds — **DONE** (v0.18.0)
+37. Big Bang warning with alternative guidance — **DONE** (v0.18.1)
+38. "How to expand scope" in nextActions — **DONE** (v0.18.1)
 
 **Pro candidates (deferred):**
 
@@ -148,9 +152,9 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 ## Known gaps
 
 - **Codex native hook path**: deferred until official support is stable beyond experimental Bash-only interception.
-- **Check output UX**: CLI output is data-dump style with no actionable guidance. MCP output is significantly better. Score bar function exists but is never called. Next actions are buried after 20+ lines of data. This is the top OSS priority to fix.
-- **Scope enforcement for large changes**: all three scope violation types are hard errors with no graduated thresholds. File-budget is only a warning. This creates a block → rollback → retry loop that makes the tool impractical for large refactors. Fix: configurable severity + graduated thresholds + acknowledged-skips for scope.
-- **Two disconnected verdict systems**: `result.verdict` (service.js) and `result.scoreVerdict` (scoring.js) are computed independently. CLI only shows the former. The latter is lost in text output.
+- **Check output UX (v0.18.0+)**: CLI output completely restructured with score bar, verdict interpretation, next actions at top, verdict-aware closing, and cost awareness. Warning recovery guidance and suppress hints added in v0.18.1.
+- **Scope enforcement (v0.18.0+v0.18.1)**: Configurable severity, graduated thresholds, acknowledged-skips, Big Bang warning, and scope expansion guidance. All OSS scope features complete.
+- **Verdict system unified (v0.18.1)**: `result.verdict` now uses `scoreVerdict` values when the generic default would apply. Two verdict sources still exist but produce consistent results.
 - **Evaluation design**: Upgraded from binary pass/fail to composite scoring with configurable weights and graduated verdicts. Score is informational; errors still cause exit code 1. Weights now actually affect scoring (v0.17.1 fix).
 - **Trust calipers**: partially shipped. An optional lightweight built-in mutation-testing slice (Caliper 3) is now shipped in OSS. Type-check and coverage gates remain trivial preset edits (not yet done). Full mutation integration, independent review, context handoff, and runtime smoke tests are still proposal-stage.
 - **Mutation testing in OSS**: the built-in tester applies basic mutations (boolean flips, operator swaps, literal replacements) to detect the most egregious cases of vacuous tests. It is config-gated, requires an explicit runnable `testCommand`, and skips to a warning if the baseline command fails. It improves evidence that tests are non-vacuous. It does not prove correctness or comprehensive coverage, and does not replace stronger tools like Stryker or mutmut.

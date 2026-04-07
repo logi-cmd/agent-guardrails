@@ -237,7 +237,7 @@ export async function run() {
       }
     });
     assert.equal(checkResponse.result.structuredContent.ok, true);
-    assert.equal(checkResponse.result.structuredContent.verdict, "Safe to review");
+    assert.equal(checkResponse.result.structuredContent.verdict, "Safe to deploy");
     assert.equal(typeof checkResponse.result.structuredContent.continuity, "object");
     assert.match(checkResponse.result.structuredContent.finishCheck.recommendedCommand, /agent-guardrails check --review/);
 

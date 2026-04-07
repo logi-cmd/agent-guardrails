@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.1 - 2026-04-07
+
+### Added: OSS navigation features complete
+
+- **Warning recovery guidance (#32)**: `buildRecoveryGuidance()` now provides actionable fix suggestions for WARNING findings, not just errors. 9 new recovery templates added (file budget, breadth, config change, unsafe patterns, sensitive files, large change, scope, continuity).
+- **Suppress/acknowledge hints (#33)**: Findings now carry a `skipKey` field. CLI output shows `💡 To suppress: add '--acknowledged-skips <key>' to your plan command` for error-level findings that can be downgraded. New skip keys: `breadth`, `big-bang`.
+- **Big Bang warning (#37)**: New `big-bang-warning` detector fires when a change exceeds 15 files, 3+ top-level directories, and 300+ added lines simultaneously. Suggests splitting into focused tasks. Suppressed via `--acknowledged-skips big-bang`.
+- **Scope expansion guidance (#38)**: When scope violations are detected, nextActions now include specific instructions on how to expand scope (via `--allow-paths` or `--acknowledged-skips scope`).
+- **Unified verdict system**: `result.verdict` now uses `scoreVerdict` enum values when the default "Safe to review" would apply, producing more informative verdicts like "Pass with concerns" and "Needs attention".
+- **15 new i18n keys** in both English and Chinese (recovery guidance, suppress hints, Big Bang finding/action, scope expansion guidance, verdict strings).
+
 ## 0.18.0 - 2026-04-07
 
 
