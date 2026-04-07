@@ -167,6 +167,62 @@ It is that a DIY stack still leaves a lot of manual work around:
 
 **Key difference**: define boundaries *before* code generation, not *after* discovering problems.
 
+## Configuration
+
+All settings live in `.agent-guardrails/config.json`, created by `setup`. Key sections:
+
+### Scope (`checks.scope`)
+
+Controls how out-of-scope file changes are handled.
+
+```json
+{
+  "checks": {
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
+    }
+  }
+}
+```
+
+| Field | Default | Values | Description |
+|-------|---------|--------|-------------|
+| `violationSeverity` | `"error"` | `"error"` \| `"warning"` | Severity for scope violations. `"error"` blocks merge; `"warning"` lets acknowledged violations pass. |
+| `violationBudget` | `5` | Number | Minor scope slips within this count are surfaced as soft warnings instead of hard errors. Only applies when explicit scope (allowedPaths, intendedFiles) is not configured. |
+
+**Tip**: Keep `violationSeverity` at `"error"` (default) for safety-first workflows. Lower to `"warning"` only for exploratory prototyping where scope flexibility is acceptable.
+
+### Consistency (`checks.consistency`)
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `maxChangedFilesPerTask` | `20` | Maximum files per task before warning |
+| `maxTopLevelEntries` | `3` | Maximum unique top-level directories |
+| `maxBreadthMultiplier` | `2` | Breadth multiplier for change diffusion |
+
+### Correctness (`checks.correctness`)
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `requireTestsWithSourceChanges` | Preset-dependent | Require test file changes when source files change |
+| `requireCommandsReported` | Preset-dependent | Require validation commands to be reported as run |
+| `requireEvidenceFiles` | `true` | Require evidence file to exist |
+
+### Scoring (`scoring`)
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `weights` | Category defaults | Per-category weights (scope, validation, consistency, continuity, performance, risk), auto-normalized to 100 |
+
+### Risk (`checks.risk`)
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `requireReviewNotesForProtectedAreas` | `true` | Require review notes when touching protected paths |
+| `warnOnInterfaceChangesWithoutContract` | `true` | Warn on interface changes not in task contract |
+| `warnOnConfigOrMigrationChanges` | `true` | Warn on config/migration file changes |
+
 ## CLI Reference
 
 | Command | Purpose |

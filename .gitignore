@@ -30,6 +30,8 @@ memory/
 nul
 opencode.json
 CLAUDE.md
+AGENTS.md
+GEMINI.md
 plugins/plugin-ts/package-lock.json
 plugins/plugin-ts/test-ast-parser.js
 

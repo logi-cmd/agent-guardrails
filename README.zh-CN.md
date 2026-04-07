@@ -166,6 +166,62 @@ agent-guardrails plan --task "添加用户认证"
 
 **关键区别**：在代码生成*之前*定义边界，而不是发现问题*之后*。
 
+## 配置
+
+所有设置都在 `.agent-guardrails/config.json` 中，由 `setup` 命令创建。主要配置项：
+
+### 范围控制 (`checks.scope`)
+
+控制 AI 超出范围修改文件时的处理方式。
+
+```json
+{
+  "checks": {
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
+    }
+  }
+}
+```
+
+| 字段 | 默认值 | 可选值 | 说明 |
+|------|--------|--------|------|
+| `violationSeverity` | `"error"` | `"error"` \| `"warning"` | 范围违规的严重级别。`"error"` 阻断合并；`"warning"` 允许已确认的违规通过。 |
+| `violationBudget` | `5` | 数字 | 在此数量内的轻微范围溢出会以软警告形式提示，而非硬阻断。仅在未配置明确范围（allowedPaths、intendedFiles）时生效。 |
+
+**提示**：安全优先的工作流建议保持 `violationSeverity` 为 `"error"`（默认值）。仅在探索性原型开发中降低为 `"warning"`。
+
+### 一致性 (`checks.consistency`)
+
+| 字段 | 默认值 | 说明 |
+|------|--------|------|
+| `maxChangedFilesPerTask` | `20` | 单个任务允许修改的最大文件数（超出时警告） |
+| `maxTopLevelEntries` | `3` | 允许触及的最大顶层目录数 |
+| `maxBreadthMultiplier` | `2` | 变更扩散倍数 |
+
+### 正确性 (`checks.correctness`)
+
+| 字段 | 默认值 | 说明 |
+|------|--------|------|
+| `requireTestsWithSourceChanges` | 取决于 preset | 修改源文件时是否要求同时修改测试文件 |
+| `requireCommandsReported` | 取决于 preset | 是否要求验证命令已报告执行 |
+| `requireEvidenceFiles` | `true` | 是否要求 evidence 文件存在 |
+
+### 评分 (`scoring`)
+
+| 字段 | 默认值 | 说明 |
+|------|--------|------|
+| `weights` | 各分类默认值 | 每个分类的权重（scope、validation、consistency、continuity、performance、risk），自动归一化到总和 100 |
+
+### 风险 (`checks.risk`)
+
+| 字段 | 默认值 | 说明 |
+|------|--------|------|
+| `requireReviewNotesForProtectedAreas` | `true` | 触及受保护路径时是否要求 review 说明 |
+| `warnOnInterfaceChangesWithoutContract` | `true` | 未在任务契约中声明的接口变更是否警告 |
+| `warnOnConfigOrMigrationChanges` | `true` | 配置或迁移文件变更是否警告 |
+
 ## CLI 参考
 
 | 命令 | 用途 |
