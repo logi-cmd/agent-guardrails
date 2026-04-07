@@ -10,6 +10,8 @@
 - ✅ **Test verification** — tests must pass
 - 🔍 **Drift detection** — catches parallel abstractions, interface changes
 - 🛡 **Protected paths** — critical files stay untouched
+- 🔒 **Security hygiene** — warns on hardcoded secrets, unsafe patterns, sensitive file changes
+- 📊 **Trust score** — 0-100 composite score with graduated verdicts
 - 🔧 **Auto-fix** — Tier-1 issues fixed automatically, zero side effects
 - 🧬 **Mutation testing** — optional lightweight built-in slice catches vacuous tests (config-gated, default-disabled)
 

@@ -5,7 +5,9 @@
     "planDefaults": {
       "allowedPaths": [],
       "requiredCommands": [],
-      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+      "evidencePaths": [
+        ".agent-guardrails/evidence/current-task.md"
+      ]
     },
     "readBeforeWrite": [
       "AGENTS.md",
@@ -44,15 +46,37 @@
       "warnOnConfigOrMigrationChanges": true
     },
     "sourceRoots": [],
-    "sourceExtensions": [".html", ".css", ".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".svg", ".scss", ".less"],
+    "sourceExtensions": [
+      ".html",
+      ".css",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".vue",
+      ".svelte",
+      ".svg",
+      ".scss",
+      ".less"
+    ],
     "testRoots": [],
-    "testExtensions": [".js", ".ts"],
-    "testFileSignals": [".test.", ".spec."],
+    "testExtensions": [
+      ".js",
+      ".ts"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec."
+    ],
     "mutation": {
       "enabled": false,
       "survivalThreshold": 50,
       "maxMutations": 20,
       "timeoutMs": 15000
+    },
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
     }
   },
   "protectedAreas": [
@@ -65,7 +89,11 @@
   ],
   "productionProfiles": {
     "default-frontend": {
-      "focus": ["correctness", "maintainability", "accessibility"],
+      "focus": [
+        "correctness",
+        "maintainability",
+        "accessibility"
+      ],
       "validationProfile": "standard"
     }
   },
@@ -84,7 +112,9 @@
     }
   },
   "languagePlugins": {},
-  "criticalPaths": ["index.html"],
+  "criticalPaths": [
+    "index.html"
+  ],
   "runtimeSurfaces": [],
   "performanceSensitiveAreas": [],
   "review": {

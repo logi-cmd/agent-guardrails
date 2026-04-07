@@ -1,10 +1,10 @@
 # Project State
 
-Last updated: 2026-04-07 (v0.17.0)
+Last updated: 2026-04-07 (v0.17.1)
 
 ## Current Version
 
-**v0.17.0** — Composite scoring system, graduated verdicts, OSS debt cleanup
+**v0.17.1** — Phase 0 bug fixes: i18n locale, scoring weights, doc alignment
 
 ## Goal
 
@@ -25,15 +25,41 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - **Basic security hygiene warnings** (v0.16.0): three new warning-only detectors — hardcoded secrets (API keys, passwords, tokens), unsafe code patterns (`eval()`, `innerHTML`, `chmod 777`), and sensitive file changes (`.env`, `credentials`, private keys). All are warning-only, never block, zero false-positive tolerance by default.
 - **Composite scoring system** (v0.17.0): upgraded binary pass/fail to a 0-100 trust score with graduated verdicts (safe-to-deploy / pass-with-concerns / needs-attention / high-risk / blocked). Configurable per-category weights, visual score bar in CLI and MCP output. Backward compatible — errors still cause exit code 1.
 - **OSS debt cleanup** (v0.17.0): removed TODO comments, synced self-repo config with template preset, removed dead code paths, removed reference to unpublished Python plugin, added type-check guidance to TS presets.
+- **Phase 0 bug fixes** (v0.17.1): scoring.js weights now actually affect scoring (was a functional bug); i18n English locale fixed (4 Chinese strings); CLI help i18n-backed; OSS_PRO_BOUNDARY.md trust score classification corrected; README feature list updated with v0.16.0 security + v0.17.0 scoring.
 - **README cleanup** (v0.14.2–0.14.3): removed internal strategy/engineering notes not intended for public users; added prerequisites section (must be a git repo); removed geographic restriction from target audience.
 - The OSS baseline includes Bash write interception, loop protection, daemon dedup, circuit-breaker behavior, continuity/performance review surfacing, i18n-backed baseline detector messages, a lightweight reviewer-output suppression layer, and an optional lightweight built-in mutation-testing slice.
 - Mutation testing is fully integrated into the OSS check pipeline with baseline-first execution, config-gated default-disabled behavior, and warning-only output.
 
+## Strategic Direction Update (2026-04-07)
+
+Deep analysis revealed three systemic problems and a product direction adjustment:
+
+### Core insight: from "wall" to "navigator"
+
+The current product design is **wall-style** (block/reject). Users consistently hit walls without constructive escape paths:
+- Check output shows raw data with no actionable guidance
+- Large changes always exceed scope → block → rollback → retry loop
+- No context quality awareness → AI works without understanding project patterns
+
+**Target**: agent-guardrails should be a **navigator** — guiding AI toward correct behavior, not just blocking incorrect behavior.
+
+### Three problem areas (prioritized)
+
+1. **Check output UX** (P0 — usability gate): After `check`, users don't know what to do. Fix: verdict interpretation, score bar, next actions at top, warning recovery guidance. All OSS (merge gate usability).
+
+2. **Scope management for large changes** (P0 — practicality gate): AI always exceeds binary scope → block → rollback. Fix: configurable severity, graduated thresholds, acknowledged-skips for scope, Big Bang warning. OSS (basic flexibility) + Pro (intelligent decomposition).
+
+3. **Context/memory quality** (P1 — Pro differentiator): AI loses context, doesn't learn patterns. Fix: context quality validation, intelligent context selection, pattern learning, cross-session consolidation. All Pro (memory quality assurance layer on top of Cursor/Aider/Claude Code indexing).
+
+See `docs/OSS_PRO_BOUNDARY.md` for the full updated feature matrix.
+
 ## Next Steps
 
-### OSS Baseline — Complete
+### OSS Baseline — Complete (functional); Usability — Planned
 
-The intended OSS merge-gate baseline is complete for the current product boundary:
+The intended OSS merge-gate baseline is complete for the current product boundary. Deep analysis identified UX gaps that make the gate impractical for real-world use. These are now planned:
+
+**Already shipped:**
 
 1. Hook: Bash file-write interception — **DONE**
 2. Loop detection and daemon dedup — **DONE**
@@ -47,6 +73,36 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 10. Config/task-contract validation — **DONE**
 11. Version consistency checks across release-facing docs — **DONE**
 12. Minimal static verification and cache-aware CI — **DONE**
+
+**Planned (check output UX — P0 usability):**
+
+28. Verdict interpretation — one-line explanation after verdict — **PLANNED**
+29. Trust score bar in CLI output — `formatScoreBar()` exists but never called — **PLANNED**
+30. Next actions moved to top of output — **PLANNED**
+31. Verdict-aware closing message — replace misleading "All checks passed" — **PLANNED**
+32. Recovery guidance for warnings — extend `buildRecoveryGuidance()` — **PLANNED**
+33. Suppress/acknowledge hint for findings — **PLANNED**
+
+**Planned (scope management — P0 practicality):**
+
+34. Configurable scope violation severity (`scopeViolationSeverity`) — **PLANNED**
+35. acknowledged-skips extended to scope violations — **PLANNED**
+36. Basic graduated scope thresholds (warning → error at configurable file count) — **PLANNED**
+37. Big Bang warning with alternative guidance — **PLANNED**
+38. "How to expand scope" in nextActions — **PLANNED**
+
+**Pro candidates (deferred):**
+
+39. Intelligent "next step" with file-level suggestions
+40. Auto maxChangedFiles recommendation (repo-aware)
+41. Smart change decomposition ("suggest splitting into batches")
+42. Dependency-aware scope analysis
+43. Progressive scope auto-expansion
+44. Context quality validation
+45. Intelligent context selection
+46. Pattern learning
+47. Cross-session context consolidation
+48. Metacognitive self-verification
 
 ### Mutation Testing Integration — Complete
 
@@ -85,12 +141,19 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 | Route/plan mistakes (agent picks wrong approach) | OSS task contracts make intent explicit before code is written. `plan` constrains scope upfront. | Pro adds auto contract generation, repo pattern learning, smarter suggestions. | Guaranteeing the plan is strategically correct. |
 | Long-context / session memory decay | OSS has no session continuity mechanism. Each task starts from the contract only. | Pro adds structured context handoff, session management, context compression. | Solving long-context degradation at the model layer. |
 | Objective calipers (external tools the agent cannot influence) | OSS ships an optional lightweight built-in mutation-testing slice (basic mutations: boolean flips, operator swaps, literal replacements) when explicitly enabled with a runnable test command. Users can also wire in type-check, coverage, and external mutation-testing commands as required commands. | Pro adds automatic caliper configuration, full mutation testing integration (Stryker/mutmut, diff-scoped runs, survivor thresholds, historical tracking), independent review, runtime smoke tests. | Formal verification. Runtime smoke tests are a later phase. Mutation testing improves evidence that tests are non-vacuous; it does not prove correctness or comprehensive coverage. |
+| Post-check guidance (user doesn't know what to do) | CLI output shows raw data without interpretation. MCP output is better but still lacks actionable specificity. | Pro adds intelligent file-level "what to do next" suggestions, automatic fix suggestions based on project patterns, history-aware remediation. | Replacing human judgment. |
+| Large change scope enforcement (block → rollback loop) | All scope violations are hard errors. No graduated thresholds or constructive escape paths. | Pro adds smart change decomposition, dependency-aware scope analysis, progressive auto-expansion. | Eliminating all scope violations. |
+| AI context quality (agent works without project awareness) | Task contracts provide structured working context. AGENTS.md provides persistent project context. No awareness of context freshness or completeness. | Pro adds context quality validation, intelligent context selection, pattern learning, cross-session consolidation. | Building its own codebase indexer (Cursor/Aider territory). Pro sits above existing tools as a quality assurance layer. |
 
 ## Known gaps
 
 - **Codex native hook path**: deferred until official support is stable beyond experimental Bash-only interception.
-- **Evaluation design**: Upgraded from binary pass/fail to composite scoring with configurable weights and graduated verdicts. Score is informational; errors still cause exit code 1.
+- **Check output UX**: CLI output is data-dump style with no actionable guidance. MCP output is significantly better. Score bar function exists but is never called. Next actions are buried after 20+ lines of data. This is the top OSS priority to fix.
+- **Scope enforcement for large changes**: all three scope violation types are hard errors with no graduated thresholds. File-budget is only a warning. This creates a block → rollback → retry loop that makes the tool impractical for large refactors. Fix: configurable severity + graduated thresholds + acknowledged-skips for scope.
+- **Two disconnected verdict systems**: `result.verdict` (service.js) and `result.scoreVerdict` (scoring.js) are computed independently. CLI only shows the former. The latter is lost in text output.
+- **Evaluation design**: Upgraded from binary pass/fail to composite scoring with configurable weights and graduated verdicts. Score is informational; errors still cause exit code 1. Weights now actually affect scoring (v0.17.1 fix).
 - **Trust calipers**: partially shipped. An optional lightweight built-in mutation-testing slice (Caliper 3) is now shipped in OSS. Type-check and coverage gates remain trivial preset edits (not yet done). Full mutation integration, independent review, context handoff, and runtime smoke tests are still proposal-stage.
 - **Mutation testing in OSS**: the built-in tester applies basic mutations (boolean flips, operator swaps, literal replacements) to detect the most egregious cases of vacuous tests. It is config-gated, requires an explicit runnable `testCommand`, and skips to a warning if the baseline command fails. It improves evidence that tests are non-vacuous. It does not prove correctness or comprehensive coverage, and does not replace stronger tools like Stryker or mutmut.
 - **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis belongs to Pro.
-- **Commercial packaging**: the next challenge is no longer whether OSS works as a merge gate, but how clearly the project communicates the upgrade from OSS trust layer to Pro Local efficiency/depth layer for solo developers and small teams.
+- **Context/memory quality**: OSS provides structured working context (task contracts, evidence, AGENTS.md). No awareness of context freshness, completeness, or project patterns. Pro will add context quality validation, pattern learning, and cross-session consolidation as a memory quality assurance layer above existing tools (Cursor, Aider, Claude Code).
+- **Commercial packaging**: the next challenge is no longer whether OSS works as a merge gate, but how clearly the project communicates the upgrade from OSS trust layer to Pro Local efficiency/depth layer for solo developers and small teams. Three Pro differentiators are now clearly identified: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).

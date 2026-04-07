@@ -104,7 +104,7 @@ async function checkPassesWithTests() {
     const { output, result } = await withRepoCwd(tempDir, () => captureLogs(() => runCheck({ locale: "en" })));
 
     assert.equal(result.ok, true);
-    assert.match(output, /All baseline guardrail checks passed/);
+    assert.match(output, /All checks passed/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
   }
@@ -485,7 +485,7 @@ async function checkIgnoresTheGeneratedTaskContractFile() {
     const { output, result } = await withRepoCwd(tempDir, () => captureLogs(() => runCheck({ locale: "en" })));
 
     assert.equal(result.ok, true);
-    assert.match(output, /All baseline guardrail checks passed/);
+    assert.match(output, /All checks passed/);
     assert.match(result.finishCheck.nextActions.join("\n"), /Keep security, dependency, performance, understanding, continuity concerns explicit/i);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
@@ -632,7 +632,7 @@ async function checkPrintsReviewOutput() {
     assert.equal(result.ok, false);
     assert.equal(result.verdict, "Validation incomplete");
     assert.match(output, /Review summary:/);
-    assert.match(output, /Verdict: Validation incomplete/);
+    assert.match(output, /Trust Score.*\(blocked\)/);
     assert.match(output, /Missing validation:/);
     assert.match(output, /\[error\] Source files changed without any accompanying test changes/);
     assert.match(output, /Finish-time command:/);
@@ -696,7 +696,7 @@ async function checkMarksProductionReadyChangesAsSafeToDeploy() {
     assert.equal(result.postDeployMaintenance.observabilityStatus, "covered");
     assert.match(result.deployReadiness.checklist.join("\n"), /Rollback path recorded/i);
     assert.match(result.postDeployMaintenance.operatorNextActions.join("\n"), /rollback path/i);
-    assert.match(output, /Verdict: Safe to deploy/);
+    assert.match(output, /\(safe-to-deploy\)/);
     assert.match(output, /Deploy readiness:/);
     assert.match(output, /Post-deploy maintenance:/);
   } finally {

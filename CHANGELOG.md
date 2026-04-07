@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.18.0 - 2026-04-07
+
+
+
+### Fixed: Phase 0 bug fixes and doc alignment
+
+- **scoring.js weights now work**: `computeCompositeScore()` now applies per-category weights when provided. Previously the `weights` parameter was accepted but completely ignored — a functional bug.
+- **i18n English locale fixed**: 4 strings in `lib/i18n.js` that were Chinese in the English locale (`ciDetected`, `hookInjected`, `hookSkipped`, `slashInstalled`) are now proper English.
+- **CLI help i18n**: `generate-agents` command description is now i18n-backed (`cli.generateAgentsSummary`) instead of a hardcoded string.
+- **OSS_PRO_BOUNDARY.md updated**: Trust Score (0-100) is now correctly marked as OSS (shipped in v0.17.0), not Pro-only. Pro differentiation clarified: per-category breakdown, historical trends, confidence calibration.
+- **README feature list updated**: README.md and README.zh-CN.md now list security hygiene warnings (v0.16.0) and trust score (v0.17.0) as shipping features.
+
 ## 0.17.0 - 2026-04-07
 
 ### New: composite scoring system

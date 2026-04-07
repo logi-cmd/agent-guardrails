@@ -3,9 +3,18 @@
   "preset": "node-service",
   "workflow": {
     "planDefaults": {
-      "allowedPaths": ["src/", "lib/", "test/", "tests/"],
-      "requiredCommands": ["npm test"],
-      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+      "allowedPaths": [
+        "src/",
+        "lib/",
+        "test/",
+        "tests/"
+      ],
+      "requiredCommands": [
+        "npm test"
+      ],
+      "evidencePaths": [
+        ".agent-guardrails/evidence/current-task.md"
+      ]
     },
     "readBeforeWrite": [
       "AGENTS.md",
@@ -45,16 +54,37 @@
       "warnOnInterfaceChangesWithoutContract": true,
       "warnOnConfigOrMigrationChanges": true
     },
-    "sourceRoots": ["src", "lib"],
-    "sourceExtensions": [".js", ".mjs", ".cjs", ".ts"],
-    "testRoots": ["test", "tests"],
-    "testExtensions": [".js", ".ts"],
-    "testFileSignals": [".test.", ".spec."],
+    "sourceRoots": [
+      "src",
+      "lib"
+    ],
+    "sourceExtensions": [
+      ".js",
+      ".mjs",
+      ".cjs",
+      ".ts"
+    ],
+    "testRoots": [
+      "test",
+      "tests"
+    ],
+    "testExtensions": [
+      ".js",
+      ".ts"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec."
+    ],
     "mutation": {
       "enabled": false,
       "survivalThreshold": 50,
       "maxMutations": 20,
       "timeoutMs": 15000
+    },
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
     }
   },
   "protectedAreas": [
@@ -85,11 +115,21 @@
   ],
   "productionProfiles": {
     "default-service": {
-      "focus": ["correctness", "reliability", "maintainability", "observability"],
+      "focus": [
+        "correctness",
+        "reliability",
+        "maintainability",
+        "observability"
+      ],
       "validationProfile": "standard"
     },
     "high-throughput-api": {
-      "focus": ["performance", "concurrency", "reliability", "observability"],
+      "focus": [
+        "performance",
+        "concurrency",
+        "reliability",
+        "observability"
+      ],
       "validationProfile": "strict"
     }
   },
@@ -117,11 +157,24 @@
     }
   },
   "languagePlugins": {
-    "javascript": ["@agent-guardrails/plugin-ts"]
+    "javascript": [
+      "@agent-guardrails/plugin-ts"
+    ]
   },
-  "criticalPaths": ["src/auth/", "src/billing/", "src/contracts/"],
-  "runtimeSurfaces": ["src/", "infra/"],
-  "performanceSensitiveAreas": ["src/billing/", "src/cache/", "src/queue/"],
+  "criticalPaths": [
+    "src/auth/",
+    "src/billing/",
+    "src/contracts/"
+  ],
+  "runtimeSurfaces": [
+    "src/",
+    "infra/"
+  ],
+  "performanceSensitiveAreas": [
+    "src/billing/",
+    "src/cache/",
+    "src/queue/"
+  ],
   "review": {
     "includeEvidenceSummary": true
   }

@@ -5,7 +5,9 @@
     "planDefaults": {
       "allowedPaths": [],
       "requiredCommands": [],
-      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+      "evidencePaths": [
+        ".agent-guardrails/evidence/current-task.md"
+      ]
     },
     "readBeforeWrite": [
       "AGENTS.md",
@@ -42,15 +44,60 @@
       "warnOnConfigOrMigrationChanges": true
     },
     "sourceRoots": [],
-    "sourceExtensions": [".js", ".jsx", ".ts", ".tsx", ".py", ".rb", ".go", ".rs", ".java", ".html", ".css", ".scss", ".less", ".vue", ".svelte", ".php", ".c", ".cpp", ".h", ".m", ".sh", ".lua", ".swift"],
+    "sourceExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".py",
+      ".rb",
+      ".go",
+      ".rs",
+      ".java",
+      ".html",
+      ".css",
+      ".scss",
+      ".less",
+      ".vue",
+      ".svelte",
+      ".php",
+      ".c",
+      ".cpp",
+      ".h",
+      ".m",
+      ".sh",
+      ".lua",
+      ".swift"
+    ],
     "testRoots": [],
-    "testExtensions": [".js", ".jsx", ".ts", ".tsx", ".py", ".rb", ".go", ".rs", ".java", ".swift"],
-    "testFileSignals": [".test.", ".spec.", "test_", "_test.", "_test."],
+    "testExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".py",
+      ".rb",
+      ".go",
+      ".rs",
+      ".java",
+      ".swift"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec.",
+      "test_",
+      "_test.",
+      "_test."
+    ],
     "mutation": {
       "enabled": false,
       "survivalThreshold": 50,
       "maxMutations": 20,
       "timeoutMs": 15000
+    },
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
     }
   },
   "protectedAreas": [],

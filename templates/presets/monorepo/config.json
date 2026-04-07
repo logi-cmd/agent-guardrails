@@ -3,9 +3,17 @@
   "preset": "monorepo",
   "workflow": {
     "planDefaults": {
-      "allowedPaths": ["apps/", "packages/", "tests/"],
-      "requiredCommands": ["npm test"],
-      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+      "allowedPaths": [
+        "apps/",
+        "packages/",
+        "tests/"
+      ],
+      "requiredCommands": [
+        "npm test"
+      ],
+      "evidencePaths": [
+        ".agent-guardrails/evidence/current-task.md"
+      ]
     },
     "readBeforeWrite": [
       "AGENTS.md",
@@ -46,16 +54,42 @@
       "warnOnInterfaceChangesWithoutContract": true,
       "warnOnConfigOrMigrationChanges": true
     },
-    "sourceRoots": ["apps", "packages"],
-    "sourceExtensions": [".js", ".jsx", ".ts", ".tsx", ".py"],
-    "testRoots": ["tests"],
-    "testExtensions": [".js", ".jsx", ".ts", ".tsx", ".py"],
-    "testFileSignals": [".test.", ".spec.", "test_", "_test.py"],
+    "sourceRoots": [
+      "apps",
+      "packages"
+    ],
+    "sourceExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".py"
+    ],
+    "testRoots": [
+      "tests"
+    ],
+    "testExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".py"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec.",
+      "test_",
+      "_test.py"
+    ],
     "mutation": {
       "enabled": false,
       "survivalThreshold": 50,
       "maxMutations": 20,
       "timeoutMs": 15000
+    },
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
     }
   },
   "protectedAreas": [
@@ -80,11 +114,19 @@
   ],
   "productionProfiles": {
     "default-monorepo": {
-      "focus": ["correctness", "maintainability", "operability"],
+      "focus": [
+        "correctness",
+        "maintainability",
+        "operability"
+      ],
       "validationProfile": "standard"
     },
     "shared-contract-heavy": {
-      "focus": ["reliability", "maintainability", "operability"],
+      "focus": [
+        "reliability",
+        "maintainability",
+        "operability"
+      ],
       "validationProfile": "strict"
     }
   },
@@ -112,11 +154,25 @@
     }
   },
   "languagePlugins": {
-    "typescript": ["@agent-guardrails/plugin-ts"]
+    "typescript": [
+      "@agent-guardrails/plugin-ts"
+    ]
   },
-  "criticalPaths": ["packages/contracts/", "packages/auth/", "infra/"],
-  "runtimeSurfaces": ["apps/", "packages/", "infra/"],
-  "performanceSensitiveAreas": ["apps/api/", "packages/cache/", "packages/queue/"],
+  "criticalPaths": [
+    "packages/contracts/",
+    "packages/auth/",
+    "infra/"
+  ],
+  "runtimeSurfaces": [
+    "apps/",
+    "packages/",
+    "infra/"
+  ],
+  "performanceSensitiveAreas": [
+    "apps/api/",
+    "packages/cache/",
+    "packages/queue/"
+  ],
   "review": {
     "includeEvidenceSummary": true
   }

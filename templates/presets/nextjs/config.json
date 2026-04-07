@@ -3,9 +3,20 @@
   "preset": "nextjs",
   "workflow": {
     "planDefaults": {
-      "allowedPaths": ["app/", "components/", "lib/", "src/", "test/", "tests/"],
-      "requiredCommands": ["npm test"],
-      "evidencePaths": [".agent-guardrails/evidence/current-task.md"]
+      "allowedPaths": [
+        "app/",
+        "components/",
+        "lib/",
+        "src/",
+        "test/",
+        "tests/"
+      ],
+      "requiredCommands": [
+        "npm test"
+      ],
+      "evidencePaths": [
+        ".agent-guardrails/evidence/current-task.md"
+      ]
     },
     "readBeforeWrite": [
       "AGENTS.md",
@@ -48,16 +59,41 @@
       "warnOnInterfaceChangesWithoutContract": true,
       "warnOnConfigOrMigrationChanges": true
     },
-    "sourceRoots": ["app", "components", "lib", "src"],
-    "sourceExtensions": [".js", ".jsx", ".ts", ".tsx"],
-    "testRoots": ["test", "tests"],
-    "testExtensions": [".js", ".jsx", ".ts", ".tsx"],
-    "testFileSignals": [".test.", ".spec."],
+    "sourceRoots": [
+      "app",
+      "components",
+      "lib",
+      "src"
+    ],
+    "sourceExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx"
+    ],
+    "testRoots": [
+      "test",
+      "tests"
+    ],
+    "testExtensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx"
+    ],
+    "testFileSignals": [
+      ".test.",
+      ".spec."
+    ],
     "mutation": {
       "enabled": false,
       "survivalThreshold": 50,
       "maxMutations": 20,
       "timeoutMs": 15000
+    },
+    "scope": {
+      "violationSeverity": "error",
+      "violationBudget": 5
     }
   },
   "protectedAreas": [
@@ -82,11 +118,19 @@
   ],
   "productionProfiles": {
     "default-webapp": {
-      "focus": ["correctness", "maintainability", "observability"],
+      "focus": [
+        "correctness",
+        "maintainability",
+        "observability"
+      ],
       "validationProfile": "standard"
     },
     "traffic-sensitive-web": {
-      "focus": ["performance", "reliability", "observability"],
+      "focus": [
+        "performance",
+        "reliability",
+        "observability"
+      ],
       "validationProfile": "strict"
     }
   },
@@ -111,11 +155,25 @@
     }
   },
   "languagePlugins": {
-    "typescript": ["@agent-guardrails/plugin-ts"]
+    "typescript": [
+      "@agent-guardrails/plugin-ts"
+    ]
   },
-  "criticalPaths": ["app/api/", "middleware.ts", "lib/auth/"],
-  "runtimeSurfaces": ["app/", "components/", "lib/"],
-  "performanceSensitiveAreas": ["app/api/", "lib/cache/", "lib/data/"],
+  "criticalPaths": [
+    "app/api/",
+    "middleware.ts",
+    "lib/auth/"
+  ],
+  "runtimeSurfaces": [
+    "app/",
+    "components/",
+    "lib/"
+  ],
+  "performanceSensitiveAreas": [
+    "app/api/",
+    "lib/cache/",
+    "lib/data/"
+  ],
   "review": {
     "includeEvidenceSummary": true
   }
