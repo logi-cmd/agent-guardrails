@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added: Pro interface layer
+
+- `lib/check/pro/index.js` — dynamic import stub for `@agent-guardrails/pro`. Silent degradation when Pro package is not installed; process-level cache.
+- 3 hook points in `check.js`: `tryEnrichReview` (enriches review after buildReview), `getProNextActions` (appends Pro next actions), `formatProCategoryBreakdown` (renders per-category score breakdown in CLI).
+- Transparent upgrade path: `npm install @agent-guardrails/pro` activates Pro features without config changes.
+- `tests/pro-stub.test.js` — 7 tests covering degradation, null safety, and import caching.
+
 ## 0.19.0 - 2026-04-08
 
 ### Fixed: Quality audit findings (P0+P1)

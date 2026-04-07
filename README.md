@@ -223,6 +223,36 @@ Controls how out-of-scope file changes are handled.
 | `warnOnInterfaceChangesWithoutContract` | `true` | Warn on interface changes not in task contract |
 | `warnOnConfigOrMigrationChanges` | `true` | Warn on config/migration file changes |
 
+## Pro (optional upgrade)
+
+The OSS package is a complete, production-ready merge gate. **Pro adds efficiency and depth** on top of it — no migration needed.
+
+| Feature | OSS | Pro |
+|---------|-----|-----|
+| Per-category trust score breakdown | — | ✅ scope / validation / consistency / continuity / performance / risk |
+| Smart change decomposition | — | ✅ "Split into 3 batches" when change exceeds budget |
+| Auto file budget (repo-aware) | — | ✅ Adjusts limit based on project structure |
+| Context quality validation | — | ✅ Detects stale contracts, missing evidence |
+| Intelligent next actions | — | ✅ Priority-ranked suggestions with file-level detail |
+
+**Upgrade in one step:**
+
+```bash
+npm install @agent-guardrails/pro
+```
+
+Add your license key to `.agent-guardrails/config.json`:
+
+```json
+{
+  "pro": {
+    "licenseKey": "lsq_your_key_here"
+  }
+}
+```
+
+That's it — the next `check` run will automatically activate Pro features. No other config changes needed.
+
 ## CLI Reference
 
 | Command | Purpose |

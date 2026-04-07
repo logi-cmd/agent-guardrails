@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-08 (v0.19.0)
+Last updated: 2026-04-08 (v0.19.0, Pro stub ready)
 
 ## Current Version
 
@@ -59,7 +59,26 @@ See `docs/OSS_PRO_BOUNDARY.md` for the full updated feature matrix.
 
 ## Next Steps
 
-### OSS Baseline — Complete (functional); Usability — Planned
+### Pro Private Repo — In Progress
+
+Private repo: `https://github.com/logi-cmd/agent-guardrails-pro.git`
+License provider: Lemon Squeezy (recommended, pending setup)
+
+**OSS Pro interface layer — DONE:**
+
+49. `lib/check/pro/index.js` — dynamic import stub for `@agent-guardrails/pro`, silent degradation, process-level cache
+50. 3 hook points in `check.js` — `tryEnrichReview`, `getProNextActions`, `formatProCategoryBreakdown`
+51. User upgrade path: `npm install @agent-guardrails/pro` → Pro activates automatically
+
+**Pro modules (to implement in private repo):**
+
+- `tier.js` — license key validation (Lemon Squeezy)
+- `scoring.js` — per-category score breakdown (scope/validation/consistency/continuity/performance/risk)
+- `recommendations.js` — auto maxChangedFiles, smart change decomposition
+- `context-quality.js` — context freshness/completeness validation
+- `index.js` — `enrichReview`, `getProNextActions`, `formatProCategoryBreakdown` (matches OSS stub contract)
+
+### OSS Baseline — Complete (functional); Usability — Shipped
 
 The intended OSS merge-gate baseline is complete for the current product boundary. Deep analysis identified UX gaps that make the gate impractical for real-world use. These are now planned:
 
@@ -160,4 +179,4 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - **Mutation testing in OSS**: the built-in tester applies basic mutations (boolean flips, operator swaps, literal replacements) to detect the most egregious cases of vacuous tests. It is config-gated, requires an explicit runnable `testCommand`, and skips to a warning if the baseline command fails. It improves evidence that tests are non-vacuous. It does not prove correctness or comprehensive coverage, and does not replace stronger tools like Stryker or mutmut.
 - **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis belongs to Pro.
 - **Context/memory quality**: OSS provides structured working context (task contracts, evidence, AGENTS.md). No awareness of context freshness, completeness, or project patterns. Pro will add context quality validation, pattern learning, and cross-session consolidation as a memory quality assurance layer above existing tools (Cursor, Aider, Claude Code).
-- **Commercial packaging**: the next challenge is no longer whether OSS works as a merge gate, but how clearly the project communicates the upgrade from OSS trust layer to Pro Local efficiency/depth layer for solo developers and small teams. Three Pro differentiators are now clearly identified: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
+- **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` under active development. License provider selected: Lemon Squeezy. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).

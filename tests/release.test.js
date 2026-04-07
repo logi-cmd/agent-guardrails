@@ -84,9 +84,9 @@ export async function run() {
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);
   assert.match(roadmap, /## Phase 3 \(Shipped\)/);
   assert.match(roadmap, /## Phase 4 \(Shipped/);
-  assert.match(roadmap, /## Phase 5 \((Next|Current focus)\)/);
-  assert.match(roadmap, /## Phase 6 \(Later\)/);
-  assert.match(roadmap, /## Phase 7 \(Later\)/);
+  assert.match(roadmap, /## Phase 5 \(Complete/);
+  assert.match(roadmap, /## Phase 6 \(.*Pro.*\)/);
+  assert.match(roadmap, /## Phase 7 \(Later.*Pro Cloud/);
   assert.match(roadmap, /rough-intent mode/i);
   assert.match(roadmap, /trust verdict/i);
   assert.match(roadmap, /Python.*baseline proof slice/i);

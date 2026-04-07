@@ -50,13 +50,14 @@ Smart layer goes live with real diff analysis, persistent archaeology, and repo 
 - MCP structured output for `explain_change` and `query_archaeology`
 - 5-agent support with templates and daemon hooks
 
-## Phase 5 (Current focus)
+## Phase 5 (Complete — OSS v0.19.0)
 
-With the OSS baseline now functionally complete, focus shifts to broader proof, sharper packaging, and deeper language support.
+OSS merge gate is production-ready. Pro development has started in a private repo.
+
+### OSS (shipped)
 
 - clearer current language-support packaging in the docs and proof surface
-- Python as the next deeper ecosystem
-- ship a Python/FastAPI baseline proof slice before semantic-depth claims
+- Python as the next deeper ecosystem — ship a Python/FastAPI baseline proof slice before semantic-depth claims
 - a single proof asset for "what this catches that normal AI coding workflows miss"
 - early distribution through one proof page plus one sandbox-first trial path
 - refine code archaeology with module-level pattern learning
@@ -66,24 +67,57 @@ With the OSS baseline now functionally complete, focus shifts to broader proof, 
 - post-deploy maintenance summaries with operator next actions
 - homepage / proof / pricing packaging for overseas solo developers and small teams
 - clearer upgrade path from OSS trust layer to Pro Local efficiency layer
-- **mutation testing fully integrated** into OSS check pipeline with baseline-first, config-gated, warning-only behavior
-- **working-tree diff parsing fixed** for correct path extraction in reviewer output
-- **direct module test coverage** added for mutation detector, i18n messages, and `listChangedFiles()`
-- **reviewer warning reduction** — eliminated public surface drift, reduced async-risk warnings, tightened surface declarations
+- mutation testing fully integrated into OSS check pipeline with baseline-first, config-gated, warning-only behavior
+- working-tree diff parsing fixed for correct path extraction in reviewer output
+- direct module test coverage for mutation detector, i18n messages, and `listChangedFiles()`
+- reviewer warning reduction — eliminated public surface drift, reduced async-risk warnings, tightened surface declarations
+- quality audit (v0.19.0): security hardening, code deduplication, i18n cleanup, test coverage
+- **Pro interface layer (v0.19.0)**: `lib/check/pro/index.js` with 3 dynamic-import hooks (`tryEnrichReview`, `getProNextActions`, `formatProCategoryBreakdown`). Silent degradation when `@agent-guardrails/pro` is not installed. 18 test suites all passing.
+- rough-intent mode so users can start from a vague request
+- short trust verdict above the reviewer summary
+- recovery guidance, secrets-safe guidance, and cost-awareness hints
+- **被动理解层 (Passive Understanding Layer)** — automatic change explanations without forced review
+- **诊断检测器 (Diagnostic Detectors)** — state-mgmt-complexity, async-logic-risk, performance-degradation
+- first-pass adapters for Claude Code, Cursor, OpenCode, Codex, and Gemini CLI
 
-## Phase 6 (Later)
+### Pro (in private repo `agent-guardrails-pro`)
 
-Only after the runtime can judge production-readiness clearly should the project add real deployment orchestration.
+- license validation (Lemon Squeezy)
+- per-category score breakdown
+- auto maxChangedFiles recommendation (repo-aware)
+- smart change decomposition
+- context quality validation
+- intelligent next-action suggestions
 
+## Phase 6 (Pro — Active Development)
+
+Pro Local development is active in the private repo `agent-guardrails-pro`.
+
+- Lemon Squeezy license key validation with local cache
+- per-category trust score breakdown (scope, validation, consistency, continuity, performance, risk)
+- auto maxChangedFiles recommendation based on repo structure
+- smart change decomposition ("suggest splitting into 3 batches")
+- context quality validation (stale/missing context detection)
+- intelligent next-action suggestions with file-level detail
+- private npm package `@agent-guardrails/pro` with transparent OSS upgrade path
+
+## Phase 7 (Later — Pro Cloud)
+
+After Pro Local is stable and gaining users, extend to team-scale features.
+
+- Python semantic pack
+- protected-area semantic escalation
+- higher-confidence review summary
+- stronger policy composition
+- external benchmark repos and before/after comparisons
+- optional framework-aware detectors where generic heuristics are not enough
+- module history and repo-learned continuity
+- shared policies, approvals, audit trails, and ROI instrumentation
 - script / CI deployment orchestration
 - provider adapter interface
 - first provider reference implementation
 - post-deploy verification hooks
 - rollback / redeploy orchestration
-
-## Phase 7 (Later)
-
-After entry, trust, recovery, language support, proof, and deployment layering are clearer, move into deeper enforcement and team-scale layers.
 
 - Python semantic pack
 - protected-area semantic escalation

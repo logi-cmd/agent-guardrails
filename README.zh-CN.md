@@ -222,6 +222,36 @@ agent-guardrails plan --task "添加用户认证"
 | `warnOnInterfaceChangesWithoutContract` | `true` | 未在任务契约中声明的接口变更是否警告 |
 | `warnOnConfigOrMigrationChanges` | `true` | 配置或迁移文件变更是否警告 |
 
+## Pro（可选升级）
+
+OSS 版本是完整的生产级 merge gate。**Pro 在此基础上增加效率和深度** — 无需迁移。
+
+| 功能 | OSS | Pro |
+|------|-----|-----|
+| 分类信任评分细分 | — | ✅ scope / validation / consistency / continuity / performance / risk |
+| 智能变更拆分 | — | ✅ 变更超出预算时自动建议拆分批次 |
+| 自动文件预算（感知仓库结构） | — | ✅ 根据项目结构自动调整限制 |
+| 上下文质量验证 | — | ✅ 检测过期契约、缺失证据 |
+| 智能 next actions | — | ✅ 按优先级排序的文件级建议 |
+
+**一步升级：**
+
+```bash
+npm install @agent-guardrails/pro
+```
+
+在 `.agent-guardrails/config.json` 中添加 license key：
+
+```json
+{
+  "pro": {
+    "licenseKey": "lsq_your_key_here"
+  }
+}
+```
+
+仅此而已 — 下次运行 `check` 时 Pro 功能会自动激活，无需其他配置变更。
+
 ## CLI 参考
 
 | 命令 | 用途 |
