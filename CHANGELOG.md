@@ -9,6 +9,20 @@
 - Transparent upgrade path: `npm install @agent-guardrails/pro` activates Pro features without config changes.
 - `tests/pro-stub.test.js` — 7 tests covering degradation, null safety, and import caching.
 
+### Changed: OSS release discipline and documentation system
+
+- Added canonical build docs for product blueprint, technical spec, Pro Local spec, implementation plan, acceptance criteria, and release process.
+- Added `docs/RELEASE_PROCESS.md` covering GitHub release flow, npm publish flow, `logi-cmd` identity requirements, release notes, and required doc updates.
+- Updated `README.md` to link the release process.
+- Updated `package.json` author metadata to `logi-cmd` and added public `publishConfig`.
+- Re-validated package contents with `npm pack --dry-run` to keep non-essential docs out of the npm tarball.
+
+### Fixed: CLI and install-smoke process would hang on imported chat cleanup timer
+
+- `lib/chat/session.js` now `unref()`s the periodic session cleanup timer so short-lived CLI commands like `help` can exit normally.
+- Restored reliable completion for `node ./tests/install-smoke.js`.
+- Restored reliable completion for the full `npm test` suite.
+
 ## 0.19.0 - 2026-04-08
 
 ### Fixed: Quality audit findings (P0+P1)

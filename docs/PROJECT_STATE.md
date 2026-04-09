@@ -1,6 +1,20 @@
 # Project State
 
-Last updated: 2026-04-08 (v0.19.0, Pro stub ready)
+Last updated: 2026-04-08 (v0.19.0, Pro stub pushed, LSP direction added)
+
+## Canonical build docs
+
+The build-ready source of truth now lives in:
+
+- `docs/DOCUMENTATION_INDEX.md`
+- `docs/PRODUCT_BLUEPRINT.md`
+- `docs/TECHNICAL_SPEC.md`
+- `docs/PRO_LOCAL_SPEC.md`
+- `docs/IMPLEMENTATION_PLAN.md`
+- `docs/ACCEPTANCE_CRITERIA.md`
+- `docs/RELEASE_PROCESS.md`
+
+Strategy, market, pricing, and older design docs still matter, but if there is any conflict, the canonical build docs win.
 
 ## Current Version
 
@@ -177,6 +191,8 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - **Evaluation design**: Upgraded from binary pass/fail to composite scoring with configurable weights and graduated verdicts. Score is informational; errors still cause exit code 1. Weights now actually affect scoring (v0.17.1 fix).
 - **Trust calipers**: partially shipped. An optional lightweight built-in mutation-testing slice (Caliper 3) is now shipped in OSS. Type-check and coverage gates remain trivial preset edits (not yet done). Full mutation integration, independent review, context handoff, and runtime smoke tests are still proposal-stage.
 - **Mutation testing in OSS**: the built-in tester applies basic mutations (boolean flips, operator swaps, literal replacements) to detect the most egregious cases of vacuous tests. It is config-gated, requires an explicit runnable `testCommand`, and skips to a warning if the baseline command fails. It improves evidence that tests are non-vacuous. It does not prove correctness or comprehensive coverage, and does not replace stronger tools like Stryker or mutmut.
-- **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis belongs to Pro.
+- **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis and LSP-backed semantic detection belong to Pro. Lightweight static import analysis (regex-based, zero-dependency) can be shipped in Pro Local as a bridge between heuristic and full LSP.
+- **LSP integration direction**: LSP can significantly improve interface change detection, dependency impact analysis, and semantic drift detection. However, LSP server cold-start (2-10s) and per-language server requirements make it unsuitable for OSS CLI single-execution model. LSP-backed analysis is planned for Pro Cloud (persistent language servers) with Pro Local using lighter alternatives (static import graphs, AST-grep, tree-sitter).
 - **Context/memory quality**: OSS provides structured working context (task contracts, evidence, AGENTS.md). No awareness of context freshness, completeness, or project patterns. Pro will add context quality validation, pattern learning, and cross-session consolidation as a memory quality assurance layer above existing tools (Cursor, Aider, Claude Code).
 - **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` under active development. License provider selected: Lemon Squeezy. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
+- **Semantic detection strategy**: Three-tier approach. (1) OSS: filename/token heuristics (current). (2) Pro Local: static import graph + AST-grep for structured pattern matching (zero-dependency, no LSP server needed). (3) Pro Cloud: full LSP-backed analysis with persistent language servers for interface changes, dependency impact, and semantic drift.

@@ -1,5 +1,19 @@
 # Roadmap
 
+## Canonical planning note
+
+For execution, the canonical build docs are:
+
+- `docs/DOCUMENTATION_INDEX.md`
+- `docs/PRODUCT_BLUEPRINT.md`
+- `docs/TECHNICAL_SPEC.md`
+- `docs/PRO_LOCAL_SPEC.md`
+- `docs/IMPLEMENTATION_PLAN.md`
+- `docs/ACCEPTANCE_CRITERIA.md`
+- `docs/RELEASE_PROCESS.md`
+
+This roadmap is directional. If roadmap wording conflicts with the canonical build docs, the canonical build docs win.
+
 ## Phase 1 (Shipped)
 
 The current public release already includes the core scaffold:
@@ -93,12 +107,16 @@ OSS merge gate is production-ready. Pro development has started in a private rep
 
 Pro Local development is active in the private repo `agent-guardrails-pro`.
 
+- product rule: go deeper before going wider; every Pro feature must remove real workflow pain, not add cosmetic analysis
+- rough-intent to smallest-safe contract generation with multiple task-shape suggestions
 - Lemon Squeezy license key validation with local cache
 - per-category trust score breakdown (scope, validation, consistency, continuity, performance, risk)
-- auto maxChangedFiles recommendation based on repo structure
-- smart change decomposition ("suggest splitting into 3 batches")
-- context quality validation (stale/missing context detection)
-- intelligent next-action suggestions with file-level detail
+- repo-aware file budget recommendation based on project structure and task shape
+- smart change decomposition with concrete batch boundaries and spillover detection
+- context quality validation with missing-input detection before coding starts
+- intelligent next-action suggestions with file-level detail and merge/deploy guidance
+- lightweight local repo memory for repeated pattern and repair guidance
+- production-shaped change detection plus verify / rollback handoff
 - private npm package `@agent-guardrails/pro` with transparent OSS upgrade path
 
 ## Phase 7 (Later — Pro Cloud)
@@ -118,15 +136,22 @@ After Pro Local is stable and gaining users, extend to team-scale features.
 - first provider reference implementation
 - post-deploy verification hooks
 - rollback / redeploy orchestration
+- **static import graph analysis** (zero-dependency, regex-based dependency extraction for JS/TS)
+- **AST-grep / tree-sitter pattern matching** for structured code analysis without LSP server dependency
+- **LSP-backed semantic detection** (persistent language servers for interface change detection, dependency impact analysis, semantic drift)
 
-- Python semantic pack
-- protected-area semantic escalation
-- higher-confidence review summary
-- stronger policy composition
-- external benchmark repos and before/after comparisons
-- optional framework-aware detectors where generic heuristics are not enough
-- module history and repo-learned continuity
-- shared policies, approvals, audit trails, and ROI instrumentation
+## Phase 8 (Future — LSP Integration)
+
+Full LSP integration requires persistent language servers, making it a Pro Cloud feature.
+
+- persistent language server management (TypeScript, Python, Go, Rust)
+- LSP `findReferences` for precise dependency impact analysis
+- LSP `documentSymbols` for export signature change detection
+- LSP `diagnostics` for real-time type error surfacing in check results
+- call-graph-aware change decomposition (group mutually dependent files into batches)
+- semantic drift detection via AST comparison across files
+- cross-language support via language-specific LSP adapters
+- incremental analysis (only re-analyze changed files and their dependents)
 
 ## Proof of value
 
@@ -136,3 +161,6 @@ This project should continue proving value through:
 - fewer behavior changes without tests
 - fewer repo-inconsistent abstractions
 - faster onboarding through templates, adapter guidance, and end-to-end demos
+- faster trust decisions from vague intent to merge-ready proof
+- fewer oversized AI sessions that require manual cleanup
+- fewer merge-safe but deploy-risky changes

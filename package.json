@@ -34,7 +34,10 @@
   "engines": {
     "node": ">=18"
   },
-  "author": "agent-guardrails contributors",
+  "author": "logi-cmd",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/logi-cmd/agent-guardrails.git"
