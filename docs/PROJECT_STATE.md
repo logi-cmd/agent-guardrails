@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-08 (v0.19.0, Pro stub pushed, LSP direction added)
+Last updated: 2026-04-10 (v0.19.1, OSS release workflow hardened)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.0** — Quality audit fixes: security hardening, code deduplication, i18n cleanup, test coverage improvement
+**v0.19.1** — OSS release workflow hardening, install-smoke reliability, and canonical release/process docs
 
 ## Goal
 

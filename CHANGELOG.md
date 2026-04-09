@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.19.1 - 2026-04-10
 
 ### Added: Pro interface layer
 
