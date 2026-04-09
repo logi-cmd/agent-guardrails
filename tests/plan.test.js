@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
 import { readConfig } from "../lib/utils.js";
+
+const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
+const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
 
 function captureLogs(run) {
   const original = console.log;
@@ -19,6 +24,73 @@ function captureLogs(run) {
     .finally(() => {
       console.log = original;
     });
+}
+
+function withMockInstalledPro(callback) {
+  const packageDir = path.join(OSS_REPO_ROOT, "node_modules", "@agent-guardrails", "pro");
+  fs.mkdirSync(packageDir, { recursive: true });
+  fs.writeFileSync(path.join(packageDir, "package.json"), JSON.stringify({
+    name: "@agent-guardrails/pro",
+    version: "0.0.0-test",
+    type: "module",
+    exports: {
+      ".": "./index.js"
+    }
+  }, null, 2), "utf8");
+  fs.writeFileSync(path.join(packageDir, "index.js"), [
+    "export function planTaskShapes(intent, repoContext) {",
+    "  return {",
+    "    taskType: 'auth',",
+    "    confidence: 0.91,",
+    "    recommendedOptionId: 'auth-service-1',",
+    "    shouldSplitImmediately: true,",
+    "    options: [",
+    "      {",
+    "        id: 'auth-service-1',",
+    "        title: 'Auth service first',",
+    "        summary: 'Start in the auth service layer first.',",
+    "        changeType: 'service',",
+    "        likelyFiles: ['src/auth/service.js', 'tests/auth/service.test.js'],",
+    "        validations: ['npm test', 'targeted auth tests'],",
+    "        riskLevel: 'high',",
+    "        safeBecause: 'Keeps the first pass inside auth service boundaries.',",
+    "        contractDraft: {",
+    "          allowedPaths: ['src/auth/', 'tests/auth/'],",
+    "          requiredCommands: ['npm test'],",
+    "          evidencePaths: ['.agent-guardrails/evidence/current-task.md'],",
+    "          riskLevel: 'high'",
+    "        }",
+    "      },",
+    "      {",
+    "        id: 'auth-ui-2',",
+    "        title: 'Auth UI first',",
+    "        summary: 'Start from the login UI only.',",
+    "        changeType: 'ui',",
+    "        likelyFiles: ['src/components/LoginForm.jsx'],",
+    "        validations: ['npm test'],",
+    "        riskLevel: 'medium',",
+    "        safeBecause: 'Avoids backend spillover in the first pass.',",
+    "        contractDraft: {",
+    "          allowedPaths: ['src/components/'],",
+    "          requiredCommands: ['npm test'],",
+    "          evidencePaths: ['.agent-guardrails/evidence/current-task.md'],",
+    "          riskLevel: 'medium'",
+    "        }",
+    "      }",
+    "    ]",
+    "  };",
+    "}",
+    "export async function enrichReview(review) { return review; }",
+    "export async function getProNextActions() { return []; }",
+    "export async function formatProCategoryBreakdown() { return null; }",
+    ""
+  ].join("\n"), "utf8");
+
+  try {
+    return callback();
+  } finally {
+    fs.rmSync(packageDir, { recursive: true, force: true });
+  }
 }
 
 export async function run() {
@@ -204,4 +276,38 @@ export async function run() {
 
   assert.ok(error instanceof Error);
   assert.match(error.message, /Run `agent-guardrails init/);
+
+  const roughIntentDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-plan-pro-"));
+  await runInit({
+    positional: [roughIntentDir],
+    flags: { preset: "node-service", lang: "en" },
+    locale: "en"
+  });
+
+  const planModuleUrl = pathToFileURL(path.join(OSS_REPO_ROOT, "lib", "commands", "plan.js")).href;
+  const proJson = withMockInstalledPro(() => execFileSync("node", [
+    "--input-type=module",
+    "-e",
+    [
+      `import fs from "node:fs";`,
+      `import path from "node:path";`,
+      `import { runPlan } from ${JSON.stringify(planModuleUrl)};`,
+      `process.chdir(${JSON.stringify(roughIntentDir)});`,
+      `const original = console.log;`,
+      `console.log = () => {};`,
+      `const result = await runPlan({ positional: [], flags: { task: "fix auth login edge cases", json: true, yes: true, lang: "en" }, locale: "en" });`,
+      `console.log = original;`,
+      `const contract = JSON.parse(fs.readFileSync(path.join(${JSON.stringify(roughIntentDir)}, ".agent-guardrails", "task-contract.json"), "utf8"));`,
+      `process.stdout.write(JSON.stringify({ result, contract }));`
+    ].join("\n")
+  ], { cwd: roughIntentDir, encoding: "utf8" }));
+  const proParsed = JSON.parse(proJson);
+
+  assert.equal(proParsed.result.status, "created");
+  assert.equal(proParsed.result.riskLevel, "high");
+  assert.deepEqual(proParsed.result.allowedPaths, ["src/auth/", "tests/auth/"]);
+  assert.equal(proParsed.contract.proPlan.selectedOptionId, "auth-service-1");
+  assert.equal(proParsed.contract.proPlan.recommendedOptionId, "auth-service-1");
+  assert.equal(proParsed.contract.proPlan.options.length, 2);
+  assert.equal(proParsed.contract.allowedPaths[0], "src/auth/");
 }

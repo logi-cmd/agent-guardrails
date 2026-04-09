@@ -3,11 +3,15 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { runCheck } from "../lib/commands/check.js";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
 import { ossDetectors } from "../lib/check/detectors/oss.js";
 import { listChangedFiles, resolveRepoRoot, resolveGitRoot } from "../lib/utils.js";
+
+const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
+const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
 
 function captureLogs(run) {
   const original = console.log;
@@ -56,6 +60,60 @@ async function withRepoCwd(tempDir, callback) {
     return await callback();
   } finally {
     process.chdir(original);
+  }
+}
+
+function withMockInstalledPro(callback) {
+  const packageDir = path.join(OSS_REPO_ROOT, "node_modules", "@agent-guardrails", "pro");
+  fs.mkdirSync(packageDir, { recursive: true });
+  fs.writeFileSync(path.join(packageDir, "package.json"), JSON.stringify({
+    name: "@agent-guardrails/pro",
+    version: "0.0.0-test",
+    type: "module",
+    exports: {
+      ".": "./index.js"
+    }
+  }, null, 2), "utf8");
+  fs.writeFileSync(path.join(packageDir, "index.js"), [
+    "export async function enrichReview(review, context) {",
+    "  return {",
+    "    ...review,",
+    "    categoryScores: { scope: 88, validation: 76, consistency: 91, continuity: 84, performance: 93, risk: 67 },",
+    "    contextQuality: {",
+    "      score: 62,",
+    "      confidence: 'weak',",
+    "      issues: [{ code: 'missing-evidence', severity: 'warning', message: 'No evidence paths in task contract' }],",
+    "      missingInputs: ['Evidence path', 'Relevant repo files'],",
+    "      suggestedFiles: ['src/auth/service.js', 'tests/auth/service.test.js'],",
+    "      contractFixes: ['Add at least one evidence path so proof can be collected with the change.']",
+    "    },",
+    "    scopeIntelligence: {",
+    "      fileBudget: { fileCount: context.changedFiles.length, safeBudget: 1, overBudget: true },",
+    "      classifications: context.changedFiles.map((file) => ({ file, role: file.includes('docs') ? 'spillover' : 'core' })),",
+    "      spillover: [{ file: 'docs/notes.md', justified: false, reason: 'Touches a new top-level area (docs) outside the intended scope.' }],",
+    "      recommendedAction: 'split',",
+    "      explanation: 'The change introduces unrelated areas that should become a separate batch.',",
+    "      batches: [",
+    "        { id: 'core-src', role: 'core', title: 'core batch', files: ['src/service.js'] },",
+    "        { id: 'review-docs', role: 'spillover', title: 'spillover batch', files: ['docs/notes.md'] }",
+    "      ]",
+    "    }",
+    "  };",
+    "}",
+    "export async function getProNextActions() {",
+    "  return ['[Pro] [HIGH] Context is weak: load likely repo files and tighten the task contract before trusting this result'];",
+    "}",
+    "export async function formatProCategoryBreakdown() {",
+    "  return 'Category Scores:\\n  scope: #########- 88/100 (good)';",
+    "}",
+    "export function planTaskShapes() { return null; }",
+    ""
+  ].join("\n"), "utf8");
+
+  try {
+    return callback();
+  } finally {
+    fs.rmSync(packageDir, { recursive: true, force: true });
   }
 }
 
@@ -607,6 +665,50 @@ async function checkPrintsJsonFailures() {
     assert.equal(process.exitCode, 1);
     assert.match(parsed.failures[0], /Source files changed without any accompanying test changes/);
     assert.equal(parsed.counts.changedFiles, 1);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkPrintsJsonWithInstalledPro() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-json-pro-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/", "docs/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "docs"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "service.js"), "export const x = 1;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "service.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "docs", "notes.md"), "# note\n", "utf8");
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = `src/service.js${path.delimiter}tests/service.test.js${path.delimiter}docs/notes.md`;
+  process.exitCode = 0;
+
+  const checkModuleUrl = pathToFileURL(path.join(OSS_REPO_ROOT, "lib", "commands", "check.js")).href;
+  const resultText = withMockInstalledPro(() => execFileSync("node", [
+    "--input-type=module",
+    "-e",
+    [
+      `import { executeCheck } from ${JSON.stringify(checkModuleUrl)};`,
+      `process.chdir(${JSON.stringify(tempDir)});`,
+      `const result = await executeCheck({ repoRoot: ${JSON.stringify(tempDir)}, flags: { json: true }, locale: "en", suppressExitCode: true });`,
+      `process.stdout.write(JSON.stringify(result));`
+    ].join("\n")
+  ], {
+    cwd: tempDir,
+    encoding: "utf8",
+    env: { ...process.env, AGENT_GUARDRAILS_CHANGED_FILES: process.env.AGENT_GUARDRAILS_CHANGED_FILES || "" }
+  }));
+
+  try {
+    const parsed = JSON.parse(resultText);
+    assert.equal(parsed.review.contextQuality.confidence, "weak");
+    assert.equal(parsed.review.scopeIntelligence.recommendedAction, "split");
+    assert.equal(parsed.review.scopeIntelligence.fileBudget.overBudget, true);
+    assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
+    assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -1344,6 +1446,7 @@ export async function run() {
   await checkFailsOutsideGitContextWithoutBaseRef();
   await checkPrintsJsonOutput();
   await checkPrintsJsonFailures();
+  await checkPrintsJsonWithInstalledPro();
   await checkPrintsReviewOutput();
   await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
