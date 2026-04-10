@@ -97,6 +97,18 @@ function withMockInstalledPro(callback) {
     "        { id: 'core-src', role: 'core', title: 'core batch', files: ['src/service.js'] },",
     "        { id: 'review-docs', role: 'spillover', title: 'spillover batch', files: ['docs/notes.md'] }",
     "      ]",
+    "    },",
+    "    deployHandoff: {",
+    "      sensitivity: 'high',",
+    "      isProductionSensitive: true,",
+    "      signals: [{ code: 'operational-surface', severity: 'high', message: 'Operational deployment or infrastructure files changed.' }],",
+    "      requiredProof: ['targeted validation command', 'post-deploy verification step', 'rollback note'],",
+    "      proofStatus: { 'targeted validation command': true, 'post-deploy verification step': false, 'rollback note': false },",
+    "      missingProof: ['post-deploy verification step', 'rollback note'],",
+    "      preDeployChecks: ['Run the required validation command and attach command output to evidence.'],",
+    "      postDeployVerify: ['Confirm logs, errors, and core health signals after deploy.'],",
+    "      rollback: 'Define a concrete rollback or backout path before deploy.',",
+    "      recommendation: 'Do not deploy until missing deploy proof is resolved.'",
     "    }",
     "  };",
     "}",
@@ -706,6 +718,8 @@ async function checkPrintsJsonWithInstalledPro() {
     const parsed = JSON.parse(resultText);
     assert.equal(parsed.review.contextQuality.confidence, "weak");
     assert.equal(parsed.review.scopeIntelligence.recommendedAction, "split");
+    assert.equal(parsed.review.deployHandoff.sensitivity, "high");
+    assert.deepEqual(parsed.review.deployHandoff.missingProof, ["post-deploy verification step", "rollback note"]);
     assert.equal(parsed.review.scopeIntelligence.fileBudget.overBudget, true);
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
