@@ -109,6 +109,14 @@ function withMockInstalledPro(callback) {
     "      postDeployVerify: ['Confirm logs, errors, and core health signals after deploy.'],",
     "      rollback: 'Define a concrete rollback or backout path before deploy.',",
     "      recommendation: 'Do not deploy until missing deploy proof is resolved.'",
+    "    },",
+    "    repoMemory: {",
+    "      path: '.agent-guardrails/pro/repo-memory.json',",
+    "      hasUsefulMemory: true,",
+    "      continuityHints: ['Prefer known repo pattern: Reuse existing service layer.'],",
+    "      repeatedRisks: [{ code: 'parallel-abstraction', message: 'Parallel service abstraction appeared before' }],",
+    "      updated: true,",
+    "      stats: { preferredPatterns: 1, rejectedApproaches: 0, recurringRisks: 1, repairHistory: 0 }",
     "    }",
     "  };",
     "}",
@@ -720,6 +728,8 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.review.scopeIntelligence.recommendedAction, "split");
     assert.equal(parsed.review.deployHandoff.sensitivity, "high");
     assert.deepEqual(parsed.review.deployHandoff.missingProof, ["post-deploy verification step", "rollback note"]);
+    assert.equal(parsed.review.repoMemory.hasUsefulMemory, true);
+    assert.equal(parsed.review.repoMemory.repeatedRisks[0].code, "parallel-abstraction");
     assert.equal(parsed.review.scopeIntelligence.fileBudget.overBudget, true);
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
