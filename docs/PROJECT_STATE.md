@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-13 (post-v0.19.3, OSS Pro proof recipe status)
+Last updated: 2026-04-13 (post-v0.19.3, OSS Pro proof recipe freshness status)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof recipes, learned proof, and prioritized proof-surface wording when available.
+**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof recipes, learned proof, stale recipe warnings, and prioritized proof-surface wording when available.
 
 ## Goal
 
@@ -52,6 +52,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.3 update: `agent-guardrails pro status` and `check --review` render installed Pro `proofMemory` summaries, including active missing proof, recently resolved proof, and top recurring proof-surface wording, while keeping the memory logic inside Pro.
 - Post-v0.19.3 update: `check --review` also renders Pro-provided `proofPlan.cheapestNextProof.learnedEvidence` and the top `proofPlan.impactSurfaces` entry, so users can see the repo-specific proof recipe and why that proof surface was prioritized. OSS only renders optional Pro fields; it does not compute Pro proof logic.
 - Post-v0.19.3 update: `agent-guardrails pro status` also renders Pro-provided proof recipe counts and top reusable proof recipes, giving users a status-level view of what the repo has learned from previous evidence.
+- Post-v0.19.3 update: `agent-guardrails pro status` now also renders Pro-provided proof recipe freshness, age, and stale warnings, so users can see when a reusable proof pattern should be rerun instead of trusted as current proof.
 
 ## Strategic Direction Update (2026-04-07)
 
