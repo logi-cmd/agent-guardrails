@@ -214,5 +214,5 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 
 ## Release addendum - 2026-04-12 v0.19.3
 
-- OSS v0.19.3 release candidate covers the Pro status next-action guidance shipped after v0.19.2.
-- Package version is bumped to 0.19.3 for npm/GitHub release alignment.
+- OSS v0.19.3 is published and covers the Pro status next-action guidance shipped after v0.19.2.
+- GitHub tag/release v0.19.3 and npm latest 0.19.3 are confirmed under the logi-cmd account.
