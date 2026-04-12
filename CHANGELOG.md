@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added: Pro proof memory surfaced in status output
+
+- `agent-guardrails pro status` now renders the installed Pro package's `proofMemory` summary when available, including active evidence gaps and recently resolved proof.
+- JSON status output includes the same Pro-provided memory object without OSS computing or storing paid logic.
+
 ### Added: Pro proof plan surfaced in OSS JSON output
 
 - `check --json` now promotes the installed Pro package's `proofPlan` to the top level when available, so automation can read the evidence plan without parsing nested review details.

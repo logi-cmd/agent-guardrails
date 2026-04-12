@@ -78,6 +78,19 @@ async function withMockInstalledPro(callback) {
     "      ]",
     "    },",
     "    integration: { activation: 'Install @agent-guardrails/pro and configure pro.licenseKey.' },",
+    "    proofMemory: {",
+    "      state: 'active_gaps',",
+    "      activeGapCount: 1,",
+    "      resolvedCount: 1,",
+    "      missingEventCount: 2,",
+    "      userValue: 'Shows recurring missing proof and the evidence that resolved prior gaps, so Pro becomes more project-aware over time.',",
+    "      topActiveGaps: [",
+    "        { code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', expectedEvidence: 'Paste the passing output for npm test.', timesSeen: 2, files: [] }",
+    "      ],",
+    "      recentResolvedProof: [",
+    "        { code: 'add-rollback-proof', title: 'Document rollback proof', command: null, resolvedAt: '2026-04-12T00:00:00.000Z' }",
+    "      ]",
+    "    },",
     "    demoGoLiveDecision: {",
     "      verdict: 'hold',",
     "      riskTier: 'high',",
@@ -138,6 +151,11 @@ export async function run() {
       assert.match(output, /agent-guardrails check --review/);
       assert.match(output, /Primary command: agent-guardrails check --json/);
       assert.match(output, /Activation checklist/);
+      assert.match(output, /Proof memory: active_gaps/);
+      assert.match(output, /Run required command: npm test \(seen 2x\)/);
+      assert.match(output, /Command: npm test/);
+      assert.match(output, /Recently resolved/);
+      assert.match(output, /Document rollback proof/);
       assert.match(output, /Why Pro matters/);
       assert.match(output, /Cheapest missing proof/);
       assert.match(output, /Go-live verdict/);

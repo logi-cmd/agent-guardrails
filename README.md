@@ -235,6 +235,7 @@ The OSS package is a complete, production-ready merge gate. **Pro adds efficienc
 | Context quality validation | — | ✅ Detects stale contracts, missing evidence |
 | Intelligent next actions | — | ✅ Priority-ranked suggestions with file-level detail |
 | Proof plan in `check --json` | — | ✅ Top-level machine-readable evidence plan when Pro is installed |
+| Proof memory in `pro status` | — | ✅ Shows recurring missing evidence and recently resolved proof when Pro is installed |
 
 **Upgrade in one step:**
 
