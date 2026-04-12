@@ -251,7 +251,7 @@ Add your license key to `.agent-guardrails/config.json`:
 }
 ```
 
-That's it — the next `check` run will automatically activate Pro features. No other config changes needed.
+That's it — the next `check` run will automatically activate Pro features. Run `agent-guardrails pro status` to verify install and license state.
 
 ## CLI Reference
 
@@ -264,6 +264,7 @@ That's it — the next `check` run will automatically activate Pro features. No 
 | `check --review` | Run reviewer-facing guardrail check |
 | `generate-agents` | Generate agent-specific config files |
 | `doctor` | Diagnose current installation |
+| `pro status` | Show optional Pro install and license status |
 | `start` | Start daemon |
 | `stop` | Stop daemon |
 | `status` | Show daemon status |

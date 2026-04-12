@@ -76,6 +76,10 @@ const testModules = [
     path: "./doctor.test.js"
   },
   {
+    name: "pro-status",
+    path: "./pro-status.test.js"
+  },
+  {
     name: "pro-stub",
     path: "./pro-stub.test.js"
   }

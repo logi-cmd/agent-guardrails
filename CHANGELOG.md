@@ -8,6 +8,12 @@
 - JSON output now includes a top-level `goLiveDecision` field so downstream tooling can read the verdict directly.
 - Existing deep signals remain available in `review`, `runtime.nextActions`, and `deployHandoff` for explanation and follow-up.
 
+### Added: OSS Pro status entry
+
+- `agent-guardrails pro status` and `agent-guardrails pro-status` show Pro install state, license state, and the demo go-live decision from the OSS CLI.
+- The command degrades cleanly when `@agent-guardrails/pro` is not installed, so OSS users can verify upgrade readiness without entering the private repo.
+- `README.md`, `README.zh-CN.md`, and `docs/PROJECT_STATE.md` were synced to describe the new status entry.
+
 ### Tests
 
 - Added coverage for the Pro-installed CLI path, JSON path, and verdict rendering path.

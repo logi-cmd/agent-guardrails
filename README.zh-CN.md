@@ -250,7 +250,7 @@ npm install @agent-guardrails/pro
 }
 ```
 
-仅此而已 — 下次运行 `check` 时 Pro 功能会自动激活，无需其他配置变更。
+仅此而已 — 下次运行 `check` 时 Pro 功能会自动激活。可运行 `agent-guardrails pro status` 验证安装和 license 状态。
 
 ## CLI 参考
 
@@ -263,6 +263,7 @@ npm install @agent-guardrails/pro
 | `check --review` | 运行审查模式的门禁检查 |
 | `generate-agents` | 生成 agent 专用配置文件 |
 | `doctor` | 诊断当前安装 |
+| `pro status` | 显示可选 Pro 安装和 license 状态 |
 | `start` | 启动 daemon |
 | `stop` | 停止 daemon |
 | `status` | 显示 daemon 状态 |

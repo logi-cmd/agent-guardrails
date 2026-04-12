@@ -198,3 +198,10 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` under active development. License provider selected: Lemon Squeezy. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
 - **Semantic detection strategy**: Three-tier approach. (1) OSS: filename/token heuristics (current). (2) Pro Local: static import graph + AST-grep for structured pattern matching (zero-dependency, no LSP server needed). (3) Pro Cloud: full LSP-backed analysis with persistent language servers for interface changes, dependency impact, and semantic drift.
 
+
+## 2026-04-12 OSS status addendum
+
+- OSS now exposes `agent-guardrails pro status` and `agent-guardrails pro-status` to show Pro install state, license state, and the demo go-live decision.
+- `check` still surfaces the Pro go-live verdict at the top level when `@agent-guardrails/pro` is installed.
+- Verified with `npm test` and `npm pack --dry-run`; no internal docs were added to the published package.
+- Next step: keep OSS docs synchronized with any future command or output changes, and avoid touching `docs/SEMANTIC_ARCHITECTURE.md` unless explicitly requested.
