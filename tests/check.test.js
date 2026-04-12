@@ -148,6 +148,15 @@ function withMockInstalledPro(callback) {
     "      hasUsefulMemory: true,",
     "      continuityHints: ['Prefer known repo pattern: Reuse existing service layer.'],",
     "      repeatedRisks: [{ code: 'parallel-abstraction', message: 'Parallel service abstraction appeared before' }],",
+    "      proofMemory: {",
+    "        surfaceSummary: {",
+    "          state: 'active',",
+    "          headline: 'Top recurring proof pressure: Validation proof memory (1 active, 0 resolved).',",
+    "          topSurfaces: [",
+    "            { surface: 'validation', title: 'Validation proof memory', activeGapCount: 1, resolvedCount: 0, message: 'Validation proof memory has 1 active gap(s). Future changes may prioritize declared validation command output.' }",
+    "          ]",
+    "        }",
+    "      },",
     "      updated: true,",
     "      stats: { preferredPatterns: 1, rejectedApproaches: 0, recurringRisks: 1, repairHistory: 0 }",
     "    }",
@@ -763,6 +772,7 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.deepEqual(parsed.review.deployHandoff.missingProof, ["post-deploy verification step", "rollback note"]);
     assert.equal(parsed.review.repoMemory.hasUsefulMemory, true);
     assert.equal(parsed.review.repoMemory.repeatedRisks[0].code, "parallel-abstraction");
+    assert.equal(parsed.review.repoMemory.proofMemory.surfaceSummary.topSurfaces[0].surface, "validation");
     assert.equal(parsed.review.scopeIntelligence.fileBudget.overBudget, true);
     assert.equal(parsed.goLiveDecision.verdict, "hold");
     assert.equal(parsed.goLiveDecision.riskTier, "high");
@@ -813,6 +823,9 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /Go-live verdict: HOLD \(high\)/);
     assert.match(output, /Evidence gaps:/);
     assert.match(output, /Next best actions:/);
+    assert.match(output, /Proof memory: Top recurring proof pressure: Validation proof memory/);
+    assert.match(output, /Validation proof memory has 1 active gap\(s\)/);
+    assert.match(output, /declared validation command output/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
