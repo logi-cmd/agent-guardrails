@@ -125,6 +125,24 @@ function withMockInstalledPro(callback) {
     "        rollbackGuidance: ['Define a concrete rollback or backout path before deploy.']",
     "      }",
     "    },",
+    "    proofPlan: {",
+    "      state: 'blocked',",
+    "      summary: '2 proof items needed before this should go live.',",
+    "      cheapestNextProof: {",
+    "        code: 'add-targeted-proof',",
+    "        priority: 'blocking',",
+    "        effort: 'medium',",
+    "        title: 'Add targeted proof for changed source files',",
+    "        command: 'npm test',",
+    "        files: ['src/service.js'],",
+    "        expectedEvidence: 'Show direct test evidence for src/service.js.'",
+    "      },",
+    "      steps: [",
+    "        { code: 'add-targeted-proof', title: 'Add targeted proof for changed source files', files: ['src/service.js'] },",
+    "        { code: 'add-rollback-proof', title: 'Document rollback proof', files: [] }",
+    "      ],",
+    "      acceptanceChecklist: ['Show direct test evidence for src/service.js.', 'Add rollback path.']",
+    "    },",
     "    repoMemory: {",
     "      path: '.agent-guardrails/pro/repo-memory.json',",
     "      hasUsefulMemory: true,",
@@ -750,6 +768,9 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.goLiveDecision.riskTier, "high");
     assert.deepEqual(parsed.goLiveDecision.evidenceGaps, ["targeted validation command", "rollback note"]);
     assert.ok(parsed.goLiveDecision.nextBestActions[0].includes("Resolve evidence gap"));
+    assert.equal(parsed.proofPlan.state, "blocked");
+    assert.equal(parsed.proofPlan.cheapestNextProof.code, "add-targeted-proof");
+    assert.deepEqual(parsed.proofPlan.cheapestNextProof.files, ["src/service.js"]);
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
   } finally {

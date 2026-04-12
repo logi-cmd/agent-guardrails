@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added: Pro proof plan surfaced in OSS JSON output
+
+- `check --json` now promotes the installed Pro package's `proofPlan` to the top level when available, so automation can read the evidence plan without parsing nested review details.
+- The field remains `null` when Pro is unavailable or does not provide a proof plan, preserving OSS behavior.
+
 ## 0.19.3 - 2026-04-12
 
 ### Added: Pro status next-action guidance

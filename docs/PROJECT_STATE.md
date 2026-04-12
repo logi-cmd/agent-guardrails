@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-12 (v0.19.3, OSS Pro status next-action guidance)
+Last updated: 2026-04-12 (post-v0.19.3, OSS Pro proof plan JSON surfacing)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.3** - OSS Pro status now surfaces next-action guidance for installed Pro packages
+**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level.
 
 ## Goal
 
@@ -48,6 +48,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - The OSS baseline includes Bash write interception, loop protection, daemon dedup, circuit-breaker behavior, continuity/performance review surfacing, i18n-backed baseline detector messages, a lightweight reviewer-output suppression layer, and an optional lightweight built-in mutation-testing slice.
 - Mutation testing is fully integrated into the OSS check pipeline with baseline-first execution, config-gated default-disabled behavior, and warning-only output.
 - Pro go-live verdict surfacing is now wired into OSS `check` output when `@agent-guardrails/pro` is installed, including a first-layer CLI verdict and a top-level JSON field.
+- Post-v0.19.3 update: check --json also exposes a top-level proofPlan when the installed Pro package provides one. OSS does not compute the plan; it only makes the optional Pro evidence plan machine-readable at the first layer.
 
 ## Strategic Direction Update (2026-04-07)
 

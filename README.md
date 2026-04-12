@@ -234,6 +234,7 @@ The OSS package is a complete, production-ready merge gate. **Pro adds efficienc
 | Auto file budget (repo-aware) | — | ✅ Adjusts limit based on project structure |
 | Context quality validation | — | ✅ Detects stale contracts, missing evidence |
 | Intelligent next actions | — | ✅ Priority-ranked suggestions with file-level detail |
+| Proof plan in `check --json` | — | ✅ Top-level machine-readable evidence plan when Pro is installed |
 
 **Upgrade in one step:**
 
