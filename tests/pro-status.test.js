@@ -59,6 +59,17 @@ async function withMockInstalledPro(callback) {
     "      { code: 'install-pro-package', label: 'Install @agent-guardrails/pro', status: 'done', command: 'npm install @agent-guardrails/pro' },",
     "      { code: 'run-check', label: 'Run check and review the Pro go-live verdict', status: 'done', command: 'agent-guardrails check --review' }",
     "    ],",
+    "    activationFlow: {",
+    "      state: 'ready',",
+    "      primaryCommand: 'agent-guardrails check --json',",
+    "      nextAction: {",
+    "        code: 'run-check',",
+    "        label: 'Run a Pro-enriched check',",
+    "        command: 'agent-guardrails check --review',",
+    "        value: 'See the go-live decision, proof gaps, and next best action on the real current diff.'",
+    "      },",
+    "      expectedResult: 'The check output includes goLiveDecision at the top level when Pro enrichment is available.'",
+    "    },",
     "    conversion: {",
     "      primaryUseCase: 'Decide whether an AI-generated change can go live with enough evidence.',",
     "      valueMoments: [",
@@ -123,6 +134,9 @@ export async function run() {
       assert.match(output, /Package: @agent-guardrails\/pro v0\.1\.0-test/);
       assert.match(output, /License: cached_valid \(valid\)/);
       assert.match(output, /Readiness: ready/);
+      assert.match(output, /Next Pro action/);
+      assert.match(output, /agent-guardrails check --review/);
+      assert.match(output, /Primary command: agent-guardrails check --json/);
       assert.match(output, /Activation checklist/);
       assert.match(output, /Why Pro matters/);
       assert.match(output, /Cheapest missing proof/);

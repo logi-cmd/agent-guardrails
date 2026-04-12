@@ -250,7 +250,7 @@ npm install @agent-guardrails/pro
 }
 ```
 
-仅此而已 — 下次运行 `check` 时 Pro 功能会自动激活。可运行 `agent-guardrails pro status` 验证安装和 license 状态。
+仅此而已 — 下次运行 `check` 时 Pro 功能会自动激活。可运行 `agent-guardrails pro status` 验证安装、license 状态，以及下一步应该执行的 Pro 动作。
 
 ## CLI 参考
 

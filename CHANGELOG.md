@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added: Pro status next-action guidance
+
+- `agent-guardrails pro status` now renders the installed Pro package's `activationFlow.nextAction` when available, so users see the single next command that moves them toward working Pro enrichment.
+- The status output also surfaces Pro's primary command for machine-readable check enrichment when the package provides it.
+
 ## 0.19.2 - 2026-04-12
 
 ### Added: Pro go-live verdict surfaced in OSS check output

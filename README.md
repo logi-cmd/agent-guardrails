@@ -251,7 +251,7 @@ Add your license key to `.agent-guardrails/config.json`:
 }
 ```
 
-That's it — the next `check` run will automatically activate Pro features. Run `agent-guardrails pro status` to verify install and license state.
+That's it — the next `check` run will automatically activate Pro features. Run `agent-guardrails pro status` to verify install, license state, and the next Pro action to take.
 
 ## CLI Reference
 
