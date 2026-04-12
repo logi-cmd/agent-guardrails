@@ -50,10 +50,22 @@ async function withMockInstalledPro(callback) {
     "    packageVersion: '0.1.0-test',",
     "    installed: true,",
     "    license: { state: 'cached_valid', valid: true, reason: null, meta: { plan: 'team' } },",
+    "    readiness: { state: 'ready', canEnrichCheck: true, summary: 'Pro is ready to enrich checks.' },",
     "    capabilities: [",
-    "      { code: 'go-live-verdict', label: 'Go-live verdict', available: true },",
-    "      { code: 'repo-memory', label: 'Repo memory calibration', available: true }",
+    "      { code: 'go-live-verdict', label: 'Go-live verdict', available: true, userValue: 'Answers whether this change can ship.' },",
+    "      { code: 'repo-memory', label: 'Repo memory calibration', available: true, userValue: 'Raises the proof bar for repeated local risks.' }",
     "    ],",
+    "    activationChecklist: [",
+    "      { code: 'install-pro-package', label: 'Install @agent-guardrails/pro', status: 'done', command: 'npm install @agent-guardrails/pro' },",
+    "      { code: 'run-check', label: 'Run check and review the Pro go-live verdict', status: 'done', command: 'agent-guardrails check --review' }",
+    "    ],",
+    "    conversion: {",
+    "      primaryUseCase: 'Decide whether an AI-generated change can go live with enough evidence.',",
+    "      valueMoments: [",
+    "        { code: 'go-live-decision', title: 'Verdict before explanation', outcome: 'See go, need_evidence, or hold before digging through raw findings.' },",
+    "        { code: 'proof-gap', title: 'Cheapest missing proof', outcome: 'Know the next evidence item that would move a change closer to shipping.' }",
+    "      ]",
+    "    },",
     "    integration: { activation: 'Install @agent-guardrails/pro and configure pro.licenseKey.' },",
     "    demoGoLiveDecision: {",
     "      verdict: 'hold',",
@@ -110,6 +122,10 @@ export async function run() {
       assert.equal(result.license.state, "cached_valid");
       assert.match(output, /Package: @agent-guardrails\/pro v0\.1\.0-test/);
       assert.match(output, /License: cached_valid \(valid\)/);
+      assert.match(output, /Readiness: ready/);
+      assert.match(output, /Activation checklist/);
+      assert.match(output, /Why Pro matters/);
+      assert.match(output, /Cheapest missing proof/);
       assert.match(output, /Go-live verdict/);
       assert.match(output, /Demo go-live verdict: HOLD \(high\)/);
     });

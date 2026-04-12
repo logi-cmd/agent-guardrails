@@ -11,6 +11,7 @@
 ### Added: OSS Pro status entry
 
 - `agent-guardrails pro status` and `agent-guardrails pro-status` show Pro install state, license state, and the demo go-live decision from the OSS CLI.
+- When the installed Pro package provides richer status metadata, the CLI now also surfaces readiness, activation checklist, capability value, and buyer-facing value moments.
 - The command degrades cleanly when `@agent-guardrails/pro` is not installed, so OSS users can verify upgrade readiness without entering the private repo.
 - `README.md`, `README.zh-CN.md`, and `docs/PROJECT_STATE.md` were synced to describe the new status entry.
 

@@ -205,3 +205,4 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - `check` still surfaces the Pro go-live verdict at the top level when `@agent-guardrails/pro` is installed.
 - Verified with `npm test` and `npm pack --dry-run`; no internal docs were added to the published package.
 - Next step: keep OSS docs synchronized with any future command or output changes, and avoid touching `docs/SEMANTIC_ARCHITECTURE.md` unless explicitly requested.
+- 2026-04-12 follow-up: OSS `agent-guardrails pro status` now renders richer Pro metadata when available: readiness, activation checklist, capability value, and buyer-facing value moments. Pro `buildProStatus()` is the source of truth for those fields.
