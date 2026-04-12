@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.19.2 - 2026-04-12
+
+### Added: Pro go-live verdict surfaced in OSS check output
+
+- `check` now promotes the Pro `goLiveDecision` to the first visible layer of CLI output when `@agent-guardrails/pro` is installed.
+- JSON output now includes a top-level `goLiveDecision` field so downstream tooling can read the verdict directly.
+- Existing deep signals remain available in `review`, `runtime.nextActions`, and `deployHandoff` for explanation and follow-up.
+
+### Tests
+
+- Added coverage for the Pro-installed CLI path, JSON path, and verdict rendering path.
+- Re-validated with `npm test` and `npm pack --dry-run`.
+
 ## 0.19.1 - 2026-04-10
 
 ### Added: Pro interface layer

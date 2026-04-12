@@ -110,6 +110,21 @@ function withMockInstalledPro(callback) {
     "      rollback: 'Define a concrete rollback or backout path before deploy.',",
     "      recommendation: 'Do not deploy until missing deploy proof is resolved.'",
     "    },",
+    "    goLiveDecision: {",
+    "      verdict: 'hold',",
+    "      riskTier: 'high',",
+    "      why: [",
+    "        'Boundary-sensitive files changed: src/service.js.',",
+    "        'Deploy-sensitive change is missing proof: rollback note.'",
+    "      ],",
+    "      evidenceGaps: ['targeted validation command', 'rollback note'],",
+    "      nextBestActions: ['Resolve evidence gap: targeted validation command.', 'Resolve evidence gap: rollback note.'],",
+    "      goLiveHandoff: {",
+    "        preDeployChecks: ['Run the required validation command and attach command output to evidence.'],",
+    "        postDeployWatch: ['Confirm logs, errors, and core health signals after deploy.'],",
+    "        rollbackGuidance: ['Define a concrete rollback or backout path before deploy.']",
+    "      }",
+    "    },",
     "    repoMemory: {",
     "      path: '.agent-guardrails/pro/repo-memory.json',",
     "      hasUsefulMemory: true,",
@@ -731,8 +746,52 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.review.repoMemory.hasUsefulMemory, true);
     assert.equal(parsed.review.repoMemory.repeatedRisks[0].code, "parallel-abstraction");
     assert.equal(parsed.review.scopeIntelligence.fileBudget.overBudget, true);
+    assert.equal(parsed.goLiveDecision.verdict, "hold");
+    assert.equal(parsed.goLiveDecision.riskTier, "high");
+    assert.deepEqual(parsed.goLiveDecision.evidenceGaps, ["targeted validation command", "rollback note"]);
+    assert.ok(parsed.goLiveDecision.nextBestActions[0].includes("Resolve evidence gap"));
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkPrintsGoLiveVerdictWithInstalledPro() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-go-live-pro-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/", "docs/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "docs"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "service.js"), "export const x = 1;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "service.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "docs", "notes.md"), "# note\n", "utf8");
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = `src/service.js${path.delimiter}tests/service.test.js${path.delimiter}docs/notes.md`;
+  process.exitCode = 0;
+
+  const checkModuleUrl = pathToFileURL(path.join(OSS_REPO_ROOT, "lib", "commands", "check.js")).href;
+  const output = withMockInstalledPro(() => execFileSync("node", [
+    "--input-type=module",
+    "-e",
+    [
+      `import { runCheck } from ${JSON.stringify(checkModuleUrl)};`,
+      `process.chdir(${JSON.stringify(tempDir)});`,
+      `await runCheck({ locale: "en" });`
+    ].join("\n")
+  ], {
+    cwd: tempDir,
+    encoding: "utf8",
+    env: { ...process.env, AGENT_GUARDRAILS_CHANGED_FILES: process.env.AGENT_GUARDRAILS_CHANGED_FILES || "" }
+  }));
+
+  try {
+    assert.match(output, /Go-live verdict: HOLD \(high\)/);
+    assert.match(output, /Evidence gaps:/);
+    assert.match(output, /Next best actions:/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -1471,6 +1530,7 @@ export async function run() {
   await checkPrintsJsonOutput();
   await checkPrintsJsonFailures();
   await checkPrintsJsonWithInstalledPro();
+  await checkPrintsGoLiveVerdictWithInstalledPro();
   await checkPrintsReviewOutput();
   await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
