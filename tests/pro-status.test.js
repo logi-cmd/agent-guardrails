@@ -83,6 +83,7 @@ async function withMockInstalledPro(callback) {
     "      activeGapCount: 1,",
     "      resolvedCount: 1,",
     "      missingEventCount: 2,",
+    "      proofRecipeCount: 1,",
     "      userValue: 'Shows recurring missing proof and the evidence that resolved prior gaps, so Pro becomes more project-aware over time.',",
     "      surfaceSummary: {",
     "        state: 'active',",
@@ -99,6 +100,9 @@ async function withMockInstalledPro(callback) {
     "      ],",
     "      recentResolvedProof: [",
     "        { code: 'add-rollback-proof', title: 'Document rollback proof', command: null, resolvedAt: '2026-04-12T00:00:00.000Z' }",
+    "      ],",
+    "      topProofRecipes: [",
+    "        { surface: 'validation', code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', timesUsed: 2, userValue: 'Reusable local proof recipe learned from evidence that previously closed this gap.' }",
     "      ]",
     "    },",
     "    demoGoLiveDecision: {",
@@ -167,6 +171,9 @@ export async function run() {
       assert.match(output, /declared validation command output/);
       assert.match(output, /Run required command: npm test \(seen 2x\)/);
       assert.match(output, /Command: npm test/);
+      assert.match(output, /Proof recipes: 1/);
+      assert.match(output, /Reusable proof recipes/);
+      assert.match(output, /Run required command: npm test \(used 2x\)/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
       assert.match(output, /Why Pro matters/);
