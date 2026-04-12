@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-12 (v0.19.2 draft, OSS check now surfaces Pro go-live verdict)
+Last updated: 2026-04-12 (v0.19.3, OSS Pro status next-action guidance)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.2** - OSS check now surfaces the Pro go-live verdict at the top level
+**v0.19.3** - OSS Pro status now surfaces next-action guidance for installed Pro packages
 
 ## Goal
 
@@ -211,3 +211,8 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 
 - OSS `agent-guardrails pro status` now renders Pro-provided `activationFlow.nextAction` and `primaryCommand` when available, giving users one concrete next command after install, license, and readiness checks.
 - This is a post-v0.19.2 draft change and should be released as the next patch version if published to npm/GitHub.
+
+## Release addendum - 2026-04-12 v0.19.3
+
+- OSS v0.19.3 release candidate covers the Pro status next-action guidance shipped after v0.19.2.
+- Package version is bumped to 0.19.3 for npm/GitHub release alignment.
