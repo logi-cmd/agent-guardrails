@@ -135,8 +135,17 @@ function withMockInstalledPro(callback) {
     "        title: 'Add targeted proof for changed source files',",
     "        command: 'npm test',",
     "        files: ['src/service.js'],",
-    "        expectedEvidence: 'Show direct test evidence for src/service.js.'",
+    "        expectedEvidence: 'Show direct test evidence for src/service.js.',",
+    "        learnedEvidence: {",
+    "          source: 'repo-memory',",
+    "          summary: 'Previously resolved Add targeted proof for changed source files by run `npm test`.',",
+    "          command: 'npm test',",
+    "          timesUsed: 2",
+    "        }",
     "      },",
+    "      impactSurfaces: [",
+    "        { surface: 'validation', title: 'Validation proof', stepCount: 1, blockingCount: 1, memoryPressure: 3 }",
+    "      ],",
     "      steps: [",
     "        { code: 'add-targeted-proof', title: 'Add targeted proof for changed source files', files: ['src/service.js'] },",
     "        { code: 'add-rollback-proof', title: 'Document rollback proof', files: [] }",
@@ -781,6 +790,8 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.proofPlan.state, "blocked");
     assert.equal(parsed.proofPlan.cheapestNextProof.code, "add-targeted-proof");
     assert.deepEqual(parsed.proofPlan.cheapestNextProof.files, ["src/service.js"]);
+    assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.command, "npm test");
+    assert.equal(parsed.proofPlan.impactSurfaces[0].surface, "validation");
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
   } finally {
@@ -826,6 +837,8 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /Proof memory: Top recurring proof pressure: Validation proof memory/);
     assert.match(output, /Validation proof memory has 1 active gap\(s\)/);
     assert.match(output, /declared validation command output/);
+    assert.match(output, /Learned proof: Previously resolved Add targeted proof/);
+    assert.match(output, /Prioritized proof surface: Validation proof \(1 blocking, memory pressure 3\)/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
