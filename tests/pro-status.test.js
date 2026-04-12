@@ -84,6 +84,16 @@ async function withMockInstalledPro(callback) {
     "      resolvedCount: 1,",
     "      missingEventCount: 2,",
     "      userValue: 'Shows recurring missing proof and the evidence that resolved prior gaps, so Pro becomes more project-aware over time.',",
+    "      surfaceSummary: {",
+    "        state: 'active',",
+    "        headline: 'Top recurring proof pressure: Validation proof memory (1 active, 1 resolved).',",
+    "        topSurfaces: [",
+    "          { surface: 'validation', title: 'Validation proof memory', activeGapCount: 1, resolvedCount: 1, message: 'Validation proof memory has 1 active gap(s). Future changes may prioritize declared validation command output.' }",
+    "        ]",
+    "      },",
+    "      impactSurfaces: [",
+    "        { surface: 'validation', title: 'Validation proof memory', activeGapCount: 1, resolvedCount: 1, message: 'Validation proof memory has 1 active gap(s). Future changes may prioritize declared validation command output.' }",
+    "      ],",
     "      topActiveGaps: [",
     "        { code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', expectedEvidence: 'Paste the passing output for npm test.', timesSeen: 2, files: [] }",
     "      ],",
@@ -152,6 +162,9 @@ export async function run() {
       assert.match(output, /Primary command: agent-guardrails check --json/);
       assert.match(output, /Activation checklist/);
       assert.match(output, /Proof memory: active_gaps/);
+      assert.match(output, /Top recurring proof pressure: Validation proof memory/);
+      assert.match(output, /Validation proof memory has 1 active gap\(s\)/);
+      assert.match(output, /declared validation command output/);
       assert.match(output, /Run required command: npm test \(seen 2x\)/);
       assert.match(output, /Command: npm test/);
       assert.match(output, /Recently resolved/);
