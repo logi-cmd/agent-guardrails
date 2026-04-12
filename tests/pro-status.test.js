@@ -102,7 +102,7 @@ async function withMockInstalledPro(callback) {
     "        { code: 'add-rollback-proof', title: 'Document rollback proof', command: null, resolvedAt: '2026-04-12T00:00:00.000Z' }",
     "      ],",
     "      topProofRecipes: [",
-    "        { surface: 'validation', code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', timesUsed: 2, freshness: 'stale', ageDays: 467, stalenessWarning: 'This is a stale 467-day-old proof recipe; rerun `npm test` to reconfirm it before treating it as current proof.', userValue: 'Reusable local proof recipe learned from evidence that previously closed this gap.' }",
+    "        { surface: 'validation', code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', timesUsed: 2, freshness: 'stale', ageDays: 467, stalenessWarning: 'This is a stale 467-day-old proof recipe; rerun `npm test` to reconfirm it before treating it as current proof.', nextAction: 'Rerun `npm test` and capture fresh passing output before relying on this recipe.', userValue: 'Reusable local proof recipe learned from evidence that previously closed this gap.' }",
     "      ]",
     "    },",
     "    demoGoLiveDecision: {",
@@ -176,6 +176,7 @@ export async function run() {
       assert.match(output, /Run required command: npm test \(used 2x\)/);
       assert.match(output, /Freshness: stale \(467 days old\)/);
       assert.match(output, /rerun `npm test` to reconfirm it/);
+      assert.match(output, /Next: Rerun `npm test` and capture fresh passing output/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
       assert.match(output, /Why Pro matters/);
