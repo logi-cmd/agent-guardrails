@@ -2,16 +2,22 @@
 
 ## Unreleased
 
-### Added: Pro proof memory surfaced in status output
+## 0.19.4 - 2026-04-13
+
+### Added: Pro proof visibility bundle
 
 - `agent-guardrails pro status` now renders the installed Pro package's `proofMemory` summary when available, including active evidence gaps, recently resolved proof, and human-readable recurring proof-surface wording.
 - `agent-guardrails check --review` now renders Pro proof-memory surface wording inside the Pro guidance section when the installed Pro package provides it.
-- JSON status output includes the same Pro-provided memory object without OSS computing or storing paid logic.
-
-### Added: Pro proof plan surfaced in OSS JSON output
-
 - `check --json` now promotes the installed Pro package's `proofPlan` to the top level when available, so automation can read the evidence plan without parsing nested review details.
 - The field remains `null` when Pro is unavailable or does not provide a proof plan, preserving OSS behavior.
+- `check --review` now renders Pro-provided learned proof evidence, learned proof scoring, proof workbench next actions, and prioritized proof-surface guidance when available.
+- `agent-guardrails pro status` now renders Pro-provided reusable proof recipes, stale recipe warnings, proof recipe next actions, resolved proof closure summaries, reusable proof commands, reusable evidence paths, and proof memory health.
+- JSON status output includes the same Pro-provided memory objects without OSS computing or storing paid logic.
+
+### Notes
+
+- OSS remains fully usable without `@agent-guardrails/pro` installed.
+- All Pro-specific intelligence remains optional and owned by the installed Pro package; OSS only renders stable optional fields when present.
 
 ## 0.19.3 - 2026-04-12
 

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-13 (post-v0.19.3, OSS Pro proof memory health rendering)
+Last updated: 2026-04-13 (v0.19.4 release)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
+**v0.19.4** - OSS Pro visibility bundle release: `check --json` exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
 
 ## Goal
 
