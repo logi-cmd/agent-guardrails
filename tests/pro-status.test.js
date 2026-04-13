@@ -99,7 +99,7 @@ async function withMockInstalledPro(callback) {
     "        { code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', expectedEvidence: 'Paste the passing output for npm test.', timesSeen: 2, files: [] }",
     "      ],",
     "      recentResolvedProof: [",
-    "        { code: 'add-rollback-proof', title: 'Document rollback proof', command: null, resolvedAt: '2026-04-12T00:00:00.000Z' }",
+    "        { code: 'add-rollback-proof', title: 'Document rollback proof', command: null, resolvedAt: '2026-04-12T00:00:00.000Z', closureSummary: 'Closed Document rollback proof with docs/release-checks.md. Future matching gaps will prioritize this proof recipe.' }",
     "      ],",
     "      topProofRecipes: [",
     "        { surface: 'validation', code: 'run-required-command', title: 'Run required command: npm test', command: 'npm test', timesUsed: 2, freshness: 'stale', ageDays: 467, stalenessWarning: 'This is a stale 467-day-old proof recipe; rerun `npm test` to reconfirm it before treating it as current proof.', nextAction: 'Rerun `npm test` and capture fresh passing output before relying on this recipe.', userValue: 'Reusable local proof recipe learned from evidence that previously closed this gap.' }",
@@ -179,6 +179,8 @@ export async function run() {
       assert.match(output, /Next: Rerun `npm test` and capture fresh passing output/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
+      assert.match(output, /Closed Document rollback proof with docs\/release-checks\.md/);
+      assert.match(output, /Future matching gaps will prioritize this proof recipe/);
       assert.match(output, /Why Pro matters/);
       assert.match(output, /Cheapest missing proof/);
       assert.match(output, /Go-live verdict/);

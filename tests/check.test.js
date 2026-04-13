@@ -140,8 +140,12 @@ function withMockInstalledPro(callback) {
     "          source: 'repo-memory',",
     "          summary: 'Previously resolved Add targeted proof for changed source files by run `npm test`.',",
     "          command: 'npm test',",
-    "          timesUsed: 2",
-    "        }",
+    "          timesUsed: 2,",
+    "          applicabilityScore: 100,",
+    "          freshnessPenalty: 15,",
+    "          effectiveScore: 85,",
+    "          scoreReason: 'exact command match; stale freshness penalty -15; effective score 85.'",
+    "        },",
     "      },",
     "      impactSurfaces: [",
     "        { surface: 'validation', title: 'Validation proof', stepCount: 1, blockingCount: 1, memoryPressure: 3 }",
@@ -791,6 +795,7 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.proofPlan.cheapestNextProof.code, "add-targeted-proof");
     assert.deepEqual(parsed.proofPlan.cheapestNextProof.files, ["src/service.js"]);
     assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.command, "npm test");
+    assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.effectiveScore, 85);
     assert.equal(parsed.proofPlan.impactSurfaces[0].surface, "validation");
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
@@ -838,6 +843,8 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /Validation proof memory has 1 active gap\(s\)/);
     assert.match(output, /declared validation command output/);
     assert.match(output, /Learned proof: Previously resolved Add targeted proof/);
+    assert.match(output, /Learned proof score: 85 \(applicability 100, freshness penalty 15\)/);
+    assert.match(output, /exact command match; stale freshness penalty -15; effective score 85/);
     assert.match(output, /Prioritized proof surface: Validation proof \(1 blocking, memory pressure 3\)/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;

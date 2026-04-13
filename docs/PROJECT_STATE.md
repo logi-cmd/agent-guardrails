@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-13 (post-v0.19.3, OSS Pro proof recipe next actions)
+Last updated: 2026-04-13 (post-v0.19.3, OSS Pro learned proof scoring and closure summaries)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof recipes, learned proof, stale recipe warnings, proof recipe next actions, and prioritized proof-surface wording when available.
+**v0.19.3** - Published OSS release. Post-v0.19.3 work in progress: `check --json` now exposes installed Pro proof plans at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof recipes, learned proof, learned proof scoring, stale recipe warnings, proof recipe next actions, proof closure summaries, and prioritized proof-surface wording when available.
 
 ## Goal
 
@@ -54,6 +54,8 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.3 update: `agent-guardrails pro status` also renders Pro-provided proof recipe counts and top reusable proof recipes, giving users a status-level view of what the repo has learned from previous evidence.
 - Post-v0.19.3 update: `agent-guardrails pro status` now also renders Pro-provided proof recipe freshness, age, and stale warnings, so users can see when a reusable proof pattern should be rerun instead of trusted as current proof.
 - Post-v0.19.3 update: `agent-guardrails pro status` now renders Pro-provided proof recipe next actions, giving users a direct command or evidence action for reusable proof patterns without moving Pro logic into OSS.
+- Post-v0.19.3 update: `check --review` now renders Pro-provided learned proof scoring (`effectiveScore`, applicability, freshness penalty, and reason), so users can understand why repo memory recommended a proof recipe. OSS still only renders optional Pro fields.
+- Post-v0.19.3 update: `agent-guardrails pro status` now renders Pro-provided resolved proof `closureSummary`, so users can see which evidence closed a prior gap and how future matching gaps will reuse that recipe.
 
 ## Strategic Direction Update (2026-04-07)
 
