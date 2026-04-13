@@ -111,6 +111,15 @@ async function withMockInstalledPro(callback) {
     "        { path: '.agent-guardrails/evidence/current-task.md', timesUsed: 3, surfaces: ['validation'], nextUse: 'Reuse .agent-guardrails/evidence/current-task.md as the evidence pattern to recreate when this proof gap appears again.' }",
     "      ]",
     "    },",
+    "    proofMemoryHealth: {",
+    "      state: 'needs_cleanup',",
+    "      severity: 'warning',",
+    "      headline: 'Proof memory needs cleanup before its recommendations should be trusted blindly.',",
+    "      summary: 'Proof memory has unreliable or stale recipes that should be reviewed.',",
+    "      counts: { trusted: 1, watch: 1, unreliable: 1, unknown: 0, archived: 1, cleanupCandidates: 1 },",
+    "      nextAction: { code: 'preview-proof-memory-cleanup', label: 'Preview proof memory cleanup', command: 'agent-guardrails pro status --json', value: 'Review cleanup candidates before archiving unreliable proof recipes.' },",
+    "      userValue: 'Keeps repo memory useful by separating trusted proof habits from stale or failed advice.'",
+    "    },",
     "    demoGoLiveDecision: {",
     "      verdict: 'hold',",
     "      riskTier: 'high',",
@@ -188,6 +197,12 @@ export async function run() {
       assert.match(output, /Use `npm test` as the first proof command/);
       assert.match(output, /Reusable evidence paths/);
       assert.match(output, /\.agent-guardrails\/evidence\/current-task\.md \(used 3x; validation\)/);
+      assert.match(output, /Proof memory health: needs_cleanup \(warning\)/);
+      assert.match(output, /Proof memory needs cleanup before its recommendations should be trusted blindly/);
+      assert.match(output, /Trusted: 1; Watch: 1; Unreliable: 1; Archived: 1; Cleanup candidates: 1/);
+      assert.match(output, /Next: Preview proof memory cleanup/);
+      assert.match(output, /Command: agent-guardrails pro status --json/);
+      assert.match(output, /Review cleanup candidates before archiving unreliable proof recipes/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
       assert.match(output, /Closed Document rollback proof with docs\/release-checks\.md/);
