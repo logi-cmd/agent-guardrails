@@ -267,6 +267,7 @@ That's it — the next `check` run will automatically activate Pro features. Run
 | `generate-agents` | Generate agent-specific config files |
 | `doctor` | Diagnose current installation |
 | `pro status` | Show optional Pro install and license status |
+| `pro cleanup` | Preview or apply Pro proof memory cleanup |
 | `start` | Start daemon |
 | `stop` | Stop daemon |
 | `status` | Show daemon status |

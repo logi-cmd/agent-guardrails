@@ -364,6 +364,7 @@ Needed for:
 OSS should integrate Pro through a stable extension boundary:
 
 - attempt dynamic load
+- resolve Pro from the target repo first, then fall back to the OSS package location
 - degrade silently if missing
 - preserve result schema stability
 - allow additive enrichment only
@@ -373,6 +374,9 @@ Required Pro hooks:
 - `enrichReview`
 - `getProNextActions`
 - `formatProCategoryBreakdown`
+- `buildProStatus`
+- `planProofMemoryCleanup`
+- `applyProofMemoryCleanup`
 
 Future hooks may be added only if backward-compatible.
 

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-13 (v0.19.4 release)
+Last updated: 2026-04-13 (Pro cleanup CLI draft)
 
 ## Canonical build docs
 
@@ -59,6 +59,8 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.3 update: `check --review` now renders Pro-provided `proofPlan.proofWorkbench.nextAction`, confidence, and recommendation score when available, giving paid users a direct first action from the OSS review surface.
 - Post-v0.19.3 update: `agent-guardrails pro status` now renders Pro-provided `commandPatterns` and `evidencePathPatterns`, so paid users can see reusable proof commands and evidence paths without opening Pro repo memory JSON.
 - Post-v0.19.3 update: `agent-guardrails pro status` now renders Pro-provided `proofMemoryHealth`, including health state, severity, trusted/watch/unreliable/archived counts, cleanup-candidate count, and the next Pro action. OSS still only renders the optional Pro field; Pro owns the memory-health logic.
+- Post-v0.19.4 draft update: `agent-guardrails pro cleanup` now calls installed Pro `planProofMemoryCleanup()` by default and `applyProofMemoryCleanup()` only with `--apply`, returning text or top-level JSON while keeping cleanup rules and repo-memory mutation inside Pro.
+- Post-v0.19.4 draft update: Pro status and cleanup resolution now checks the target repo `node_modules` before falling back to the OSS package location, so global OSS installs can still activate a project-local Pro package.
 
 ## Strategic Direction Update (2026-04-07)
 

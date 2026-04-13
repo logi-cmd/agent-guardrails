@@ -1,6 +1,6 @@
 # Pro Local Spec
 
-Last updated: 2026-04-09
+Last updated: 2026-04-13
 Status: Canonical
 
 ## Goal
@@ -178,6 +178,7 @@ Must do:
 - change future recommendations
 - influence scope and continuity warnings
 - improve with repeated use
+- expose safe maintenance actions through OSS, including proof memory cleanup dry-run before any archive mutation
 
 ### 5. Stronger semantic detection
 

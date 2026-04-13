@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runCli } from "../lib/cli.js";
-import { runProStatus } from "../lib/commands/pro-status.js";
+import { runProCleanup, runProStatus } from "../lib/commands/pro-status.js";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
@@ -27,9 +27,9 @@ function captureLogs(run) {
     });
 }
 
-async function withMockInstalledPro(callback) {
-  const packageDir = path.join(OSS_REPO_ROOT, "node_modules", "@agent-guardrails", "pro");
-  const backupDir = path.join(OSS_REPO_ROOT, "node_modules", "@agent-guardrails", `.pro-backup-${process.pid}`);
+async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
+  const packageDir = path.join(repoRoot, "node_modules", "@agent-guardrails", "pro");
+  const backupDir = path.join(repoRoot, "node_modules", "@agent-guardrails", `.pro-backup-${process.pid}`);
   const hadExistingPackage = fs.existsSync(packageDir);
   if (hadExistingPackage) {
     fs.renameSync(packageDir, backupDir);
@@ -129,6 +129,24 @@ async function withMockInstalledPro(callback) {
     "    }",
     "  };",
     "}",
+    "export function planProofMemoryCleanup() {",
+    "  return {",
+    "    mode: 'dry-run',",
+    "    state: 'needs_cleanup',",
+    "    cleanup: { archivedCount: 1, wouldArchive: [{ command: 'npm test', reason: 'failed repeatedly' }] },",
+    "    nextAction: { code: 'apply-proof-memory-cleanup', label: 'Apply proof memory cleanup', value: 'Archive unreliable proof recipes.', warning: 'This will archive 1 proof recipe.' },",
+    "    userValue: 'Keeps paid repo memory useful by moving failed or stale recipes out of the active recommendation path.'",
+    "  };",
+    "}",
+    "export function applyProofMemoryCleanup() {",
+    "  return {",
+    "    mode: 'apply',",
+    "    state: 'cleaned',",
+    "    cleanup: { archivedCount: 1, wouldArchive: [{ command: 'npm test', reason: 'failed repeatedly' }] },",
+    "    nextAction: { code: 'rerun-pro-status', label: 'Rerun Pro status', value: 'Confirm proof memory health after cleanup.' },",
+    "    userValue: 'Keeps paid repo memory useful by moving failed or stale recipes out of the active recommendation path.'",
+    "  };",
+    "}",
     ""
   ].join("\n"), "utf8");
 
@@ -218,6 +236,62 @@ export async function run() {
 
       assert.match(output, /Agent Guardrails Pro/);
       assert.match(output, /Status: not installed/);
+    });
+
+    it("previews and applies Pro proof memory cleanup through the CLI", async () => {
+      const preview = await withMockInstalledPro(() =>
+        captureLogs(() => runCli(["pro", "cleanup", "--lang", "en"]))
+      );
+      assert.match(preview.output, /Proof memory cleanup: needs_cleanup/);
+      assert.match(preview.output, /Mode: dry-run/);
+      assert.match(preview.output, /Would archive: 1/);
+      assert.match(preview.output, /Command: npm test/);
+      assert.match(preview.output, /Next: Apply proof memory cleanup/);
+      assert.match(preview.output, /Archive unreliable proof recipes/);
+
+      const applied = await withMockInstalledPro(() =>
+        captureLogs(() => runCli(["pro", "cleanup", "--apply", "--lang", "en"]))
+      );
+      assert.match(applied.output, /Proof memory cleanup: cleaned/);
+      assert.match(applied.output, /Mode: apply/);
+      assert.match(applied.output, /Archived: 1/);
+      assert.match(applied.output, /Next: Rerun Pro status/);
+    });
+
+    it("prints machine-readable Pro proof memory cleanup JSON", async () => {
+      const { output } = await withMockInstalledPro(() =>
+        captureLogs(() => runCli(["pro", "cleanup", "--json", "--lang", "en"]))
+      );
+
+      const parsed = JSON.parse(output);
+      assert.equal(parsed.installed, true);
+      assert.equal(parsed.action, "proof-memory-cleanup");
+      assert.equal(parsed.mode, "dry-run");
+      assert.equal(parsed.state, "needs_cleanup");
+      assert.equal(parsed.cleanup.archivedCount, 1);
+      assert.equal(parsed.nextAction.code, "apply-proof-memory-cleanup");
+    });
+
+    it("loads Pro from the target repo node_modules", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-local-"));
+      try {
+        const { result: status } = await withMockInstalledPro(
+          () => captureLogs(() => runProStatus({ flags: { json: true }, locale: "en", repoRoot })),
+          repoRoot
+        );
+        assert.equal(status.installed, true);
+        assert.equal(status.packageVersion, "0.1.0-test");
+
+        const { result: cleanup } = await withMockInstalledPro(
+          () => captureLogs(() => runProCleanup({ flags: { json: true }, locale: "en", repoRoot })),
+          repoRoot
+        );
+        assert.equal(cleanup.installed, true);
+        assert.equal(cleanup.action, "proof-memory-cleanup");
+        assert.equal(cleanup.state, "needs_cleanup");
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
     });
   });
 }

@@ -264,6 +264,7 @@ npm install @agent-guardrails/pro
 | `generate-agents` | 生成 agent 专用配置文件 |
 | `doctor` | 诊断当前安装 |
 | `pro status` | 显示可选 Pro 安装和 license 状态 |
+| `pro cleanup` | 预览或执行 Pro proof memory 清理 |
 | `start` | 启动 daemon |
 | `stop` | 停止 daemon |
 | `status` | 显示 daemon 状态 |
