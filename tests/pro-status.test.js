@@ -117,11 +117,12 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "      headline: 'Proof memory needs cleanup before its recommendations should be trusted blindly.',",
     "      summary: 'Proof memory has unreliable or stale recipes that should be reviewed.',",
     "      counts: { trusted: 1, watch: 1, unreliable: 1, unknown: 0, archived: 1, cleanupEvents: 1, cleanupCandidates: 1 },",
+    "      policy: { staleAfterDays: 90, maxFailureCount: 2, recentCleanupDays: 30 },",
     "      lastCleanupAt: '2026-04-13T00:00:00.000Z',",
     "      recentCleanupEvents: [",
     "        { type: 'proof-memory-cleanup', appliedAt: '2026-04-13T00:00:00.000Z', archivedCount: 1, commands: ['npm test'], reasons: ['stale 200 days; failed 4x'], summary: 'Archived 1 proof recipe from active repo memory.' }",
     "      ],",
-    "      nextAction: { code: 'preview-proof-memory-cleanup', label: 'Preview proof memory cleanup', command: 'agent-guardrails pro status --json', value: 'Review cleanup candidates before archiving unreliable proof recipes.' },",
+    "      nextAction: { code: 'preview-proof-memory-cleanup', label: 'Preview proof memory cleanup', command: 'agent-guardrails pro status --json', policy: { staleAfterDays: 90, maxFailureCount: 2, recentCleanupDays: 30 }, value: 'Review cleanup candidates before archiving unreliable proof recipes.' },",
     "      userValue: 'Keeps repo memory useful by separating trusted proof habits from stale or failed advice.'",
     "    },",
     "    demoGoLiveDecision: {",
@@ -222,6 +223,7 @@ export async function run() {
       assert.match(output, /Proof memory health: needs_cleanup \(warning\)/);
       assert.match(output, /Proof memory needs cleanup before its recommendations should be trusted blindly/);
       assert.match(output, /Trusted: 1; Watch: 1; Unreliable: 1; Archived: 1; Cleanup events: 1; Cleanup candidates: 1/);
+      assert.match(output, /Policy: stale after 90 days; archive after 2 failed reuse attempts; cleanup context 30 days/);
       assert.match(output, /Last cleanup: 2026-04-13T00:00:00.000Z/);
       assert.match(output, /Recent cleanup/);
       assert.match(output, /Archived 1 proof recipe from active repo memory/);

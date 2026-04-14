@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-14 (Pro proof memory context visibility)
+Last updated: 2026-04-14 (Pro proof memory policy visibility)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.4** - OSS Pro visibility bundle release: `check --json` exposes installed Pro proof plans, proof recipe summaries, and proof memory context at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, cleanup history, proof memory context, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
+**v0.19.4** - OSS Pro visibility bundle release: `check --json` exposes installed Pro proof plans, proof recipe summaries, and proof memory context at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, cleanup history, proof memory context, proof memory policy, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
 
 ## Goal
 
@@ -64,6 +64,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.4 draft update: `check --json` now adds a top-level `proofRecipe` summary when Pro provides learned proof evidence, including memory health penalty and warning fields. `check --review` also renders the Pro-provided memory health penalty and warning without moving scoring logic into OSS.
 - Post-v0.19.4 draft update: agent-guardrails pro status now renders Pro-provided cleanup event history, including cleanup event count, last cleanup time, recent cleanup summary, affected commands, and archive reasons.
 - Post-v0.19.4 draft update: `check --json` now adds a top-level `proofMemoryContext` summary when Pro explains recent proof-memory cleanup. `check --review` renders the same context, archived commands, cleanup reasons, and go-live impact without moving memory-change logic into OSS.
+- Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided proof memory policy thresholds, including stale age, failed-reuse archive threshold, and cleanup-context window.
 
 ## Strategic Direction Update (2026-04-07)
 
