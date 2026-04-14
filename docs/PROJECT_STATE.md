@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-14 (Pro first value path visibility)
+Last updated: 2026-04-14 (Windows config parsing and Pro E2E dogfood)
 
 ## Canonical build docs
 
@@ -69,6 +69,8 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided `paidValue`, including paid-value state, score, value drivers, and next paid action. OSS only renders the optional field; Pro owns the paid-value scoring and copy.
 - Post-v0.19.4 draft update: `agent-guardrails pro status --lang zh-CN` now localizes the OSS status labels for installed Pro state, readiness, proof memory, proof memory health, policy advice, paid value, capabilities, conversion, and demo verdict surfaces.
 - Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided `firstValuePath`, including the first paid-value path state, steps, and next action. OSS only renders the optional field; Pro owns the first-value logic and sequencing.
+- Post-v0.19.4 draft update: config and task-contract JSON parsing now tolerates a leading UTF-8 BOM, preventing PowerShell-created `.agent-guardrails/config.json` files from blocking `pro status` or `check` on Windows.
+- Post-v0.19.4 dogfood: locally packed OSS + Pro packages were installed in a separate repo with an auth diff; `pro status` rendered English/zh-CN readiness, paid value, and first value path, while `check --review` and `check --json` surfaced the Pro go-live verdict and proof plan at the top layer.
 
 ## Strategic Direction Update (2026-04-07)
 

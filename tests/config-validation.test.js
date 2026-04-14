@@ -78,6 +78,15 @@ async function readConfigAcceptsValidObject() {
   assert.equal(config.preset, "node-service");
 }
 
+async function readConfigAcceptsUtf8Bom() {
+  const tempDir = makeTempDir("cfg-bom");
+  writeConfigRaw(tempDir, `\uFEFF${JSON.stringify({ preset: "node-service", pro: { licenseKey: "test" } })}`);
+
+  const config = readConfig(tempDir);
+  assert.equal(config.preset, "node-service");
+  assert.equal(config.pro.licenseKey, "test");
+}
+
 async function readTaskContractReturnsNullWhenFileMissing() {
   const tempDir = makeTempDir("tc-missing");
   const result = readTaskContract(tempDir);
@@ -190,6 +199,7 @@ export async function run() {
   await readConfigThrowsOnArrayTopLevel();
   await readConfigThrowsOnPrimitiveTopLevel();
   await readConfigAcceptsValidObject();
+  await readConfigAcceptsUtf8Bom();
   await readTaskContractReturnsNullWhenFileMissing();
   await readTaskContractThrowsOnMalformedJSON();
   await readTaskContractThrowsOnArrayTopLevel();
