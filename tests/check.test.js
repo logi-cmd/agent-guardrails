@@ -208,6 +208,53 @@ function withMockInstalledPro(callback) {
   }
 }
 
+function withMockInstalledProGo(callback) {
+  const packageDir = path.join(OSS_REPO_ROOT, "node_modules", "@agent-guardrails", "pro");
+  fs.mkdirSync(packageDir, { recursive: true });
+  fs.writeFileSync(path.join(packageDir, "package.json"), JSON.stringify({
+    name: "@agent-guardrails/pro",
+    version: "0.0.0-test",
+    type: "module",
+    exports: {
+      ".": "./index.js"
+    }
+  }, null, 2), "utf8");
+  fs.writeFileSync(path.join(packageDir, "index.js"), [
+    "export async function enrichReview(review) {",
+    "  return {",
+    "    ...review,",
+    "    goLiveDecision: {",
+    "      verdict: 'go',",
+    "      riskTier: 'high',",
+    "      why: ['Required evidence was supplied for this high-risk change.'],",
+    "      evidenceGaps: [],",
+    "      nextBestActions: ['Deploy with the declared post-deploy watch.'],",
+    "      goLiveHandoff: {",
+    "        preDeployChecks: ['Confirm validation output is attached.'],",
+    "        postDeployWatch: ['Confirm logs, errors, and core health signals after deploy.'],",
+    "        rollbackGuidance: ['Use the documented rollback path if the watch fails.']",
+    "      }",
+    "    },",
+    "    proofPlan: {",
+    "      state: 'ready',",
+    "      summary: 'Ready to go live with post-deploy watch.',",
+    "      steps: [{ code: 'deploy-watch', title: 'Watch production after deploy' }]",
+    "    }",
+    "  };",
+    "}",
+    "export async function getProNextActions() { return []; }",
+    "export async function formatProCategoryBreakdown() { return null; }",
+    "export function planTaskShapes() { return null; }",
+    ""
+  ].join("\n"), "utf8");
+
+  try {
+    return callback();
+  } finally {
+    fs.rmSync(packageDir, { recursive: true, force: true });
+  }
+}
+
 async function checkFailsWithoutTests() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-fail-"));
   await initRepo(tempDir);
@@ -877,6 +924,60 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /Cleanup reasons: stale 200 days; failed 4x/);
     assert.match(output, /Memory impact: Current proof recommendations use active trusted proof memory/);
     assert.match(output, /Prioritized proof surface: Validation proof \(1 blocking, memory pressure 3\)/);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
+async function checkSuppressesDeployReadinessWhenProSaysGo() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-pro-go-deploy-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/", ".agent-guardrails/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src", "orders"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "orders", "refund.js"), "export const refund = true;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "refund.test.js"), "export const ok = true;\n", "utf8");
+
+  await withRepoCwd(tempDir, () =>
+    runPlan({
+      positional: [],
+      flags: {
+        task: "Refine refund deploy path",
+        "allow-paths": "src/,tests/",
+        "intended-files": "src/orders/refund.js,tests/refund.test.js",
+        "required-commands": "npm test",
+        "production-profile": "customer-facing-api"
+      },
+      locale: "en"
+    })
+  );
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = ["src/orders/refund.js", "tests/refund.test.js"].join(path.delimiter);
+  process.exitCode = 0;
+
+  const checkModuleUrl = pathToFileURL(path.join(OSS_REPO_ROOT, "lib", "commands", "check.js")).href;
+  const output = withMockInstalledProGo(() => execFileSync("node", [
+    "--input-type=module",
+    "-e",
+    [
+      `import { runCheck } from ${JSON.stringify(checkModuleUrl)};`,
+      `process.chdir(${JSON.stringify(tempDir)});`,
+      `await runCheck({ flags: { review: true, "commands-run": "npm test" }, locale: "en" });`,
+      "process.exitCode = 0;"
+    ].join("\n")
+  ], {
+    cwd: tempDir,
+    encoding: "utf8",
+    env: { ...process.env, AGENT_GUARDRAILS_CHANGED_FILES: process.env.AGENT_GUARDRAILS_CHANGED_FILES || "" }
+  }));
+
+  try {
+    assert.match(output, /Go-live verdict: GO \(high\)/);
+    assert.doesNotMatch(output, /Deploy readiness:/);
+    assert.doesNotMatch(output, /The change is not yet ready to deploy/);
+    assert.match(output, /Post-deploy maintenance:/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
     process.exitCode = 0;
@@ -1616,6 +1717,7 @@ export async function run() {
   await checkPrintsJsonFailures();
   await checkPrintsJsonWithInstalledPro();
   await checkPrintsGoLiveVerdictWithInstalledPro();
+  await checkSuppressesDeployReadinessWhenProSaysGo();
   await checkPrintsReviewOutput();
   await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
