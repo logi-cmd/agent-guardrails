@@ -143,8 +143,10 @@ function withMockInstalledPro(callback) {
     "          timesUsed: 2,",
     "          applicabilityScore: 100,",
     "          freshnessPenalty: 15,",
-    "          effectiveScore: 85,",
-    "          scoreReason: 'exact command match; stale freshness penalty -15; effective score 85.'",
+    "          memoryHealthPenalty: 35,",
+    "          memoryHealthWarning: 'This proof recipe is marked unreliable after 3 failed reuse attempts; treat it as a hint until fresh evidence confirms it.',",
+    "          effectiveScore: 50,",
+    "          scoreReason: 'exact command match; stale freshness penalty -15; memory health penalty -35; effective score 50.'",
     "        },",
     "      },",
     "      proofWorkbench: {",
@@ -802,7 +804,10 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.proofPlan.cheapestNextProof.code, "add-targeted-proof");
     assert.deepEqual(parsed.proofPlan.cheapestNextProof.files, ["src/service.js"]);
     assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.command, "npm test");
-    assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.effectiveScore, 85);
+    assert.equal(parsed.proofPlan.cheapestNextProof.learnedEvidence.effectiveScore, 50);
+    assert.equal(parsed.proofRecipe.command, "npm test");
+    assert.equal(parsed.proofRecipe.memoryHealthPenalty, 35);
+    assert.match(parsed.proofRecipe.memoryHealthWarning, /unreliable/);
     assert.match(parsed.proofPlan.proofWorkbench.nextAction, /Run `npm test` first/);
     assert.equal(parsed.proofPlan.impactSurfaces[0].surface, "validation");
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
@@ -851,8 +856,9 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /Validation proof memory has 1 active gap\(s\)/);
     assert.match(output, /declared validation command output/);
     assert.match(output, /Learned proof: Previously resolved Add targeted proof/);
-    assert.match(output, /Learned proof score: 85 \(applicability 100, freshness penalty 15\)/);
-    assert.match(output, /exact command match; stale freshness penalty -15; effective score 85/);
+    assert.match(output, /Learned proof score: 50 \(applicability 100, freshness penalty 15, memory health penalty 35\)/);
+    assert.match(output, /Learned proof warning: This proof recipe is marked unreliable after 3 failed reuse attempts/);
+    assert.match(output, /exact command match; stale freshness penalty -15; memory health penalty -35; effective score 50/);
     assert.match(output, /Proof workbench: Run `npm test` first because this repo reused it 2x/);
     assert.match(output, /Proof workbench score: high confidence, recommendation 95/);
     assert.match(output, /Prioritized proof surface: Validation proof \(1 blocking, memory pressure 3\)/);
