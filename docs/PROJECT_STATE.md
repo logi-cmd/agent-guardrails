@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-14 (Pro proof memory policy advice visibility)
+Last updated: 2026-04-14 (Pro paid value and bilingual status visibility)
 
 ## Canonical build docs
 
@@ -18,7 +18,7 @@ Strategy, market, pricing, and older design docs still matter, but if there is a
 
 ## Current Version
 
-**v0.19.4** - OSS Pro visibility bundle release: `check --json` exposes installed Pro proof plans, proof recipe summaries, and proof memory context at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, cleanup history, proof memory context, proof memory policy, proof memory policy advice, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
+**v0.19.4** - OSS Pro visibility bundle release: `check --json` exposes installed Pro proof plans, proof recipe summaries, and proof memory context at the top level, and `pro status` plus `check --review` render Pro proof-memory, proof memory health, cleanup history, proof memory context, proof memory policy, proof memory policy advice, paid value, proof recipes, learned proof, learned proof scoring, proof workbench next actions, stale recipe warnings, proof recipe next actions, proof closure summaries, reusable proof commands, reusable evidence paths, and prioritized proof-surface wording when available.
 
 ## Goal
 
@@ -66,6 +66,8 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.4 draft update: `check --json` now adds a top-level `proofMemoryContext` summary when Pro explains recent proof-memory cleanup. `check --review` renders the same context, archived commands, cleanup reasons, and go-live impact without moving memory-change logic into OSS.
 - Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided proof memory policy thresholds, including stale age, failed-reuse archive threshold, and cleanup-context window.
 - Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided proof memory policy advice, including strict/default/relaxed mode, policy tradeoff, suggested next action, command, and config path.
+- Post-v0.19.4 draft update: `agent-guardrails pro status` now renders Pro-provided `paidValue`, including paid-value state, score, value drivers, and next paid action. OSS only renders the optional field; Pro owns the paid-value scoring and copy.
+- Post-v0.19.4 draft update: `agent-guardrails pro status --lang zh-CN` now localizes the OSS status labels for installed Pro state, readiness, proof memory, proof memory health, policy advice, paid value, capabilities, conversion, and demo verdict surfaces.
 
 ## Strategic Direction Update (2026-04-07)
 

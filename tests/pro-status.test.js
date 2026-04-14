@@ -132,6 +132,20 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "      nextAction: { code: 'preview-proof-memory-cleanup', label: 'Preview proof memory cleanup', command: 'agent-guardrails pro status --json', policy: { staleAfterDays: 90, maxFailureCount: 2, recentCleanupDays: 30 }, value: 'Review cleanup candidates before archiving unreliable proof recipes.' },",
     "      userValue: 'Keeps repo memory useful by separating trusted proof habits from stale or failed advice.'",
     "    },",
+    "    paidValue: {",
+    "      state: 'compounding',",
+    "      score: 85,",
+    "      headline: 'Pro is earning paid value when repo memory changes the next proof step.',",
+    "      summary: 'This repo has learned proof recipes and can turn repeated missing evidence into project-specific next actions.',",
+    "      userValue: 'This is the paid layer: deploy decisions, cheapest proof, and local evidence memory, not another generic checklist.',",
+    "      valueDrivers: [",
+    "        { code: 'go-live-decision', title: 'Go-live decision', outcome: 'Turns raw findings into go, need_evidence, or hold.' },",
+    "        { code: 'proof-plan', title: 'Proof plan', outcome: 'Points to the cheapest next proof item.' },",
+    "        { code: 'repo-memory', title: 'Repo memory', outcome: 'Reuses project-specific proof recipes.' },",
+    "        { code: 'policy-calibration', title: 'Policy calibration', outcome: 'Keeps stale advice out of future proof plans.' }",
+    "      ],",
+    "      nextAction: { code: 'run-pro-enriched-check', label: 'Run a Pro-enriched check', command: 'agent-guardrails check --review', value: 'Run it on a real diff so the go-live decision and next proof step show up in the workflow.' }",
+    "    },",
     "    demoGoLiveDecision: {",
     "      verdict: 'hold',",
     "      riskTier: 'high',",
@@ -245,6 +259,12 @@ export async function run() {
       assert.match(output, /Next: Preview proof memory cleanup/);
       assert.match(output, /Command: agent-guardrails pro status --json/);
       assert.match(output, /Review cleanup candidates before archiving unreliable proof recipes/);
+      assert.match(output, /Paid value: compounding \(85\/100\)/);
+      assert.match(output, /Pro is earning paid value when repo memory changes the next proof step/);
+      assert.match(output, /This is the paid layer/);
+      assert.match(output, /Value drivers/);
+      assert.match(output, /Go-live decision: Turns raw findings into go, need_evidence, or hold/);
+      assert.match(output, /Next paid action: Run a Pro-enriched check/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
       assert.match(output, /Closed Document rollback proof with docs\/release-checks\.md/);
@@ -253,6 +273,28 @@ export async function run() {
       assert.match(output, /Cheapest missing proof/);
       assert.match(output, /Go-live verdict/);
       assert.match(output, /Demo go-live verdict: HOLD \(high\)/);
+    });
+
+    it("renders Chinese labels for Pro status", async () => {
+      const { output, result } = await withMockInstalledPro(() =>
+        captureLogs(() => runProStatus({ flags: { lang: "zh-CN" }, locale: "zh-CN", repoRoot: OSS_REPO_ROOT }))
+      );
+
+      assert.equal(result.installed, true);
+      assert.match(output, /状态: 已安装/);
+      assert.match(output, /许可证: cached_valid \(valid\)/);
+      assert.match(output, /就绪状态: ready/);
+      assert.match(output, /下一步 Pro 动作/);
+      assert.match(output, /激活清单/);
+      assert.match(output, /证据记忆: active_gaps/);
+      assert.match(output, /证据记忆健康度: needs_cleanup \(warning\)/);
+      assert.match(output, /策略建议: strict/);
+      assert.match(output, /付费价值: compounding \(85\/100\)/);
+      assert.match(output, /价值驱动/);
+      assert.match(output, /下一步付费动作: Run a Pro-enriched check/);
+      assert.match(output, /能力/);
+      assert.match(output, /为什么 Pro 重要/);
+      assert.match(output, /演示上线结论: HOLD \(high\)/);
     });
 
     it("routes agent-guardrails pro status through the CLI", async () => {
