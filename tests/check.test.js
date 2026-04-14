@@ -154,7 +154,14 @@ function withMockInstalledPro(callback) {
     "        nextAction: 'Run `npm test` first because this repo reused it 2x for this proof pattern (high confidence; reused 2x, fresh recipe).',",
     "        command: 'npm test',",
     "        confidenceLevel: 'high',",
-    "        recommendationScore: 95",
+    "        recommendationScore: 95,",
+    "        memoryContext: {",
+    "          state: 'recent_cleanup',",
+    "          summary: 'Memory changed because cleanup archived 1 stale or failed proof recipe. Affected command: npm test.',",
+    "          archivedCommands: ['npm test'],",
+    "          reasons: ['stale 200 days; failed 4x'],",
+    "          goLiveImpact: 'Current proof recommendations use active trusted proof memory and avoid stale or repeatedly failed recipes that were archived by cleanup.'",
+    "        }",
     "      },",
     "      impactSurfaces: [",
     "        { surface: 'validation', title: 'Validation proof', stepCount: 1, blockingCount: 1, memoryPressure: 3 }",
@@ -809,6 +816,10 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.proofRecipe.memoryHealthPenalty, 35);
     assert.match(parsed.proofRecipe.memoryHealthWarning, /unreliable/);
     assert.match(parsed.proofPlan.proofWorkbench.nextAction, /Run `npm test` first/);
+    assert.equal(parsed.proofMemoryContext.state, "recent_cleanup");
+    assert.match(parsed.proofMemoryContext.summary, /cleanup archived 1 stale or failed proof recipe/);
+    assert.deepEqual(parsed.proofMemoryContext.archivedCommands, ["npm test"]);
+    assert.match(parsed.proofMemoryContext.goLiveImpact, /active trusted proof memory/);
     assert.equal(parsed.proofPlan.impactSurfaces[0].surface, "validation");
     assert.ok(parsed.runtime.nextActions.some((item) => item.includes("[Pro] [HIGH]")));
     assert.deepEqual(parsed.review.contextQuality.suggestedFiles, ["src/auth/service.js", "tests/auth/service.test.js"]);
@@ -861,6 +872,10 @@ async function checkPrintsGoLiveVerdictWithInstalledPro() {
     assert.match(output, /exact command match; stale freshness penalty -15; memory health penalty -35; effective score 50/);
     assert.match(output, /Proof workbench: Run `npm test` first because this repo reused it 2x/);
     assert.match(output, /Proof workbench score: high confidence, recommendation 95/);
+    assert.match(output, /Proof memory context: Memory changed because cleanup archived 1 stale or failed proof recipe/);
+    assert.match(output, /Archived commands: npm test/);
+    assert.match(output, /Cleanup reasons: stale 200 days; failed 4x/);
+    assert.match(output, /Memory impact: Current proof recommendations use active trusted proof memory/);
     assert.match(output, /Prioritized proof surface: Validation proof \(1 blocking, memory pressure 3\)/);
   } finally {
     delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
