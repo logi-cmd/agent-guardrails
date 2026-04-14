@@ -146,6 +146,18 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "      ],",
     "      nextAction: { code: 'run-pro-enriched-check', label: 'Run a Pro-enriched check', command: 'agent-guardrails check --review', value: 'Run it on a real diff so the go-live decision and next proof step show up in the workflow.' }",
     "    },",
+    "    firstValuePath: {",
+    "      state: 'compounding',",
+    "      headline: 'First paid-value loop: real check, cheapest proof, repo memory.',",
+    "      userValue: 'Shows the fastest path from install to a concrete Pro decision users can judge against real work.',",
+    "      nextAction: { code: 'run-pro-enriched-check', title: 'Run a real check', command: 'agent-guardrails check --review', value: 'Use a real diff to see the go-live decision, cheapest proof, and repo-memory next action.' },",
+    "      steps: [",
+    "        { code: 'activate-pro', title: 'Activate Pro', status: 'done', command: 'agent-guardrails pro status --json', outcome: 'OSS can load Pro and prepare go-live decisions in check output.' },",
+    "        { code: 'run-real-check', title: 'Run a real check', status: 'done', command: 'agent-guardrails check --review', outcome: 'See the go-live verdict, risk tier, and missing proof for a real diff.' },",
+    "        { code: 'close-cheapest-proof', title: 'Close the cheapest proof', status: 'todo', command: 'agent-guardrails check --review', outcome: 'Close the highest-leverage evidence gap instead of manually guessing the next step.' },",
+    "        { code: 'inspect-paid-value', title: 'Inspect paid value', status: 'done', command: 'agent-guardrails pro status', outcome: 'Confirm repo memory, proof recipes, and paidValue are starting to compound.' }",
+    "      ]",
+    "    },",
     "    demoGoLiveDecision: {",
     "      verdict: 'hold',",
     "      riskTier: 'high',",
@@ -265,6 +277,11 @@ export async function run() {
       assert.match(output, /Value drivers/);
       assert.match(output, /Go-live decision: Turns raw findings into go, need_evidence, or hold/);
       assert.match(output, /Next paid action: Run a Pro-enriched check/);
+      assert.match(output, /First value path: compounding/);
+      assert.match(output, /First paid-value loop: real check, cheapest proof, repo memory/);
+      assert.match(output, /Activate Pro: done \(agent-guardrails pro status --json\)/);
+      assert.match(output, /Close the cheapest proof: todo \(agent-guardrails check --review\)/);
+      assert.match(output, /Next first-value action: Run a real check/);
       assert.match(output, /Recently resolved/);
       assert.match(output, /Document rollback proof/);
       assert.match(output, /Closed Document rollback proof with docs\/release-checks\.md/);
@@ -292,6 +309,8 @@ export async function run() {
       assert.match(output, /付费价值: compounding \(85\/100\)/);
       assert.match(output, /价值驱动/);
       assert.match(output, /下一步付费动作: Run a Pro-enriched check/);
+      assert.match(output, /首次价值路径: compounding/);
+      assert.match(output, /下一步首次价值动作: Run a real check/);
       assert.match(output, /能力/);
       assert.match(output, /为什么 Pro 重要/);
       assert.match(output, /演示上线结论: HOLD \(high\)/);
