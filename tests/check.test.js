@@ -1013,6 +1013,34 @@ async function checkPrintsReviewOutput() {
   }
 }
 
+async function checkReviewOutputCanUseAsciiSafeText() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-review-ascii-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "service.js"), "export const x = 1;\n", "utf8");
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = "src/service.js";
+  process.env.AGENT_GUARDRAILS_ASCII = "1";
+  process.exitCode = 0;
+
+  try {
+    const { output, result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({ flags: { review: true }, locale: "en" }))
+    );
+
+    assert.equal(result.ok, false);
+    assert.match(output, /Trust Score.*\(blocked\)/);
+    assert.match(output, /--- Details/);
+    assert.doesNotMatch(output, /[^\x00-\x7F]/, "ASCII-safe review output should not contain Unicode glyphs");
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    delete process.env.AGENT_GUARDRAILS_ASCII;
+    process.exitCode = 0;
+  }
+}
+
 async function checkMarksProductionReadyChangesAsSafeToDeploy() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-deploy-ready-"));
   await initRepo(tempDir);
@@ -1719,6 +1747,7 @@ export async function run() {
   await checkPrintsGoLiveVerdictWithInstalledPro();
   await checkSuppressesDeployReadinessWhenProSaysGo();
   await checkPrintsReviewOutput();
+  await checkReviewOutputCanUseAsciiSafeText();
   await checkMarksProductionReadyChangesAsSafeToDeploy();
   await checkAddsContinuityGuidanceForParallelAbstraction();
   await checkPrintsContinuityAndPerformanceReviewGroups();

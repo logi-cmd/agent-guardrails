@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-14 (Pro GO output precedence)
+Last updated: 2026-04-15 (ASCII-safe review output)
 
 ## Canonical build docs
 
@@ -72,6 +72,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.4 draft update: config and task-contract JSON parsing now tolerates a leading UTF-8 BOM, preventing PowerShell-created `.agent-guardrails/config.json` files from blocking `pro status` or `check` on Windows.
 - Post-v0.19.4 dogfood: locally packed OSS + Pro packages were installed in a separate repo with an auth diff; `pro status` rendered English/zh-CN readiness, paid value, and first value path, while `check --review` and `check --json` surfaced the Pro go-live verdict and proof plan at the top layer.
 - Post-v0.19.4 draft update: when installed Pro returns `goLiveDecision.verdict = "go"`, OSS text output suppresses the older deploy-readiness block so users do not see a contradictory "GO" and "not yet ready to deploy" message in the same review. JSON output remains unchanged.
+- Post-v0.19.4 draft update: `check --review` now supports ASCII-safe human output through `AGENT_GUARDRAILS_ASCII=1` and defaults to ASCII-safe English output on Windows, avoiding mojibake from emoji, box drawing, long dashes, and score-bar glyphs in captured agent logs. JSON output remains unchanged.
 
 ## Strategic Direction Update (2026-04-07)
 
