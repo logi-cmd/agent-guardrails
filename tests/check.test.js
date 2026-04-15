@@ -1573,6 +1573,30 @@ async function listChangedFilesKeepsLeadingCharacterFromGitPorcelain() {
   assert.deepEqual(result.files.sort(), ["docs/notes.md", "lib/feature.js", "tests/feature.test.js"]);
 }
 
+async function listChangedFilesExpandsUntrackedDirectoriesToFiles() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-untracked-dir-"));
+
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: tempDir, stdio: "ignore" });
+
+  fs.writeFileSync(path.join(tempDir, "README.md"), "# seed\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "seed"], { cwd: tempDir, stdio: "ignore" });
+
+  fs.mkdirSync(path.join(tempDir, ".agent-guardrails", "evidence"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tempDir, ".agent-guardrails", "evidence", "current-task.md"),
+    "# Task Evidence\n",
+    "utf8"
+  );
+
+  const result = listChangedFiles(tempDir);
+
+  assert.equal(result.error, null);
+  assert.deepEqual(result.files, [".agent-guardrails/evidence/current-task.md"]);
+}
+
 async function hardcodedSecretsDetectorWarnsOnApiKey() {
   const detector = ossDetectors.find((d) => d.name === "hardcoded-secrets");
   assert.ok(detector, "hardcoded-secrets detector should exist");
@@ -1814,6 +1838,7 @@ export async function run() {
   await sensitiveFileChangeDetectorWarnsOnEnvFiles();
   await sensitiveFileChangeDetectorRespectsConfigGate();
   await listChangedFilesKeepsLeadingCharacterFromGitPorcelain();
+  await listChangedFilesExpandsUntrackedDirectoriesToFiles();
   await listChangedFilesCorrectlyRelativizesSubdirectoryPaths();
   await resolveRepoRootPrefersConfigAtStartDir();
   await resolveRepoRootFallsBackToGitRoot();
