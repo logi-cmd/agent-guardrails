@@ -17,7 +17,7 @@ complexity: standard
 /ag:review [--base-ref <ref>] [--commands-run "<cmd1>, <cmd2>"]
 ```
 
-**Default behavior**: `agent-guardrails check --base-ref origin/main --review`
+**Default behavior**: `npx agent-guardrails check --base-ref origin/main --review`
 
 ## Behavioral Flow
 1. **Analyze**: Review all changes vs base branch
@@ -39,7 +39,7 @@ complexity: standard
 ### Basic review
 ```
 /ag:review
-# Runs: agent-guardrails check --base-ref origin/main --review
+# Runs: npx agent-guardrails check --base-ref origin/main --review
 ```
 
 ### Review with commands run

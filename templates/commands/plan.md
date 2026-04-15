@@ -17,14 +17,14 @@ complexity: standard
 /ag:plan <task-description> [--intended-files <file1>, <file2>] [--risk-level standard|high]
 ```
 
-**Default behavior**: `agent-guardrails plan --task "<task-description>"`
+**Default behavior**: `npx agent-guardrails plan --task "<task-description>"`
 
 ## Behavioral Flow
 1. **Confidence check**: Assess confidence before planning
    - ≥90%: Proceed directly
    - 70-89%: Present plan alternatives
    - <70%: Ask user for clarification
-2. **Plan**: Execute `agent-guardrails plan --task "<description>"`
+2. **Plan**: Execute `npx agent-guardrails plan --task "<description>"`
 3. **Review**: Show task contract (allowed paths, intended files, risk level)
 4. **Confirm**: Ask user if plan looks correct before implementation
 
@@ -38,20 +38,20 @@ complexity: standard
 ### Basic planning
 ```
 /ag:plan Add user authentication
-# Runs: agent-guardrails plan --task "Add user authentication"
+# Runs: npx agent-guardrails plan --task "Add user authentication"
 # Shows: task contract with allowed paths, risk level
 ```
 
 ### Planning with scope
 ```
 /ag:plan Fix login bug --intended-files src/auth.js, tests/auth.test.js
-# Runs: agent-guardrails plan --task "Fix login bug" --intended-files src/auth.js tests/auth.test.js
+# Runs: npx agent-guardrails plan --task "Fix login bug" --intended-files src/auth.js tests/auth.test.js
 ```
 
 ### High-risk planning
 ```
 /ag:plan Refactor database layer --risk-level high
-# Runs: agent-guardrails plan --task "Refactor database layer"
+# Runs: npx agent-guardrails plan --task "Refactor database layer"
 # Marks as high-risk, requires explicit confirmation
 ```
 

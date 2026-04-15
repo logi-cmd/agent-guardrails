@@ -6,7 +6,7 @@
 
 1. `AGENTS.md`（本文件）
 2. `docs/PROJECT_STATE.md`
-3. `README.md`
+3. `README.md` if it exists
 4. 你计划修改的具体文件
 
 跳过此步骤 = 违反规则。
@@ -16,7 +16,7 @@
 **告诉用户"任务完成"之前，必须运行：**
 
 ```bash
-agent-guardrails check --base-ref HEAD~1
+npx agent-guardrails check --base-ref HEAD~1
 ```
 
 **强制规则：**
@@ -37,7 +37,7 @@ agent-guardrails check --base-ref HEAD~1
 如果契约不存在且任务不简单，**必须** 先运行：
 
 ```bash
-agent-guardrails plan --task "<任务描述>"
+npx agent-guardrails plan --task "<任务描述>"
 ```
 
 然后在生成的契约范围内实现。
@@ -61,3 +61,6 @@ agent-guardrails plan --task "<任务描述>"
 - [ ] 风险、假设和后续工作已记录。
 
 **任何一项为假，任务未完成。**
+
+
+Windows PowerShell note: if npx or npm is blocked by the .ps1 shim policy, use npx.cmd and npm.cmd.

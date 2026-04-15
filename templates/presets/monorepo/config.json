@@ -18,7 +18,7 @@
     "readBeforeWrite": [
       "AGENTS.md",
       "docs/PROJECT_STATE.md",
-      "README.md",
+      "README.md (if it exists)",
       "apps",
       "packages"
     ],

@@ -257,7 +257,7 @@ export async function run() {
   assert.deepEqual(autoContract.session.requiredCommandsSuggested, config.workflow.planDefaults.requiredCommands);
   assert.equal(autoContract.session.evidencePathSuggested, config.workflow.planDefaults.evidencePaths[0]);
   assert.deepEqual(autoContract.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
-  assert.match(autoContract.session.finishCheckHints.join("\n"), /Finish with agent-guardrails check --review/i);
+  assert.match(autoContract.session.finishCheckHints.join("\n"), /Finish with npx agent-guardrails check --review/i);
 
   const uninitializedDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-plan-no-init-"));
   let error = null;

@@ -11,7 +11,7 @@
     },
     "readBeforeWrite": [
       "AGENTS.md",
-      "README.md"
+      "README.md (if it exists)"
     ],
     "constraints": [
       "Keep changes bounded and reviewable.",

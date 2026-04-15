@@ -17,10 +17,10 @@ complexity: simple
 /ag:check [--base-ref <ref>] [--commands-run "<cmd1>, <cmd2>"]
 ```
 
-**Default behavior**: `agent-guardrails check --base-ref HEAD~1`
+**Default behavior**: `npx agent-guardrails check --base-ref HEAD~1`
 
 ## Behavioral Flow
-1. **Run**: Execute `agent-guardrails check --base-ref HEAD~1`
+1. **Run**: Execute `npx agent-guardrails check --base-ref HEAD~1`
 2. **Analyze**: Review findings (scope-drift, missing-test, new-abstraction)
 3. **Report**: Show results in chat with severity levels
 4. **Fix**: If issues found, suggest fixes or run `/ag:fix`
@@ -35,19 +35,19 @@ complexity: simple
 ### Basic check
 ```
 /ag:check
-# Runs: agent-guardrails check --base-ref HEAD~1
+# Runs: npx agent-guardrails check --base-ref HEAD~1
 ```
 
 ### Check with commands run
 ```
 /ag:check --commands-run "npm test, npm run lint"
-# Runs: agent-guardrails check --base-ref HEAD~1 --commands-run "npm test, npm run lint"
+# Runs: npx agent-guardrails check --base-ref HEAD~1 --commands-run "npm test, npm run lint"
 ```
 
 ### Check specific base
 ```
 /ag:check --base-ref origin/main
-# Runs: agent-guardrails check --base-ref origin/main
+# Runs: npx agent-guardrails check --base-ref origin/main
 ```
 
 ## Boundaries

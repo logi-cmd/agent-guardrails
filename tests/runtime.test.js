@@ -51,7 +51,7 @@ export async function run() {
   assert.equal(suggestion.contract.session.evidencePathSuggested, ".agent-guardrails/evidence/current-task.md");
   assert.deepEqual(suggestion.contract.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);
   assert.deepEqual(suggestion.contract.session.riskDimensions.dependencyRequirements, ["Mention new or upgraded packages, lockfile changes, and dependency impact explicitly."]);
-  assert.match(suggestion.contract.session.finishCheckHints.join("\n"), /Finish with agent-guardrails check --review/i);
+  assert.match(suggestion.contract.session.finishCheckHints.join("\n"), /Finish with npx agent-guardrails check --review/i);
   assert.match(suggestion.contract.session.finishCheckHints.join("\n"), /security, dependency, performance, understanding, and continuity concerns/i);
   assert.match(suggestion.contract.session.nextActions.join("\n"), /Run required commands: npm test/);
   assert.match(suggestion.contract.session.nextActions.join("\n"), /Keep security, dependency, performance, understanding, continuity concerns explicit/i);

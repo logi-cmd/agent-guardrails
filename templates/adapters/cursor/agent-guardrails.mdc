@@ -7,9 +7,11 @@ Use `agent-guardrails` as the repo-local guardrail layer.
 
 ## Working Flow
 
-1. Before finishing any task, run: `agent-guardrails check --base-ref HEAD~1`
+1. Before finishing any task, run: `npx agent-guardrails check --base-ref HEAD~1`
 2. If issues found: **STOP and fix before telling user "done"**
 3. If clean: include the check result in your summary
+
+Windows PowerShell note: if `npx` or `npm` is blocked by the `.ps1` shim policy, use `npx.cmd` and `npm.cmd`.
 
 ## Task Contract (when available)
 
@@ -24,7 +26,7 @@ If Cursor is connected to `agent-guardrails mcp`, you may also use `check_after_
 
 ## Rules
 
-- Read `AGENTS.md`, `docs/PROJECT_STATE.md`, and `README.md` before editing.
+- Read `AGENTS.md`, `docs/PROJECT_STATE.md`, and `README.md` if it exists before editing.
 - Prefer the existing repo structure over new abstractions.
 - Keep changes small and reviewable.
 - If `check` fails, fix scope or test coverage before widening the change.

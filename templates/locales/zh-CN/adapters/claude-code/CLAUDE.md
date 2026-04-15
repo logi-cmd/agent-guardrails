@@ -6,7 +6,7 @@
 
 1. `AGENTS.md`
 2. `docs/PROJECT_STATE.md`
-3. `README.md`
+3. `README.md` if it exists
 4. 本次任务要修改的目标文件
 
 ## 强制：守卫检查
@@ -14,7 +14,7 @@
 **告诉用户"任务完成"之前，必须运行：**
 
 ```bash
-agent-guardrails check --base-ref HEAD~1
+npx agent-guardrails check --base-ref HEAD~1
 ```
 
 **强制规则：**
@@ -41,3 +41,5 @@ agent-guardrails check --base-ref HEAD~1
 ## MCP（可选）
 
 如果 Claude Code 已连接 `agent-guardrails mcp`，可以使用 `check_after_edit` 获得即时反馈。但 CLI 检查始终是必需的。
+
+Windows PowerShell note: if npx or npm is blocked by the .ps1 shim policy, use npx.cmd and npm.cmd.
