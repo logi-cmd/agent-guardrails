@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-15 (real Codex adapter dogfood)
+Last updated: 2026-04-15 (Windows command evidence normalization)
 
 ## Canonical build docs
 
@@ -74,6 +74,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - Post-v0.19.4 draft update: when installed Pro returns `goLiveDecision.verdict = "go"`, OSS text output suppresses the older deploy-readiness block so users do not see a contradictory "GO" and "not yet ready to deploy" message in the same review. JSON output remains unchanged.
 - Post-v0.19.4 draft update: `check --review` now supports ASCII-safe human output through `AGENT_GUARDRAILS_ASCII=1` and defaults to ASCII-safe English output on Windows, avoiding mojibake from emoji, box drawing, long dashes, and score-bar glyphs in captured agent logs. JSON output remains unchanged.
 - Post-v0.19.4 dogfood: real Codex CLI execution against a locally installed OSS package completed the requested source/test edit and evidence note, but exposed adapter friction around bare `agent-guardrails`, Windows PowerShell `.ps1` shims, and missing README assumptions. English and zh-CN agent templates plus generated plan/runtime prompts now prefer `npx agent-guardrails`, document `npx.cmd`/`npm.cmd` fallbacks, and treat README as read-if-present.
+- Post-v0.19.4 dogfood follow-up: Windows command evidence now treats `npm.cmd`/`npx.cmd`/`pnpm.cmd`/`yarn.cmd`/`node.cmd`/`bun.cmd` as equivalent to `npm`/`npx`/`pnpm`/`yarn`/`node`/`bun`, preventing false missing-command failures when agents use Windows shims but report bare commands.
 
 ## Strategic Direction Update (2026-04-07)
 

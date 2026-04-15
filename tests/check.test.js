@@ -451,6 +451,53 @@ async function checkFailsWhenRequiredCommandsAreMissing() {
   }
 }
 
+async function checkTreatsWindowsCmdShimsAsEquivalentCommandEvidence() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-cmd-shim-"));
+  await initRepo(tempDir);
+  setAllowedPaths(tempDir, ["src/", "tests/", ".agent-guardrails/"]);
+
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });
+  fs.mkdirSync(path.join(tempDir, ".agent-guardrails", "evidence"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "service.js"), "export const x = 1;\n", "utf8");
+  fs.writeFileSync(path.join(tempDir, "tests", "service.test.js"), "export const ok = true;\n", "utf8");
+  fs.writeFileSync(
+    path.join(tempDir, ".agent-guardrails", "evidence", "current-task.md"),
+    "# Task Evidence\n\n- Commands run: npm test\n- Residual risk: none\n",
+    "utf8"
+  );
+
+  await withRepoCwd(tempDir, () =>
+    runPlan({
+      positional: [],
+      flags: {
+        task: "Update the service logic only",
+        "allow-paths": "src/,tests/",
+        "required-commands": "npm.cmd test,npx.cmd agent-guardrails check --review",
+        evidence: ".agent-guardrails/evidence/current-task.md"
+      }
+    })
+  );
+
+  process.env.AGENT_GUARDRAILS_CHANGED_FILES = `src/service.js${path.delimiter}tests/service.test.js`;
+  process.exitCode = 0;
+
+  try {
+    const { result } = await withRepoCwd(tempDir, () =>
+      captureLogs(() => runCheck({
+        flags: { "commands-run": "npm test,npx agent-guardrails check --review" },
+        locale: "en"
+      }))
+    );
+
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.missingRequiredCommands, []);
+  } finally {
+    delete process.env.AGENT_GUARDRAILS_CHANGED_FILES;
+    process.exitCode = 0;
+  }
+}
+
 async function checkFailsWhenEvidenceIsMissing() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-evidence-"));
   await initRepo(tempDir);
@@ -1733,6 +1780,7 @@ export async function run() {
   await checkFailsWhenOutsideTaskContract();
   await checkFailsWhenOutsideIntendedFiles();
   await checkFailsWhenRequiredCommandsAreMissing();
+  await checkTreatsWindowsCmdShimsAsEquivalentCommandEvidence();
   await checkFailsWhenEvidenceIsMissing();
   await checkPassesWhenTaskRequirementsAreSatisfied();
   await checkFailsWhenProtectedAreaNeedsRiskAndReviewNotes();
