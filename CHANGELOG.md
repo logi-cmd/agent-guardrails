@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 0.19.5 - 2026-04-16
+
+### Added: Pro status, proof memory, and paid-value visibility polish
+
+- `agent-guardrails pro cleanup` now previews installed Pro proof-memory cleanup by default and applies cleanup only with `--apply`, keeping cleanup rules and repo-memory mutation inside Pro.
+- Pro status and cleanup resolution now prefer the target repo's `node_modules` before falling back to the OSS package location, so global OSS installs can activate a project-local Pro package.
+- `check --json`, `check --review`, and `pro status` now render additional Pro-provided proof recipe, proof memory context, cleanup history, policy threshold, policy advice, paid-value, and first-value-path fields when available.
+- `pro status --lang zh-CN` now localizes the OSS labels for installed Pro state, readiness, proof memory, policy advice, paid value, capabilities, conversion, and demo verdict surfaces.
+
+### Fixed: Windows and agent dogfood hardening
+
+- Config and task-contract JSON parsing now tolerates a leading UTF-8 BOM, preventing PowerShell-created guardrails JSON files from blocking `pro status` or `check` on Windows.
+- `check --review` now supports ASCII-safe human output through `AGENT_GUARDRAILS_ASCII=1` and defaults to ASCII-safe English output on Windows.
+- Generated agent templates and prompts now prefer `npx agent-guardrails`, document `npx.cmd` / `npm.cmd` fallbacks, and treat README as read-if-present.
+- Windows command evidence now treats `npm.cmd`, `npx.cmd`, `pnpm.cmd`, `yarn.cmd`, `node.cmd`, and `bun.cmd` as equivalent to their bare command names.
+- Working-tree change detection now expands untracked directories to concrete files, so new evidence notes can satisfy exact intended-file contracts.
+
+### Docs
+
+- Paid-provider docs now describe Paddle hosted subscriptions and `agent-guardrails-entitlement` accurately.
+- `docs/SEMANTIC_ARCHITECTURE.md` now frames semantic detection tiers as current OSS heuristics, planned Pro Local structured analysis, and future Pro Cloud LSP-backed analysis.
+
 ## 0.19.4 - 2026-04-13
 
 ### Added: Pro proof visibility bundle
