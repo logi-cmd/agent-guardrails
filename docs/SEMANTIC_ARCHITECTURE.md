@@ -1,6 +1,6 @@
 # Semantic Architecture
 
-Last updated: 2026-03-22
+Last updated: 2026-04-16
 
 ## Current structure
 
@@ -35,6 +35,73 @@ The default detector set is the OSS baseline:
 - protected paths
 - generic config and migration warnings
 - baseline reviewer summary
+
+## Semantic detection tiers
+
+The project uses a three-tier approach to semantic analysis. This section describes the architecture direction and capability boundary; it should not be read as a claim that every tier is already shipped in OSS.
+
+### Tier 1: Heuristic (OSS - current)
+
+Filename and token matching. This is the current OSS baseline. It catches obvious pattern, interface, and boundary drift with zero extra runtime dependencies and no language server.
+
+```
+detectPatternDrift(files) {
+  // filename regex: /helper|service|controller/.test(baseName)
+  // token matching: extract identifiers, compare overlap
+}
+```
+
+### Tier 2: Structured (Pro Local - planned)
+
+Static import graph plus AST-grep for structured pattern matching. This is planned for Pro Local as a bridge between heuristic OSS checks and full LSP-backed analysis. No LSP server is required, which keeps it compatible with single CLI executions.
+
+**Static import graph** (JS/TS, zero-dependency):
+```
+// Regex extraction of import/require statements
+// Builds a module dependency graph
+// Enables: "file A changed, files B/C/D import from A"
+// Enables: boundary violation detection (forbidden cross-module imports)
+// Enables: smart change decomposition (group by dependency clusters)
+```
+
+**AST-grep** (optional, for deeper analysis):
+```
+// Structured code pattern matching
+// Detects: export signature changes (params, return types)
+// Detects: parallel abstractions (similar method signatures in separate files)
+// Detects: deprecated API usage patterns
+// Requires: tree-sitter grammar per language (bundled, no server needed)
+```
+
+### Tier 3: LSP-backed (Pro Cloud - future)
+
+Full semantic analysis with persistent language servers. This is future Pro Cloud direction, not a current OSS or Pro Local capability.
+
+**LSP capabilities used:**
+
+| LSP Method | Purpose | Pro Feature |
+|-----------|---------|-------------|
+| `textDocument/documentSymbol` | Export signature extraction | Interface change detection |
+| `textDocument/references` | Call site enumeration | Dependency impact analysis |
+| `textDocument/diagnostics` | Type errors, lint warnings | Real-time error surfacing in check |
+| `textDocument/definition` | Symbol origin tracking | Cross-file pattern tracing |
+
+**Why LSP is Pro Cloud only:**
+- Cold-start: TypeScript language server takes 5-30s for large projects. Unsuitable for CLI single-execution.
+- Per-language: each language needs its own server (TS, Python, Go, Rust, etc.).
+- Environment: requires project dependencies installed (`node_modules`, `venv`, etc.).
+- Pro Cloud manages persistent servers centrally, amortizing startup cost across all check runs.
+
+**Architecture sketch (Pro Cloud future):**
+```
+user check request -> Pro Cloud API
+  -> warm LSP pool (per-language servers kept alive)
+  -> send LSP requests (documentSymbol, references, diagnostics)
+  -> merge LSP results with OSS check results
+  -> return enriched check response
+```
+
+For the product-boundary matrix and release-status wording, see `docs/OSS_PRO_BOUNDARY.md` and `docs/PROJECT_STATE.md`.
 
 ## Plugin interface
 
