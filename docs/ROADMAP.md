@@ -96,7 +96,7 @@ OSS merge gate is production-ready. Pro development has started in a private rep
 
 ### Pro (in private repo `agent-guardrails-pro`)
 
-- license validation (Lemon Squeezy)
+- Paddle hosted billing with local entitlement/cache validation
 - per-category score breakdown
 - auto maxChangedFiles recommendation (repo-aware)
 - smart change decomposition
@@ -109,7 +109,7 @@ Pro Local development is active in the private repo `agent-guardrails-pro`.
 
 - product rule: go deeper before going wider; every Pro feature must remove real workflow pain, not add cosmetic analysis
 - rough-intent to smallest-safe contract generation with multiple task-shape suggestions
-- Lemon Squeezy license key validation with local cache
+- Paddle billing plus `agent-guardrails-entitlement` license activation with local cache
 - per-category trust score breakdown (scope, validation, consistency, continuity, performance, risk)
 - repo-aware file budget recommendation based on project structure and task shape
 - smart change decomposition with concrete batch boundaries and spillover detection

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-15 (real agent dogfood untracked evidence fix)
+Last updated: 2026-04-16 (OSS Pro paid-provider docs sync)
 
 ## Canonical build docs
 
@@ -105,7 +105,9 @@ See `docs/OSS_PRO_BOUNDARY.md` for the full updated feature matrix.
 ### Pro Private Repo â€?In Progress
 
 Private repo: `https://github.com/logi-cmd/agent-guardrails-pro.git`
-License provider: Lemon Squeezy (recommended, pending setup)
+Billing provider: Paddle hosted subscriptions (private release path)
+Runtime entitlement provider: `agent-guardrails-entitlement`
+Current Pro package state: private `@agent-guardrails/pro` v0.1.0, active development, not publicly published to npm.
 
 **OSS Pro interface layer â€?DONE:**
 
@@ -113,13 +115,15 @@ License provider: Lemon Squeezy (recommended, pending setup)
 50. 3 hook points in `check.js` â€?`tryEnrichReview`, `getProNextActions`, `formatProCategoryBreakdown`
 51. User upgrade path: `npm install @agent-guardrails/pro` â†?Pro activates automatically
 
-**Pro modules (to implement in private repo):**
+**Pro modules implemented in private repo:**
 
-- `tier.js` â€?license key validation (Lemon Squeezy)
-- `scoring.js` â€?per-category score breakdown (scope/validation/consistency/continuity/performance/risk)
-- `recommendations.js` â€?auto maxChangedFiles, smart change decomposition
-- `context-quality.js` â€?context freshness/completeness validation
-- `index.js` â€?`enrichReview`, `getProNextActions`, `formatProCategoryBreakdown` (matches OSS stub contract)
+- `tier.js` - local license/cache validation and entitlement activation diagnostics
+- `provider-readiness.js` - no-network Paddle hosted-provider release readiness checks
+- `scoring.js` - per-category score breakdown (scope/validation/consistency/continuity/performance/risk)
+- `recommendations.js` - auto maxChangedFiles, smart change decomposition, and Pro next actions
+- `context-quality.js` / `scope-intelligence.js` - context freshness, missing-input detection, spillover, and split guidance
+- `verdict-engine.js`, `proof-plan.js`, `repo-memory.js`, `trust-receipt.js`, `browser-test-plan.js` - go-live verdicts, proof plans, proof memory, trust receipts, and visible browser proof planning
+- `index.js` - exports `enrichReview`, `getProNextActions`, `formatProCategoryBreakdown`, status, proof, memory, and provider-readiness APIs consumed by the OSS stub
 
 ### OSS Baseline â€?Complete (functional); Usability â€?Shipped
 
@@ -223,7 +227,7 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis and LSP-backed semantic detection belong to Pro. Lightweight static import analysis (regex-based, zero-dependency) can be shipped in Pro Local as a bridge between heuristic and full LSP.
 - **LSP integration direction**: LSP can significantly improve interface change detection, dependency impact analysis, and semantic drift detection. However, LSP server cold-start (2-10s) and per-language server requirements make it unsuitable for OSS CLI single-execution model. LSP-backed analysis is planned for Pro Cloud (persistent language servers) with Pro Local using lighter alternatives (static import graphs, AST-grep, tree-sitter).
 - **Context/memory quality**: OSS provides structured working context (task contracts, evidence, AGENTS.md). No awareness of context freshness, completeness, or project patterns. Pro will add context quality validation, pattern learning, and cross-session consolidation as a memory quality assurance layer above existing tools (Cursor, Aider, Claude Code).
-- **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` under active development. License provider selected: Lemon Squeezy. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
+- **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` is under active development as private `@agent-guardrails/pro` v0.1.0. Billing provider is Paddle hosted subscriptions; runtime entitlement remains local-first through `agent-guardrails-entitlement`. The next release blocker is the entitlement broker that maps Paddle lifecycle webhooks to issued, renewed, suspended, or revoked Pro licenses. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
 - **Semantic detection strategy**: Three-tier approach. (1) OSS: filename/token heuristics (current). (2) Pro Local: static import graph + AST-grep for structured pattern matching (zero-dependency, no LSP server needed). (3) Pro Cloud: full LSP-backed analysis with persistent language servers for interface changes, dependency impact, and semantic drift.
 
 

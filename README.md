@@ -237,23 +237,23 @@ The OSS package is a complete, production-ready merge gate. **Pro adds efficienc
 | Proof plan in `check --json` | — | ✅ Top-level machine-readable evidence plan when Pro is installed |
 | Proof memory in `pro status` | — | ✅ Shows recurring missing evidence, resolved proof, and top proof-surface wording when Pro is installed |
 
-**Upgrade in one step:**
+**Upgrade when you have Pro package access:**
 
 ```bash
 npm install @agent-guardrails/pro
 ```
 
-Add your license key to `.agent-guardrails/config.json`:
+Pro is currently distributed through the private paid package channel. After access is granted, add your Pro license key to `.agent-guardrails/config.json`:
 
 ```json
 {
   "pro": {
-    "licenseKey": "lsq_your_key_here"
+    "licenseKey": "your_pro_license_key"
   }
 }
 ```
 
-That's it — the next `check` run will automatically activate Pro features. Run `agent-guardrails pro status` to verify install, license state, and the next Pro action to take.
+That's it - the next `check` run will automatically activate Pro features when the package and license are available. Run `agent-guardrails pro status` to verify install, license state, and the next Pro action to take.
 
 ## CLI Reference
 
