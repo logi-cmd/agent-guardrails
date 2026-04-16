@@ -18,6 +18,7 @@ docs/pilots/
 .agent-guardrails/daemon-result.json
 .agent-guardrails/daemon.log
 .agent-guardrails/daemon.pid
+.agent-guardrails/evidence/
 .agent-guardrails/task-contract.json
 .agent-guardrails/archaeology.json
 .claude/

@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-04-16 (v0.19.5 release prep)
+Last updated: 2026-04-17 (post-v0.19.5 local evidence hygiene + Pro visual verification direction)
 
 ## Canonical build docs
 
@@ -76,6 +76,7 @@ Pivot from a CLI-only merge gate to an agent-native runtime with system-level au
 - v0.19.5 dogfood: real Codex CLI execution against a locally installed OSS package completed the requested source/test edit and evidence note, but exposed adapter friction around bare `agent-guardrails`, Windows PowerShell `.ps1` shims, and missing README assumptions. English and zh-CN agent templates plus generated plan/runtime prompts now prefer `npx agent-guardrails`, document `npx.cmd`/`npm.cmd` fallbacks, and treat README as read-if-present.
 - v0.19.5 dogfood follow-up: Windows command evidence now treats `npm.cmd`/`npx.cmd`/`pnpm.cmd`/`yarn.cmd`/`node.cmd`/`bun.cmd` as equivalent to `npm`/`npx`/`pnpm`/`yarn`/`node`/`bun`, preventing false missing-command failures when agents use Windows shims but report bare commands.
 - v0.19.5 dogfood follow-up: real Claude Code completed a plan/edit/evidence/test/check loop at 100/100 in a local sandbox, while opencode was blocked by local provider/default-agent configuration before reaching the repo workflow. Working-tree change detection now expands untracked directories to concrete files, so a newly created `.agent-guardrails/evidence/current-task.md` can satisfy exact intended-file contracts instead of being reported as `.agent-guardrails/`.
+- Post-v0.19.5 hygiene: `.agent-guardrails/evidence/` is local workflow state and must not be tracked or committed. `check` can still require the evidence file to exist locally, but release hygiene now treats committed evidence notes as a regression.
 
 ## Strategic Direction Update (2026-04-07)
 
@@ -122,7 +123,7 @@ Current Pro package state: private `@agent-guardrails/pro` v0.1.0, active develo
 - `scoring.js` - per-category score breakdown (scope/validation/consistency/continuity/performance/risk)
 - `recommendations.js` - auto maxChangedFiles, smart change decomposition, and Pro next actions
 - `context-quality.js` / `scope-intelligence.js` - context freshness, missing-input detection, spillover, and split guidance
-- `verdict-engine.js`, `proof-plan.js`, `repo-memory.js`, `trust-receipt.js`, `browser-test-plan.js` - go-live verdicts, proof plans, proof memory, trust receipts, and visible browser proof planning
+- `verdict-engine.js`, `proof-plan.js`, `repo-memory.js`, `trust-receipt.js`, `browser-test-plan.js` - go-live verdicts, proof plans, proof memory, trust receipts, and the current visible proof-planning slice; product direction is broader computer-level visual verification rather than browser-only testing
 - `index.js` - exports `enrichReview`, `getProNextActions`, `formatProCategoryBreakdown`, status, proof, memory, and provider-readiness APIs consumed by the OSS stub
 
 ### OSS Baseline â€?Complete (functional); Usability â€?Shipped
@@ -227,6 +228,7 @@ The intended OSS merge-gate baseline is complete for the current product boundar
 - **Drift detection**: basic and heuristic. OSS catches obvious pattern/interface/boundary drift through filename and token matching. Full AST-based analysis and LSP-backed semantic detection belong to Pro. Lightweight static import analysis (regex-based, zero-dependency) can be shipped in Pro Local as a bridge between heuristic and full LSP.
 - **LSP integration direction**: LSP can significantly improve interface change detection, dependency impact analysis, and semantic drift detection. However, LSP server cold-start (2-10s) and per-language server requirements make it unsuitable for OSS CLI single-execution model. LSP-backed analysis is planned for Pro Cloud (persistent language servers) with Pro Local using lighter alternatives (static import graphs, AST-grep, tree-sitter).
 - **Context/memory quality**: OSS provides structured working context (task contracts, evidence, AGENTS.md). No awareness of context freshness, completeness, or project patterns. Pro will add context quality validation, pattern learning, and cross-session consolidation as a memory quality assurance layer above existing tools (Cursor, Aider, Claude Code).
+- **Pro computer-level visual verification planning**: the current private Pro repo has a first planning/guidance slice for visible proof paths, but the product direction is not browser-only. Pro should plan and guide watchable computer-control verification: UI/browser flows, desktop app flows, terminal-driven workflows with visible side effects, screenshots or video evidence, and operator-observable next actions. OSS does not ship a UI/dashboard or execute computer-control testing; it only renders optional Pro fields when installed.
 - **Commercial packaging**: Pro interface layer is now embedded in OSS. Private repo `agent-guardrails-pro` is under active development as private `@agent-guardrails/pro` v0.1.0. Billing provider is Paddle hosted subscriptions; runtime entitlement remains local-first through `agent-guardrails-entitlement`. The next release blocker is the entitlement broker that maps Paddle lifecycle webhooks to issued, renewed, suspended, or revoked Pro licenses. Three Pro differentiators: (1) intelligent guidance (not just blocking), (2) scope intelligence (not just enforcement), (3) context quality assurance (not just contracts).
 - **Semantic detection strategy**: Three-tier approach. (1) OSS: filename/token heuristics (current). (2) Pro Local: static import graph + AST-grep for structured pattern matching (zero-dependency, no LSP server needed). (3) Pro Cloud: full LSP-backed analysis with persistent language servers for interface changes, dependency impact, and semantic drift.
 

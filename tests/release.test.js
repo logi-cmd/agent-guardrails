@@ -32,6 +32,15 @@ function runNpmPublishDryRun() {
   }
 }
 
+function listTrackedFiles() {
+  return execFileSync("git", ["ls-files"], {
+    cwd: repoRoot,
+    encoding: "utf8"
+  })
+    .split(/\r?\n/)
+    .filter(Boolean);
+}
+
 export async function run() {
   const packageJson = JSON.parse(read("package.json"));
   const readme = read("README.md");
@@ -195,7 +204,24 @@ export async function run() {
     );
   }
 
+  assert.match(
+    projectState,
+    /computer-level visual verification planning/i,
+    "PROJECT_STATE.md must describe Pro visual verification as computer-level, not browser-only"
+  );
+  assert.doesNotMatch(
+    projectState,
+    /Pro visible browser test planning/i,
+    "PROJECT_STATE.md must not narrow the Pro direction to browser-only testing"
+  );
+
   const publishDryRun = runNpmPublishDryRun();
   assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);
   assert.doesNotMatch(publishDryRun, /bin\[agent-guardrails\].*invalid and removed/i);
+
+  assert.equal(
+    listTrackedFiles().includes(".agent-guardrails/evidence/current-task.md"),
+    false,
+    "task evidence notes are local workflow state and must not be tracked"
+  );
 }
