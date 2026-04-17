@@ -81,7 +81,6 @@ const requiredDocs = [
   "CHANGELOG.md",
   "CONTRIBUTING.md",
   "docs/ROADMAP.md",
-  "docs/USER_GUIDE.md",
   "docs/WORKFLOWS.md",
   "docs/PROOF.md",
   "docs/BENCHMARKS.md",

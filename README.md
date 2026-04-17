@@ -1,6 +1,6 @@
 # Agent Guardrails
 
-**[🇨🇳 中文版](./docs/zh-CN/README.md)** | **[🇬🇧 English](./README.md)**
+**[Chinese](./docs/zh-CN/README.md)** | **[English](./README.md)**
 
 ![Agent Guardrails — Merge Gate for AI-Generated Code](./assets/hero-banner.svg)
 
@@ -265,9 +265,10 @@ npm update -g agent-guardrails
 ## Docs
 
 - [CHANGELOG](./CHANGELOG.md)
-- [User Guide](./docs/USER_GUIDE.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
 - [Workflows](./docs/WORKFLOWS.md)
+- [Troubleshooting](./docs/TROUBLESHOOTING.md)
+- [Proof](./docs/PROOF.md)
+- [Benchmarks](./docs/BENCHMARKS.md)
 
 ## License
 

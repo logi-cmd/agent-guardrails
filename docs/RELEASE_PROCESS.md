@@ -209,7 +209,6 @@ When a release changes behavior, at least these docs must be checked:
 
 - `README.md`
 - `CHANGELOG.md`
-- `docs/USER_GUIDE.md`
 - `docs/WORKFLOWS.md`
 - `docs/ROADMAP.md` if roadmap status changed
 - public proof/benchmark docs if the implementation boundary changed

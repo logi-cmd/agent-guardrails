@@ -6,7 +6,6 @@ This roadmap is directional. Public behavior should be validated against:
 
 - `README.md`
 - `CHANGELOG.md`
-- `docs/USER_GUIDE.md`
 - `docs/WORKFLOWS.md`
 - `docs/PROOF.md`
 - `docs/BENCHMARKS.md`

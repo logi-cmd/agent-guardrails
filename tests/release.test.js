@@ -83,9 +83,10 @@ export async function run() {
   assert.match(readme, /L2.*AGENTS\.md/i);
   assert.match(readme, /L3.*pre-commit hook/i);
   assert.match(readme, /## Docs/);
-  assert.match(readme, /docs\/USER_GUIDE\.md/);
-  assert.match(readme, /docs\/TROUBLESHOOTING\.md/);
   assert.match(readme, /docs\/WORKFLOWS\.md/);
+  assert.match(readme, /docs\/TROUBLESHOOTING\.md/);
+  assert.match(readme, /docs\/PROOF\.md/);
+  assert.match(readme, /docs\/BENCHMARKS\.md/);
   assert.match(readme, /MIT/);
 
   assert.match(zhReadme, /中文/);
@@ -196,10 +197,15 @@ export async function run() {
     "docs/FAQ_WHY_BUY.md",
     "docs/LANDING_PAGE_COPY.md",
     "docs/PRICING_COPY.md",
+    "docs/PR_CHECKLIST.md",
     "docs/PROJECT_STATE.md",
     "docs/PRO_LOCAL_SPEC.md",
+    "docs/ROUGH_INTENT.md",
     "docs/SEMANTIC_ARCHITECTURE.md",
-    "docs/TECHNICAL_SPEC.md"
+    "docs/TECHNICAL_SPEC.md",
+    "docs/USER_GUIDE.md",
+    "README.zh-CN.md",
+    "RELEASE_v0.12.0.md"
   ]) {
     assert.equal(
       listTrackedFiles().includes(internalPath),
