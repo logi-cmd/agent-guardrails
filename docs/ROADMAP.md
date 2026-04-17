@@ -1,18 +1,16 @@
 # Roadmap
 
-## Canonical planning note
+## Public planning note
 
-For execution, the canonical build docs are:
+This roadmap is directional. Public behavior should be validated against:
 
-- `docs/DOCUMENTATION_INDEX.md`
-- `docs/PRODUCT_BLUEPRINT.md`
-- `docs/TECHNICAL_SPEC.md`
-- `docs/PRO_LOCAL_SPEC.md`
-- `docs/IMPLEMENTATION_PLAN.md`
-- `docs/ACCEPTANCE_CRITERIA.md`
+- `README.md`
+- `CHANGELOG.md`
+- `docs/USER_GUIDE.md`
+- `docs/WORKFLOWS.md`
+- `docs/PROOF.md`
+- `docs/BENCHMARKS.md`
 - `docs/RELEASE_PROCESS.md`
-
-This roadmap is directional. If roadmap wording conflicts with the canonical build docs, the canonical build docs win.
 
 ## Phase 1 (Shipped)
 

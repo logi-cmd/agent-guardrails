@@ -47,7 +47,6 @@ export async function run() {
   const roadmap = read("docs/ROADMAP.md");
   const benchmarks = read("docs/BENCHMARKS.md");
   const proof = read("docs/PROOF.md");
-  const semanticArchitecture = read("docs/SEMANTIC_ARCHITECTURE.md");
   const troubleshooting = read("docs/TROUBLESHOOTING.md");
   const workflows = read("docs/WORKFLOWS.md");
   const workflow = read(".github/workflows/guardrails.yml");
@@ -84,7 +83,9 @@ export async function run() {
   assert.match(readme, /L2.*AGENTS\.md/i);
   assert.match(readme, /L3.*pre-commit hook/i);
   assert.match(readme, /## Docs/);
-  assert.match(readme, /docs\/ROADMAP\.md/);
+  assert.match(readme, /docs\/USER_GUIDE\.md/);
+  assert.match(readme, /docs\/TROUBLESHOOTING\.md/);
+  assert.match(readme, /docs\/WORKFLOWS\.md/);
   assert.match(readme, /MIT/);
 
   assert.match(zhReadme, /中文/);
@@ -127,13 +128,6 @@ export async function run() {
   assert.match(workflows, /agent-guardrails mcp/);
   assert.match(workflows, /agent-guardrails check --base-ref origin\/main --json/);
   assert.match(workflows, /\.agent-guardrails\/evidence\/current-task\.md/);
-
-  assert.match(semanticArchitecture, /## Detector pipeline/);
-  assert.match(semanticArchitecture, /## Plugin interface/);
-  assert.match(semanticArchitecture, /plugins\/plugin-ts/);
-  assert.match(semanticArchitecture, /interface drift/i);
-  assert.match(semanticArchitecture, /boundary violation/i);
-  assert.match(semanticArchitecture, /source-to-test relevance/i);
 
   assert.match(troubleshooting, /npx agent-guardrails help/);
   assert.match(troubleshooting, /origin\/master/);
@@ -184,37 +178,6 @@ export async function run() {
     `package.json version (${packageJson.version}) must match CHANGELOG top entry (${changelogTopVersion[1]})`
   );
 
-  // Version consistency: package.json version must match PROJECT_STATE current version
-  const projectState = read("docs/PROJECT_STATE.md");
-  const stateVersionMatch = projectState.match(/\*\*v(\d+\.\d+\.\d+)\*\*/);
-  assert.ok(stateVersionMatch, "PROJECT_STATE.md must contain a **vX.Y.Z** current version line");
-  assert.equal(
-    packageJson.version,
-    stateVersionMatch[1],
-    `package.json version (${packageJson.version}) must match PROJECT_STATE current version (${stateVersionMatch[1]})`
-  );
-
-  // Version consistency: PROJECT_STATE last-updated line must not reference an older version
-  const stateUpdatedMatch = projectState.match(/Last updated:.*\(v(\d+\.\d+\.\d+)\)/);
-  if (stateUpdatedMatch) {
-    assert.equal(
-      packageJson.version,
-      stateUpdatedMatch[1],
-      `PROJECT_STATE "Last updated" references v${stateUpdatedMatch[1]} but package.json is ${packageJson.version}`
-    );
-  }
-
-  assert.match(
-    projectState,
-    /computer-level visual verification planning/i,
-    "PROJECT_STATE.md must describe Pro visual verification as computer-level, not browser-only"
-  );
-  assert.doesNotMatch(
-    projectState,
-    /Pro visible browser test planning/i,
-    "PROJECT_STATE.md must not narrow the Pro direction to browser-only testing"
-  );
-
   const publishDryRun = runNpmPublishDryRun();
   assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);
   assert.doesNotMatch(publishDryRun, /bin\[agent-guardrails\].*invalid and removed/i);
@@ -224,4 +187,24 @@ export async function run() {
     false,
     "task evidence notes are local workflow state and must not be tracked"
   );
+
+  for (const internalPath of [
+    ".agent-guardrails/prompts/IMPLEMENT_PROMPT.md",
+    ".agent-guardrails/tasks/TASK_TEMPLATE.md",
+    "autogrowth_output/EXECUTION_SUMMARY.md",
+    "docs/DOCUMENTATION_INDEX.md",
+    "docs/FAQ_WHY_BUY.md",
+    "docs/LANDING_PAGE_COPY.md",
+    "docs/PRICING_COPY.md",
+    "docs/PROJECT_STATE.md",
+    "docs/PRO_LOCAL_SPEC.md",
+    "docs/SEMANTIC_ARCHITECTURE.md",
+    "docs/TECHNICAL_SPEC.md"
+  ]) {
+    assert.equal(
+      listTrackedFiles().includes(internalPath),
+      false,
+      `${internalPath} is internal planning or commercial context and must not be tracked`
+    );
+  }
 }

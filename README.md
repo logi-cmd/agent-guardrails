@@ -1,6 +1,6 @@
 # Agent Guardrails
 
-**[🇨🇳 中文版](./README.zh-CN.md)** | **[🇬🇧 English](./README.md)**
+**[🇨🇳 中文版](./docs/zh-CN/README.md)** | **[🇬🇧 English](./README.md)**
 
 ![Agent Guardrails — Merge Gate for AI-Generated Code](./assets/hero-banner.svg)
 
@@ -223,37 +223,17 @@ Controls how out-of-scope file changes are handled.
 | `warnOnInterfaceChangesWithoutContract` | `true` | Warn on interface changes not in task contract |
 | `warnOnConfigOrMigrationChanges` | `true` | Warn on config/migration file changes |
 
-## Pro (optional upgrade)
+## Pro (optional)
 
-The OSS package is a complete, production-ready merge gate. **Pro adds efficiency and depth** on top of it — no migration needed.
+The OSS package is a complete merge gate. Pro is optional and only activates when the separate Pro package is installed and licensed.
 
-| Feature | OSS | Pro |
-|---------|-----|-----|
-| Per-category trust score breakdown | — | ✅ scope / validation / consistency / continuity / performance / risk |
-| Smart change decomposition | — | ✅ "Split into 3 batches" when change exceeds budget |
-| Auto file budget (repo-aware) | — | ✅ Adjusts limit based on project structure |
-| Context quality validation | — | ✅ Detects stale contracts, missing evidence |
-| Intelligent next actions | — | ✅ Priority-ranked suggestions with file-level detail |
-| Proof plan in `check --json` | — | ✅ Top-level machine-readable evidence plan when Pro is installed |
-| Proof memory in `pro status` | — | ✅ Shows recurring missing evidence, resolved proof, and top proof-surface wording when Pro is installed |
-
-**Upgrade when you have Pro package access:**
+**Check local Pro availability:**
 
 ```bash
-npm install @agent-guardrails/pro
+agent-guardrails pro status
 ```
 
-Pro is currently distributed through the private paid package channel. After access is granted, add your Pro license key to `.agent-guardrails/config.json`:
-
-```json
-{
-  "pro": {
-    "licenseKey": "your_pro_license_key"
-  }
-}
-```
-
-That's it - the next `check` run will automatically activate Pro features when the package and license are available. Run `agent-guardrails pro status` to verify install, license state, and the next Pro action to take.
+If Pro is absent or unlicensed, OSS behavior stays unchanged.
 
 ## CLI Reference
 
@@ -285,9 +265,9 @@ npm update -g agent-guardrails
 ## Docs
 
 - [CHANGELOG](./CHANGELOG.md)
-- [Proof](./docs/PROOF.md)
-- [Roadmap](./docs/ROADMAP.md)
-- [Release Process](./docs/RELEASE_PROCESS.md)
+- [User Guide](./docs/USER_GUIDE.md)
+- [Troubleshooting](./docs/TROUBLESHOOTING.md)
+- [Workflows](./docs/WORKFLOWS.md)
 
 ## License
 

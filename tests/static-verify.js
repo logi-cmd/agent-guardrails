@@ -81,12 +81,11 @@ const requiredDocs = [
   "CHANGELOG.md",
   "CONTRIBUTING.md",
   "docs/ROADMAP.md",
+  "docs/USER_GUIDE.md",
   "docs/WORKFLOWS.md",
   "docs/PROOF.md",
   "docs/BENCHMARKS.md",
-  "docs/SEMANTIC_ARCHITECTURE.md",
-  "docs/TROUBLESHOOTING.md",
-  "docs/PROJECT_STATE.md"
+  "docs/TROUBLESHOOTING.md"
 ];
 for (const doc of requiredDocs) {
   assertExists(doc);

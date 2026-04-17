@@ -19,6 +19,8 @@ docs/pilots/
 .agent-guardrails/daemon.log
 .agent-guardrails/daemon.pid
 .agent-guardrails/evidence/
+.agent-guardrails/prompts/
+.agent-guardrails/tasks/
 .agent-guardrails/task-contract.json
 .agent-guardrails/archaeology.json
 .claude/
@@ -44,3 +46,17 @@ docs/MARKET_RESEARCH.md
 docs/OSS_PRO_BOUNDARY.md
 docs/PRODUCT_STRATEGY.md
 docs/zh-CN/PRODUCT_STRATEGY.md
+
+# Generated growth and private planning docs should stay local only.
+autogrowth_output/
+docs/ACCEPTANCE_CRITERIA.md
+docs/DOCUMENTATION_INDEX.md
+docs/DIY_VS_AGENT_GUARDRAILS.md
+docs/FAQ_WHY_BUY.md
+docs/IMPLEMENTATION_PLAN.md
+docs/LANDING_PAGE_COPY.md
+docs/PRICING_COPY.md
+docs/PRODUCT_BLUEPRINT.md
+docs/PRO_LOCAL_SPEC.md
+docs/SEMANTIC_ARCHITECTURE.md
+docs/TECHNICAL_SPEC.md

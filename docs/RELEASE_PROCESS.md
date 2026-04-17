@@ -209,9 +209,10 @@ When a release changes behavior, at least these docs must be checked:
 
 - `README.md`
 - `CHANGELOG.md`
-- `docs/PROJECT_STATE.md`
+- `docs/USER_GUIDE.md`
+- `docs/WORKFLOWS.md`
 - `docs/ROADMAP.md` if roadmap status changed
-- canonical docs if the implementation boundary changed
+- public proof/benchmark docs if the implementation boundary changed
 
 ## Definition of release-ready
 
