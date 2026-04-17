@@ -8,7 +8,7 @@ import { runCheck } from "../lib/commands/check.js";
 import { runInit } from "../lib/commands/init.js";
 import { runPlan } from "../lib/commands/plan.js";
 import { ossDetectors } from "../lib/check/detectors/oss.js";
-import { listChangedFiles, resolveRepoRoot, resolveGitRoot } from "../lib/utils.js";
+import { listChangedFiles, listChangedFilesFromBaseRef, resolveRepoRoot, resolveGitRoot } from "../lib/utils.js";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
@@ -755,6 +755,57 @@ async function checkUsesBaseRefDiff() {
   } finally {
     delete process.env.AGENT_GUARDRAILS_BASE_REF_CHANGED_FILES;
   }
+}
+
+async function listChangedFilesFromBaseRefIncludesDeletedFiles() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-base-ref-delete-"));
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: tempDir, stdio: "ignore" });
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "critical.js"), "export const critical = true;\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "initial"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["checkout", "-b", "feature"], { cwd: tempDir, stdio: "ignore" });
+  fs.rmSync(path.join(tempDir, "src", "critical.js"));
+  execFileSync("git", ["add", "-A"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "delete critical file"], { cwd: tempDir, stdio: "ignore" });
+
+  const result = listChangedFilesFromBaseRef(tempDir, "master");
+
+  assert.deepEqual(result.files, ["src/critical.js"]);
+}
+
+async function listChangedFilesHandlesQuotedPathsWithSpaces() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-space-path-"));
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: tempDir, stdio: "ignore" });
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "file with space.js"), "export const value = 1;\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "initial"], { cwd: tempDir, stdio: "ignore" });
+  fs.appendFileSync(path.join(tempDir, "src", "file with space.js"), "export const changed = true;\n", "utf8");
+
+  const result = listChangedFiles(tempDir);
+
+  assert.deepEqual(result.files, ["src/file with space.js"]);
+}
+
+async function listChangedFilesHandlesRenamedPathsWithSpaces() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-check-rename-space-"));
+  execFileSync("git", ["init"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.email", "agent-guardrails@example.com"], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["config", "user.name", "Agent Guardrails"], { cwd: tempDir, stdio: "ignore" });
+  fs.mkdirSync(path.join(tempDir, "src"), { recursive: true });
+  fs.writeFileSync(path.join(tempDir, "src", "old name.js"), "export const value = 1;\n", "utf8");
+  execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "initial"], { cwd: tempDir, stdio: "ignore" });
+  fs.renameSync(path.join(tempDir, "src", "old name.js"), path.join(tempDir, "src", "new name.js"));
+
+  const result = listChangedFiles(tempDir);
+
+  assert.deepEqual(result.files.sort(), ["src/new name.js", "src/old name.js"]);
 }
 
 async function checkFailsForInvalidBaseRef() {
@@ -1811,6 +1862,9 @@ export async function run() {
   await checkFailsWhenChangeTypesViolateContract();
   await checkIgnoresTheGeneratedTaskContractFile();
   await checkUsesBaseRefDiff();
+  await listChangedFilesFromBaseRefIncludesDeletedFiles();
+  await listChangedFilesHandlesQuotedPathsWithSpaces();
+  await listChangedFilesHandlesRenamedPathsWithSpaces();
   await checkFailsForInvalidBaseRef();
   await checkFailsOutsideGitContextWithoutBaseRef();
   await checkPrintsJsonOutput();
