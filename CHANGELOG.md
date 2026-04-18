@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 0.19.6 - 2026-04-18
+
+### Added: Pro go-live report bridge
+
+- `agent-guardrails pro report` and `agent-guardrails pro-report` now print the optional Pro go-live report when `@agent-guardrails/pro` is installed.
+- `check --json` now includes a top-level `goLiveReport` field when Pro enriches the review, so Pro users can consume the report artifact without digging through nested output.
+- OSS still does not compute the Pro report; it only renders the optional report returned by the installed Pro package and shows upgrade guidance when Pro is absent.
+
+### Fixed: Windows and local-server robustness
+
+- Changed-file detection now uses NUL-delimited git status/diff parsing, preserving deleted files, paths with spaces, and rename metadata without quoted-path corruption.
+- `agent-guardrails serve` now rejects oversized JSON bodies instead of buffering without a limit.
+- Non-loopback `serve` hosts now print a trusted-network warning so users do not accidentally expose the local API.
+- Serve error handling now uses shared request-body and tool-failure helpers, reducing duplicate endpoint logic and keeping API error output ASCII-safe.
+
 ## 0.19.5 - 2026-04-16
 
 ### Added: Pro status, proof memory, and paid-value visibility polish
