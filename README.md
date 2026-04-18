@@ -231,9 +231,10 @@ The OSS package is a complete merge gate. Pro is optional and only activates whe
 
 ```bash
 agent-guardrails pro status
+agent-guardrails pro report
 ```
 
-If Pro is absent or unlicensed, OSS behavior stays unchanged.
+`pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. If Pro is absent or unlicensed, OSS behavior stays unchanged.
 
 ## CLI Reference
 
@@ -247,6 +248,7 @@ If Pro is absent or unlicensed, OSS behavior stays unchanged.
 | `generate-agents` | Generate agent-specific config files |
 | `doctor` | Diagnose current installation |
 | `pro status` | Show optional Pro install and license status |
+| `pro report` | Print the optional Pro go-live report |
 | `pro cleanup` | Preview or apply Pro proof memory cleanup |
 | `start` | Start daemon |
 | `stop` | Stop daemon |

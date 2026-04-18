@@ -125,6 +125,17 @@ function withMockInstalledPro(callback) {
     "        rollbackGuidance: ['Define a concrete rollback or backout path before deploy.']",
     "      }",
     "    },",
+    "    goLiveReport: {",
+    "      packageName: '@agent-guardrails/pro',",
+    "      packageVersion: '0.0.0-test',",
+    "      installed: true,",
+    "      action: 'go-live-report',",
+    "      state: 'ready',",
+    "      format: 'markdown',",
+    "      verdict: { verdict: 'hold', riskTier: 'high' },",
+    "      nextAction: { code: 'run-cheapest-proof', command: 'npm test' },",
+    "      markdown: '# Agent Guardrails Pro Go-Live Report\\n\\nVerdict: HOLD (high)\\n\\n## Cheapest Proof\\n- Command: npm test'",
+    "    },",
     "    proofPlan: {",
     "      state: 'blocked',",
     "      summary: '2 proof items needed before this should go live.',",
@@ -952,6 +963,9 @@ async function checkPrintsJsonWithInstalledPro() {
     assert.equal(parsed.goLiveDecision.riskTier, "high");
     assert.deepEqual(parsed.goLiveDecision.evidenceGaps, ["targeted validation command", "rollback note"]);
     assert.ok(parsed.goLiveDecision.nextBestActions[0].includes("Resolve evidence gap"));
+    assert.equal(parsed.goLiveReport.state, "ready");
+    assert.equal(parsed.goLiveReport.action, "go-live-report");
+    assert.equal(parsed.goLiveReport.nextAction.command, "npm test");
     assert.equal(parsed.proofPlan.state, "blocked");
     assert.equal(parsed.proofPlan.cheapestNextProof.code, "add-targeted-proof");
     assert.deepEqual(parsed.proofPlan.cheapestNextProof.files, ["src/service.js"]);

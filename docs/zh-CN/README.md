@@ -26,6 +26,7 @@ agent-guardrails plan --task "Add user authentication"
 agent-guardrails check --review
 agent-guardrails check --json
 agent-guardrails pro status
+agent-guardrails pro report
 ```
 
 ## 什么时候有用

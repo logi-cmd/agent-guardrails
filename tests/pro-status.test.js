@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runCli } from "../lib/cli.js";
-import { runProCleanup, runProStatus } from "../lib/commands/pro-status.js";
+import { runProCleanup, runProReport, runProStatus } from "../lib/commands/pro-status.js";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
@@ -185,6 +185,19 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "    userValue: 'Keeps paid repo memory useful by moving failed or stale recipes out of the active recommendation path.'",
     "  };",
     "}",
+    "export function buildGoLiveReport() {",
+    "  return {",
+    "    packageName: '@agent-guardrails/pro',",
+    "    packageVersion: '0.1.0-test',",
+    "    installed: true,",
+    "    action: 'go-live-report',",
+    "    state: 'ready',",
+    "    format: 'markdown',",
+    "    verdict: { verdict: 'hold', riskTier: 'high' },",
+    "    nextAction: { code: 'run-cheapest-proof', command: 'npm test -- auth' },",
+    "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
+    "  };",
+    "}",
     ""
   ].join("\n"), "utf8");
 
@@ -357,6 +370,43 @@ export async function run() {
       assert.equal(parsed.nextAction.code, "apply-proof-memory-cleanup");
     });
 
+    it("renders a Pro go-live report through the CLI", async () => {
+      const { output, result } = await withMockInstalledPro(() =>
+        captureLogs(() => runCli(["pro", "report", "--lang", "en"]))
+      );
+
+      assert.equal(result.installed, true);
+      assert.equal(result.action, "go-live-report");
+      assert.match(output, /Agent Guardrails Pro Go-Live Report/);
+      assert.match(output, /Verdict: HOLD \(high\)/);
+      assert.match(output, /Trust Receipt/);
+      assert.match(output, /Cheapest Proof/);
+      assert.match(output, /npm test -- auth/);
+    });
+
+    it("prints machine-readable Pro go-live report JSON", async () => {
+      const { output } = await withMockInstalledPro(() =>
+        captureLogs(() => runProReport({ flags: { json: true }, locale: "en", repoRoot: OSS_REPO_ROOT }))
+      );
+
+      const parsed = JSON.parse(output);
+      assert.equal(parsed.installed, true);
+      assert.equal(parsed.action, "go-live-report");
+      assert.equal(parsed.verdict.verdict, "hold");
+      assert.match(parsed.markdown, /Agent Guardrails Pro Go-Live Report/);
+    });
+
+    it("shows how to enable reports when Pro is not installed", async () => {
+      const { output, result } = await captureLogs(() =>
+        runCli(["pro", "report", "--lang", "en"])
+      );
+
+      assert.equal(result.installed, false);
+      assert.match(output, /Agent Guardrails Pro/);
+      assert.match(output, /Go-live report: unavailable/);
+      assert.match(output, /npm install @agent-guardrails\/pro/);
+    });
+
     it("loads Pro from the target repo node_modules", async () => {
       const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-local-"));
       try {
@@ -374,6 +424,13 @@ export async function run() {
         assert.equal(cleanup.installed, true);
         assert.equal(cleanup.action, "proof-memory-cleanup");
         assert.equal(cleanup.state, "needs_cleanup");
+
+        const { result: report } = await withMockInstalledPro(
+          () => captureLogs(() => runProReport({ flags: { json: true }, locale: "en", repoRoot })),
+          repoRoot
+        );
+        assert.equal(report.installed, true);
+        assert.equal(report.action, "go-live-report");
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }
