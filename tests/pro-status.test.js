@@ -198,6 +198,14 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
     "  };",
     "}",
+    "export async function activateLicense(licenseKey, instanceName) {",
+    "  return {",
+    "    activated: true,",
+    "    instanceId: instanceName || 'default',",
+    "    meta: { productName: 'Agent Guardrails Pro', customerName: 'CLI Buyer' },",
+    "    lifecycle: { state: 'active', canEnrichCheck: true, source: 'paddle', subscriptionStatus: 'active', daysRemaining: null }",
+    "  };",
+    "}",
     ""
   ].join("\n"), "utf8");
 
@@ -208,6 +216,16 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     if (hadExistingPackage) {
       fs.renameSync(backupDir, packageDir);
     }
+  }
+}
+
+async function withCwd(cwd, callback) {
+  const previous = process.cwd();
+  process.chdir(cwd);
+  try {
+    return await callback();
+  } finally {
+    process.chdir(previous);
   }
 }
 
@@ -334,6 +352,41 @@ export async function run() {
 
       assert.match(output, /Agent Guardrails Pro/);
       assert.match(output, /Status: not installed/);
+    });
+
+    it("activates Pro through the CLI without writing the license into repo config", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-activate-"));
+      const configPath = path.join(repoRoot, ".agent-guardrails", "config.json");
+      fs.mkdirSync(path.dirname(configPath), { recursive: true });
+      fs.writeFileSync(configPath, JSON.stringify({ project: "activation-test" }, null, 2), "utf8");
+
+      try {
+        const { output } = await withMockInstalledPro(
+          () => withCwd(repoRoot, () =>
+            captureLogs(() => runCli([
+              "pro",
+              "activate",
+              "lic_cli_activate_123",
+              "--instance-name",
+              "agent-guardrails-pro-local",
+              "--json",
+              "--lang",
+              "en"
+            ]))
+          ),
+          repoRoot
+        );
+        const parsed = JSON.parse(output);
+        const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+        assert.equal(parsed.installed, true);
+        assert.equal(parsed.activated, true);
+        assert.equal(parsed.instanceId, "agent-guardrails-pro-local");
+        assert.equal(parsed.configUpdated, false);
+        assert.equal(config.pro, undefined);
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
     });
 
     it("previews and applies Pro proof memory cleanup through the CLI", async () => {
