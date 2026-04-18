@@ -48,6 +48,10 @@ const testModules = [
     path: "./mcp.test.js"
   },
   {
+    name: "serve",
+    path: "./serve.test.js"
+  },
+  {
     name: "daemon",
     path: "./daemon.test.js"
   },
