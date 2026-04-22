@@ -8,6 +8,7 @@ import {
   bootstrapTaskSession,
   prepareFinishCheck,
   readRepoGuardrails,
+  summarizeReviewRisks,
   suggestTaskContract
 } from "../lib/runtime/service.js";
 import { writeTaskContract } from "../lib/utils.js";
@@ -89,6 +90,28 @@ export async function run() {
   assert.match(finishCheck.recommendedCommand, /agent-guardrails check --review --base-ref origin\/main --commands-run "npm test"/);
   assert.match(finishCheck.nextActions.join("\n"), /Use this finish-time command/);
   assert.match(finishCheck.nextActions.join("\n"), /security, dependency, performance, understanding, continuity concerns/i);
+
+  const blockedSummary = summarizeReviewRisks({
+    ok: false,
+    findings: [],
+    missingRequiredCommands: [],
+    missingEvidencePaths: [],
+    review: {
+      summary: {
+        scopeIssues: 0,
+        validationIssues: 0,
+        consistencyConcerns: 0,
+        riskConcerns: 0
+      },
+      riskConcerns: []
+    },
+    changedFiles: [],
+    taskContract: null,
+    protectedAreaMatches: [],
+    criticalPathFiles: []
+  }, "en");
+  assert.match(blockedSummary.nextActions.join("\n"), /blocking guardrail errors/i);
+  assert.doesNotMatch(blockedSummary.nextActions.join("\n"), /check passed/i);
 
   fs.mkdirSync(path.join(tempDir, "src", "auth"), { recursive: true });
   fs.mkdirSync(path.join(tempDir, "tests"), { recursive: true });

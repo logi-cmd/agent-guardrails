@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runCli } from "../lib/cli.js";
-import { runProCleanup, runProReport, runProStatus } from "../lib/commands/pro-status.js";
+import { runProCleanup, runProReport, runProStatus, runProWorkbench } from "../lib/commands/pro-status.js";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
@@ -195,6 +195,8 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "    format: 'markdown',",
     "    verdict: { verdict: 'hold', riskTier: 'high' },",
     "    nextAction: { code: 'run-cheapest-proof', command: 'npm test -- auth' },",
+    "    operatorWorkbench: { headline: 'Can I ship? No, hold this high change.' },",
+    "    html: '<!doctype html><html><body><h1>Agent Guardrails Pro Workbench</h1><p>Can I ship? No.</p></body></html>',",
     "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
     "  };",
     "}",
@@ -449,6 +451,44 @@ export async function run() {
       assert.match(parsed.markdown, /Agent Guardrails Pro Go-Live Report/);
     });
 
+    it("writes a local Pro workbench HTML file", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-"));
+      try {
+        const { output, result } = await withMockInstalledPro(
+          () => captureLogs(() => runProWorkbench({ flags: {}, locale: "en", repoRoot })),
+          repoRoot
+        );
+
+        assert.equal(result.installed, true);
+        assert.equal(result.action, "operator-workbench");
+        assert.equal(result.state, "ready");
+        assert.match(output, /Operator workbench: ready/);
+        assert.match(output, /Local HTML:/);
+        assert.equal(fs.existsSync(result.outputPath), true);
+        assert.match(fs.readFileSync(result.outputPath, "utf8"), /Agent Guardrails Pro Workbench/);
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("prints machine-readable Pro workbench JSON", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-json-"));
+      try {
+        const { output } = await withMockInstalledPro(
+          () => captureLogs(() => runProWorkbench({ flags: { json: true }, locale: "en", repoRoot })),
+          repoRoot
+        );
+        const parsed = JSON.parse(output);
+
+        assert.equal(parsed.installed, true);
+        assert.equal(parsed.action, "operator-workbench");
+        assert.equal(parsed.state, "ready");
+        assert.match(parsed.outputPath, /operator-workbench\.html$/);
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
     it("shows how to enable reports when Pro is not installed", async () => {
       const { output, result } = await captureLogs(() =>
         runCli(["pro", "report", "--lang", "en"])
@@ -484,6 +524,14 @@ export async function run() {
         );
         assert.equal(report.installed, true);
         assert.equal(report.action, "go-live-report");
+
+        const { result: workbench } = await withMockInstalledPro(
+          () => captureLogs(() => runProWorkbench({ flags: { json: true }, locale: "en", repoRoot })),
+          repoRoot
+        );
+        assert.equal(workbench.installed, true);
+        assert.equal(workbench.action, "operator-workbench");
+        assert.equal(workbench.state, "ready");
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }
