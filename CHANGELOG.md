@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.19.7 - 2026-04-22
+
+### Added: Pro activation and workbench bridge
+
+- `agent-guardrails pro activate <license-key>` now delegates local Pro license activation to the installed `@agent-guardrails/pro` package when available.
+- `agent-guardrails pro workbench` now writes the installed Pro package's local operator workbench HTML and supports `--open` and `--json` for browser and automation flows.
+- The OSS package still does not bundle Pro; these commands degrade with setup guidance when Pro is not installed.
+
+### Fixed: runtime partial-review handling
+
+- Runtime summaries no longer say the guardrail check passed when the check actually failed with partial review data.
+- Runtime risk summaries now tolerate partial Pro/OSS review objects without crashing on missing scope issue arrays.
+
 ## 0.19.6 - 2026-04-18
 
 ### Added: Pro go-live report bridge
