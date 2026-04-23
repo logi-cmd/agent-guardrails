@@ -27,7 +27,7 @@ function captureLogs(run) {
     });
 }
 
-async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
+async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT, options = {}) {
   const packageDir = path.join(repoRoot, "node_modules", "@agent-guardrails", "pro");
   const backupDir = path.join(repoRoot, "node_modules", "@agent-guardrails", `.pro-backup-${process.pid}`);
   const hadExistingPackage = fs.existsSync(packageDir);
@@ -43,6 +43,18 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
       ".": "./index.js"
     }
   }, null, 2), "utf8");
+  const activateLicenseLines = options.activateLicenseLines || [
+    "export async function activateLicense(licenseKey, instanceName) {",
+    "  return {",
+    "    activated: true,",
+    "    instanceId: instanceName || 'default',",
+    "    meta: { productName: 'Agent Guardrails Pro', customerName: 'CLI Buyer' },",
+    "    lifecycle: { state: 'active', canEnrichCheck: true, source: 'paddle', subscriptionStatus: 'active', daysRemaining: null }",
+    "  };",
+    "}",
+    ""
+  ];
+
   fs.writeFileSync(path.join(packageDir, "index.js"), [
     "export function buildProStatus() {",
     "  return {",
@@ -200,15 +212,7 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT) {
     "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
     "  };",
     "}",
-    "export async function activateLicense(licenseKey, instanceName) {",
-    "  return {",
-    "    activated: true,",
-    "    instanceId: instanceName || 'default',",
-    "    meta: { productName: 'Agent Guardrails Pro', customerName: 'CLI Buyer' },",
-    "    lifecycle: { state: 'active', canEnrichCheck: true, source: 'paddle', subscriptionStatus: 'active', daysRemaining: null }",
-    "  };",
-    "}",
-    ""
+    ...activateLicenseLines
   ].join("\n"), "utf8");
 
   try {
@@ -386,6 +390,58 @@ export async function run() {
         assert.equal(parsed.instanceId, "agent-guardrails-pro-local");
         assert.equal(parsed.configUpdated, false);
         assert.equal(config.pro, undefined);
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("explains Pro device-limit activation failures", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-device-limit-"));
+      try {
+        const { output, result } = await withMockInstalledPro(
+          () => withCwd(repoRoot, () =>
+            captureLogs(() => runCli([
+              "pro",
+              "activate",
+              "lic_device_limit_123",
+              "--instance-name",
+              "desktop-four",
+              "--instance-id",
+              "machine-four",
+              "--lang",
+              "en"
+            ]))
+          ),
+          repoRoot,
+          {
+            activateLicenseLines: [
+              "export async function activateLicense(licenseKey, instanceName, options = {}) {",
+              "  return {",
+              "    activated: false,",
+              "    error: 'PRO_DEVICE_LIMIT_REACHED',",
+              "    status: 403,",
+              "    instanceName,",
+              "    instanceId: options.instanceId || 'missing-instance-id',",
+              "    instanceLimit: 3,",
+              "    activeInstanceCount: 3,",
+              "    nextAction: {",
+              "      code: 'manage-devices',",
+              "      label: 'Manage activated devices',",
+              "      value: 'Deactivate one existing device before activating this one.'",
+              "    }",
+              "  };",
+              "}",
+              ""
+            ]
+          }
+        );
+
+        assert.equal(result.activated, false);
+        assert.equal(result.error, "PRO_DEVICE_LIMIT_REACHED");
+        assert.equal(result.instanceId, "machine-four");
+        assert.match(output, /Device limit: 3\/3 active devices/);
+        assert.match(output, /Current device: machine-four/);
+        assert.match(output, /Deactivate one existing device before activating this one/);
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }

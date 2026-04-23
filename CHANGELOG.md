@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Improved: Pro activation guidance
+
+- `agent-guardrails pro activate` now passes an optional `--instance-id` through to the installed Pro package for hosted activation diagnostics.
+- Personal-license device-limit failures now render the active device usage, current device, and Pro-provided next action in the OSS CLI.
+- The OSS MCP server now dynamically exposes MCP tools from an installed `@agent-guardrails/pro` package, keeping Pro logic out of OSS while letting agents read the Pro Workbench through the existing MCP connection.
+
 ## 0.19.7 - 2026-04-22
 
 ### Added: Pro activation and workbench bridge

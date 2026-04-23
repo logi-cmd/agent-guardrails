@@ -231,11 +231,14 @@ The OSS package is a complete merge gate. Pro is optional and only activates whe
 
 ```bash
 agent-guardrails pro status
+agent-guardrails pro activate <license-key>
 agent-guardrails pro report
 agent-guardrails pro workbench --open
 ```
 
-`pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. `pro workbench --open` writes and opens the optional local Pro operator workbench so users can review the ship/no-ship decision without inspecting raw JSON. If Pro is absent or unlicensed, OSS behavior stays unchanged.
+`pro activate` delegates license activation to the installed Pro package and stores only the Pro-owned local activation cache. If a personal license reaches its device limit, the OSS CLI shows the limit, current device, and Pro-provided next action instead of only returning an error code. `pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. `pro workbench --open` writes and opens the optional local Pro operator workbench so users can review the ship/no-ship decision without inspecting raw JSON. If Pro is absent or unlicensed, OSS behavior stays unchanged.
+
+When `@agent-guardrails/pro` exposes Pro MCP tools, the OSS MCP server lists and calls them dynamically. This lets existing MCP-capable agents read Pro Workbench data through the same `agent-guardrails mcp` connection without moving Pro decision logic into the OSS package.
 
 ## CLI Reference
 
@@ -249,6 +252,7 @@ agent-guardrails pro workbench --open
 | `generate-agents` | Generate agent-specific config files |
 | `doctor` | Diagnose current installation |
 | `pro status` | Show optional Pro install and license status |
+| `pro activate` | Activate the optional Pro package without writing license keys to repo config |
 | `pro report` | Print the optional Pro go-live report |
 | `pro workbench` | Write and optionally open the optional Pro operator workbench |
 | `pro cleanup` | Preview or apply Pro proof memory cleanup |

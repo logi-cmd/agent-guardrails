@@ -90,6 +90,37 @@ async function initRepo(tempDir) {
   });
 }
 
+function installMockProMcpPackage(repoDir) {
+  const packageDir = path.join(repoDir, "node_modules", "@agent-guardrails", "pro");
+  fs.mkdirSync(packageDir, { recursive: true });
+  fs.writeFileSync(path.join(packageDir, "package.json"), JSON.stringify({
+    name: "@agent-guardrails/pro",
+    version: "0.1.0-test",
+    type: "module",
+    exports: { ".": "./index.js" }
+  }, null, 2), "utf8");
+  fs.writeFileSync(path.join(packageDir, "index.js"), [
+    "export function getProMcpToolDefinitions() {",
+    "  return [{",
+    "    name: 'pro_read_workbench',",
+    "    description: 'Read the latest Pro Workbench for the current repo.',",
+    "    inputSchema: { type: 'object', properties: { repoRoot: { type: 'string' } }, additionalProperties: false }",
+    "  }];",
+    "}",
+    "export async function callProMcpTool(name, args = {}) {",
+    "  if (name !== 'pro_read_workbench') throw new Error(`Unknown Pro MCP tool ${name}`);",
+    "  return {",
+    "    state: 'ready',",
+    "    source: 'mock-pro',",
+    "    repoRoot: args.repoRoot,",
+    "    workbench: { headline: 'Can I ship? No, hold this change.' },",
+    "    agentHandoff: { prompt: 'Run npm test, capture evidence, and rerun agent-guardrails check --review.' }",
+    "  };",
+    "}",
+    ""
+  ].join("\n"), "utf8");
+}
+
 export async function run() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-mcp-"));
   await initRepo(tempDir);
@@ -274,6 +305,42 @@ export async function run() {
   }
 
   assert.equal(stderr.join("").trim(), "");
+
+  installMockProMcpPackage(tempDir);
+  const proInput = new PassThrough();
+  const proOutput = new PassThrough();
+  const proErrorOutput = new PassThrough();
+  const proServerPromise = startMcpServer({
+    input: proInput,
+    output: proOutput,
+    errorOutput: proErrorOutput,
+    repoRoot: tempDir
+  });
+  const proClient = createClient(proOutput, proInput);
+
+  try {
+    await proClient.request("initialize", {
+      protocolVersion: "2024-11-05",
+      capabilities: {},
+      clientInfo: { name: "test-pro-client", version: "1.0.0" }
+    });
+    proClient.notify("notifications/initialized");
+
+    const proTools = await proClient.request("tools/list");
+    const proToolNames = proTools.result.tools.map((tool) => tool.name);
+    assert.ok(proToolNames.includes("pro_read_workbench"), "installed Pro package should add Pro MCP tools");
+
+    const proWorkbench = await proClient.request("tools/call", {
+      name: "pro_read_workbench",
+      arguments: { repoRoot: tempDir }
+    });
+    assert.equal(proWorkbench.result.structuredContent.state, "ready");
+    assert.equal(proWorkbench.result.structuredContent.source, "mock-pro");
+    assert.match(proWorkbench.result.structuredContent.agentHandoff.prompt, /rerun agent-guardrails check --review/i);
+  } finally {
+    proInput.end();
+    await proServerPromise;
+  }
 
   const limitInput = new PassThrough();
   const limitOutput = new PassThrough();
