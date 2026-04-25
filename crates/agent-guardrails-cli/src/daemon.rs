@@ -535,7 +535,7 @@ fn wait_for_running_status(repo_root: &Path, timeout: Duration) -> DaemonStatus 
 
 #[cfg(windows)]
 fn daemon_start_timeout() -> Duration {
-    Duration::from_secs(15)
+    Duration::from_secs(45)
 }
 
 #[cfg(not(windows))]

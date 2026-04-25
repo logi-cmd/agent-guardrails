@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execFileSync, spawn } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import net from "node:net";
 
@@ -44,6 +44,21 @@ function run(command, args, cwd, env = {}, timeoutMs = 120_000) {
     timeout: timeoutMs,
     stdio: ["ignore", "pipe", "pipe"]
   });
+}
+
+function commandOutput(command, args, cwd) {
+  const result = spawnSync(command, args, {
+    cwd,
+    encoding: "utf8",
+    windowsHide: true,
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  return {
+    status: result.status,
+    stdout: result.stdout || "",
+    stderr: result.stderr || "",
+    error: result.error?.message
+  };
 }
 
 function runNpm(args, cwd, env = {}) {
@@ -202,6 +217,27 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function readTextIfExists(filePath) {
+  try {
+    return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : null;
+  } catch (error) {
+    return `failed to read ${filePath}: ${error.message}`;
+  }
+}
+
+function installedDaemonDiagnostics(repoDir) {
+  const guardrailsDir = path.join(repoDir, ".agent-guardrails");
+  return {
+    pidFile: readTextIfExists(path.join(guardrailsDir, "daemon.pid")),
+    infoFile: readTextIfExists(path.join(guardrailsDir, "daemon-info.json")),
+    logFile: readTextIfExists(path.join(guardrailsDir, "daemon.log")),
+    resultFile: readTextIfExists(path.join(guardrailsDir, "daemon-result.json")),
+    processes: process.platform === "win32"
+      ? commandOutput("tasklist", ["/FI", "IMAGENAME eq agent-guardrails-rs.exe", "/FO", "CSV"], repoDir)
+      : commandOutput("ps", ["-ef"], repoDir)
+  };
+}
+
 async function waitForChildClose(child, timeoutMs = 5000) {
   if (child.exitCode !== null || child.signalCode !== null) {
     return;
@@ -265,7 +301,8 @@ async function assertInstalledDaemonUsesRustDefault(cliPath, repoDir, env) {
     assert.equal(
       start.code,
       0,
-      `installed Rust start should exit successfully\nstdout:\n${start.stdout}\nstderr:\n${start.stderr}`
+      `installed Rust start should exit successfully\nstdout:\n${start.stdout}\nstderr:\n${start.stderr}\n` +
+        `diagnostics:\n${JSON.stringify(installedDaemonDiagnostics(repoDir), null, 2)}`
     );
     const status = parseJsonCommand(process.execPath, [cliPath, "status", "--json"], repoDir, env);
     trace("daemon status returned");
