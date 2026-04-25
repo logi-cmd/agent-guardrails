@@ -160,7 +160,7 @@ fn run_start(args: &[String]) -> Result<i32, String> {
         .spawn()
         .map_err(|error| format!("failed to spawn daemon worker: {error}"))?;
 
-    let status = wait_for_running_status(&repo_root, Duration::from_secs(5));
+    let status = wait_for_running_status(&repo_root, daemon_start_timeout());
     let ok = status.running;
     let injected = if ok {
         install_daemon_integrations(&repo_root)
@@ -522,6 +522,16 @@ fn wait_for_running_status(repo_root: &Path, timeout: Duration) -> DaemonStatus 
         }
         thread::sleep(Duration::from_millis(100));
     }
+}
+
+#[cfg(windows)]
+fn daemon_start_timeout() -> Duration {
+    Duration::from_secs(15)
+}
+
+#[cfg(not(windows))]
+fn daemon_start_timeout() -> Duration {
+    Duration::from_secs(5)
 }
 
 fn write_pid_file(repo_root: &Path) -> Result<(), String> {

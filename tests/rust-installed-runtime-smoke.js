@@ -9,6 +9,12 @@ import net from "node:net";
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), "..");
 
+function trace(message) {
+  if (process.env.AG_SMOKE_TRACE === "1") {
+    console.error(`[rust-installed-smoke] ${message}`);
+  }
+}
+
 function existingFile(candidates) {
   return candidates.find((candidate) => candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile());
 }
@@ -27,7 +33,7 @@ function npmCommand() {
   return { command: process.platform === "win32" ? "npm.cmd" : "npm", prefixArgs: [] };
 }
 
-function run(command, args, cwd, env = {}) {
+function run(command, args, cwd, env = {}, timeoutMs = 120_000) {
   return execFileSync(command, args, {
     cwd,
     encoding: "utf8",
@@ -35,6 +41,7 @@ function run(command, args, cwd, env = {}) {
       ...process.env,
       ...env
     },
+    timeout: timeoutMs,
     stdio: ["ignore", "pipe", "pipe"]
   });
 }
@@ -42,6 +49,29 @@ function run(command, args, cwd, env = {}) {
 function runNpm(args, cwd, env = {}) {
   const npm = npmCommand();
   return run(npm.command, [...npm.prefixArgs, ...args], cwd, env);
+}
+
+function runProcess(command, args, cwd, env = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env,
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString("utf8");
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString("utf8");
+    });
+    child.on("error", reject);
+    child.on("exit", (code, signal) => {
+      resolve({ code: code ?? 1, signal, stdout, stderr });
+    });
+  });
 }
 
 function git(cwd, args) {
@@ -228,25 +258,30 @@ async function waitForHttp(port, request) {
 }
 
 async function assertInstalledDaemonUsesRustDefault(cliPath, repoDir, env) {
-  const start = spawn(process.execPath, [cliPath, "start", "--json"], {
-    cwd: repoDir,
-    env,
-    stdio: "ignore",
-    windowsHide: true
-  });
-  const code = await new Promise((resolve) => start.on("exit", (exitCode) => resolve(exitCode)));
+  trace("starting daemon smoke");
+  const start = await runProcess(process.execPath, [cliPath, "start", "--json"], repoDir, env);
+  trace(`daemon start exited with ${start.code}`);
   try {
-    assert.equal(code, 0, "installed Rust start should exit successfully");
+    assert.equal(
+      start.code,
+      0,
+      `installed Rust start should exit successfully\nstdout:\n${start.stdout}\nstderr:\n${start.stderr}`
+    );
     const status = parseJsonCommand(process.execPath, [cliPath, "status", "--json"], repoDir, env);
+    trace("daemon status returned");
     assert.equal(status.ok, true);
     assert.equal(status.status.running, true);
     assert.equal(fs.readFileSync(path.join(repoDir, "AGENTS.md"), "utf8").includes("agent-guardrails:daemon:start"), true);
     const stop = parseJsonCommand(process.execPath, [cliPath, "stop", "--json"], repoDir, env);
+    trace("daemon stop returned");
     assert.equal(stop.ok, true);
     const finalStatus = parseJsonCommand(process.execPath, [cliPath, "status", "--json"], repoDir, env);
+    trace("daemon final status returned");
     assert.equal(finalStatus.status.running, false);
   } finally {
     try {
+      run(process.execPath, [cliPath, "stop", "--json"], repoDir, env);
+      await delay(500);
       run(process.execPath, [cliPath, "stop", "--json"], repoDir, env);
     } catch {
       // Best-effort cleanup for failed smoke assertions.
@@ -255,6 +290,7 @@ async function assertInstalledDaemonUsesRustDefault(cliPath, repoDir, env) {
 }
 
 async function assertInstalledServeUsesRustDefault(cliPath, repoDir, env) {
+  trace("starting serve smoke");
   const port = await freePort();
   const child = spawn(process.execPath, [cliPath, "serve", "--host", "127.0.0.1", "--port", String(port)], {
     cwd: repoDir,
@@ -278,6 +314,7 @@ async function assertInstalledServeUsesRustDefault(cliPath, repoDir, env) {
     assert.equal(chat.rustPreview, true);
   } finally {
     await stopChild(child);
+    trace("serve child stopped");
   }
 }
 
@@ -368,6 +405,7 @@ function createMcpClient(cliPath, repoDir, env) {
 }
 
 async function assertInstalledMcpLoop(cliPath, repoDir, env, { expectedRuntime }) {
+  trace(`starting MCP smoke (${expectedRuntime})`);
   const client = createMcpClient(cliPath, repoDir, env);
   try {
     const initialize = await client.request("initialize", {
@@ -426,6 +464,7 @@ async function assertInstalledMcpLoop(cliPath, repoDir, env, { expectedRuntime }
     }
   } finally {
     await client.close();
+    trace(`MCP smoke closed (${expectedRuntime})`);
   }
 }
 
@@ -446,24 +485,29 @@ export async function runRustInstalledRuntimeSmoke() {
     fs.mkdirSync(repoDir, { recursive: true });
 
     runNpm(["pack", "--pack-destination", packDir], repoRoot, npmEnv);
+    trace("npm pack completed");
     const tarball = fs.readdirSync(packDir).find((fileName) => fileName.endsWith(".tgz"));
     assert.ok(tarball, "Expected npm pack to produce a tarball.");
 
     runNpm(["init", "-y"], appDir, npmEnv);
     runNpm(["install", path.join(packDir, tarball)], appDir, npmEnv);
+    trace("npm install completed");
 
     const installedPackageRoot = path.join(appDir, "node_modules", "agent-guardrails");
     const installedNativeBinary = currentNativeBinaryPath(installedPackageRoot);
     assert.equal(fs.existsSync(installedNativeBinary), true, `Expected installed native runtime: ${installedNativeBinary}`);
 
     writeSmokeRepo(repoDir);
+    trace("smoke repo written");
 
     const cliPath = path.join(installedPackageRoot, "bin", "agent-guardrails.js");
     assertSafeRustCheck(cliPath, repoDir, {
       ...npmEnv,
       AGENT_GUARDRAILS_RUNTIME: "rust"
     });
+    trace("forced Rust check completed");
     assertSafeRustCheck(cliPath, repoDir, withAutoRuntime(npmEnv));
+    trace("auto runtime check completed");
     await assertInstalledDaemonUsesRustDefault(cliPath, repoDir, withAutoRuntime({
       ...process.env,
       ...npmEnv
