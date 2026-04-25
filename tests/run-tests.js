@@ -128,14 +128,17 @@ function runNodeTestFile(relativePath) {
 
 for (const entry of testModules) {
   try {
+    process.exitCode = 0;
     if (entry.mode === "node-test") {
       await runNodeTestFile(entry.path);
     } else {
       const module = await import(entry.path);
       await module.run();
     }
+    process.exitCode = 0;
     console.log(`PASS ${entry.name}`);
   } catch (error) {
+    process.exitCode = 0;
     failed = true;
     console.error(`FAIL ${entry.name}`);
     console.error(error instanceof Error ? error.stack : String(error));

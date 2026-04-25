@@ -7,7 +7,24 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), "..");
-const npmCliPath = path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js");
+
+function existingFile(candidates) {
+  return candidates.find((candidate) => candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile());
+}
+
+function npmCommand() {
+  const npmCliPath = existingFile([
+    process.env.npm_execpath,
+    path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js"),
+    path.resolve(path.dirname(process.execPath), "..", "share", "nodejs", "npm", "bin", "npm-cli.js")
+  ]);
+
+  if (npmCliPath) {
+    return { command: process.execPath, prefixArgs: [npmCliPath] };
+  }
+
+  return { command: process.platform === "win32" ? "npm.cmd" : "npm", prefixArgs: [] };
+}
 
 function run(command, args, cwd, env = {}) {
   try {
@@ -37,7 +54,8 @@ function run(command, args, cwd, env = {}) {
 }
 
 function runNpm(args, cwd, env = {}) {
-  return run(process.execPath, [npmCliPath, ...args], cwd, env);
+  const npm = npmCommand();
+  return run(npm.command, [...npm.prefixArgs, ...args], cwd, env);
 }
 
 function git(cwd, args) {
