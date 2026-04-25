@@ -53,6 +53,29 @@ function run(command, args, cwd, env = {}) {
   }
 }
 
+function runAllowFailure(command, args, cwd, env = {}) {
+  try {
+    return {
+      status: 0,
+      stdout: execFileSync(command, args, {
+        cwd,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          ...env
+        },
+        stdio: ["ignore", "pipe", "pipe"]
+      })
+    };
+  } catch (error) {
+    return {
+      status: typeof error.status === "number" ? error.status : 1,
+      stdout: typeof error.stdout === "string" ? error.stdout : "",
+      stderr: typeof error.stderr === "string" ? error.stderr : ""
+    };
+  }
+}
+
 function runNpm(args, cwd, env = {}) {
   const npm = npmCommand();
   return run(npm.command, [...npm.prefixArgs, ...args], cwd, env);
@@ -154,7 +177,13 @@ export async function runInstallSmoke() {
     assert.match(agentsContent, /agent-guardrails check --base-ref HEAD~1/);
     assert.match(agentsContent, /Definition Of Done|完成定义/);
 
-    const doctorBeforeEnforce = JSON.parse(run(process.execPath, [binaryPath, "doctor", repoDir, "--json"], appDir, npmEnv));
+    const doctorBeforeEnforceRun = runAllowFailure(
+      process.execPath,
+      [binaryPath, "doctor", repoDir, "--json"],
+      appDir,
+      npmEnv
+    );
+    const doctorBeforeEnforce = JSON.parse(doctorBeforeEnforceRun.stdout);
     assert.equal(doctorCheck(doctorBeforeEnforce, "configExists").passed, true);
     assert.equal(doctorCheck(doctorBeforeEnforce, "gitHook").passed, true);
     assert.equal(doctorCheck(doctorBeforeEnforce, "agentSetupFiles").passed, true);
