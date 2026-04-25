@@ -30,6 +30,21 @@ function assertExists(relativePath, kind = "file") {
   }
 }
 
+function listFiles(dirPath) {
+  const absolute = path.join(root, dirPath);
+  if (!fs.existsSync(absolute)) {
+    return [];
+  }
+  const entries = fs.readdirSync(absolute, { withFileTypes: true });
+  return entries.flatMap((entry) => {
+    const relative = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      return listFiles(relative);
+    }
+    return [relative];
+  });
+}
+
 const pkgPath = path.join(root, "package.json");
 const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
 
@@ -63,6 +78,14 @@ assertExists("bin/agent-guardrails.js");
 assertExists("lib/cli.js");
 assertExists("lib/utils.js");
 assertExists("lib/i18n.js");
+
+for (const runtimeFile of [...listFiles("bin"), ...listFiles("lib")].filter((file) => file.endsWith(".js"))) {
+  const content = fs.readFileSync(path.join(root, runtimeFile), "utf8");
+  if (content.includes("import.meta.dirname") || content.includes("import.meta.filename")) {
+    console.error(`${runtimeFile} must not use Node 20-only import.meta dirname/filename helpers; package supports Node >=18.`);
+    failures++;
+  }
+}
 
 assertExists("templates/base", "dir");
 assertExists("templates/base/workflows/agent-guardrails.yml");
