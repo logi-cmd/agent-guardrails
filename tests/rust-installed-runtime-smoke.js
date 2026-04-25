@@ -168,6 +168,51 @@ function responseBody(response) {
   return response.split("\r\n\r\n")[1] || "";
 }
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForChildClose(child, timeoutMs = 5000) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return;
+  }
+
+  await new Promise((resolve) => {
+    const timeout = setTimeout(resolve, timeoutMs);
+    child.once("close", () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+  });
+}
+
+async function stopChild(child) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return;
+  }
+
+  child.kill();
+  await waitForChildClose(child, 5000);
+  if (child.exitCode === null && child.signalCode === null) {
+    child.kill("SIGKILL");
+    await waitForChildClose(child, 5000);
+  }
+}
+
+async function removeTempRoot(tempRoot) {
+  let lastError = null;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      fs.rmSync(tempRoot, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      lastError = error;
+      await delay(250);
+    }
+  }
+  console.warn(`Warning: failed to remove smoke temp directory ${tempRoot}: ${lastError?.message ?? lastError}`);
+}
+
 async function waitForHttp(port, request) {
   const deadline = Date.now() + 5000;
   let lastError = null;
@@ -232,7 +277,7 @@ async function assertInstalledServeUsesRustDefault(cliPath, repoDir, env) {
     assert.equal(chat.tool, "plan_rough_intent");
     assert.equal(chat.rustPreview, true);
   } finally {
-    child.kill();
+    await stopChild(child);
   }
 }
 
@@ -315,11 +360,9 @@ function createMcpClient(cliPath, repoDir, env) {
       child.stdin.write(encodeFrame(payload));
       return promise;
     },
-    close() {
+    async close() {
       child.stdin.end();
-      if (!child.killed) {
-        child.kill();
-      }
+      await stopChild(child);
     }
   };
 }
@@ -382,7 +425,7 @@ async function assertInstalledMcpLoop(cliPath, repoDir, env, { expectedRuntime }
       assert.equal(finish.structuredContent.checkResult.rustPreview, undefined);
     }
   } finally {
-    client.close();
+    await client.close();
   }
 }
 
@@ -444,7 +487,7 @@ export async function runRustInstalledRuntimeSmoke() {
       AGENT_GUARDRAILS_RUNTIME: "rust"
     }, { expectedRuntime: "rust" });
   } finally {
-    fs.rmSync(tempRoot, { recursive: true, force: true });
+    await removeTempRoot(tempRoot);
     cleanupCreatedNativeRuntime(nativeRuntime.created);
   }
 }
