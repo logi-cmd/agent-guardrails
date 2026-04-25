@@ -15,7 +15,7 @@ const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
 
 function realPath(filePath) {
   try {
-    return fs.realpathSync(filePath);
+    return fs.realpathSync.native(filePath);
   } catch {
     return path.resolve(filePath);
   }
