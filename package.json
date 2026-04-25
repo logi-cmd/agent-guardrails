@@ -7,6 +7,7 @@
   "files": [
     "bin",
     "lib",
+    "native",
     "templates",
     "adapters",
     "README.md",
@@ -19,6 +20,8 @@
     "check": "node ./bin/agent-guardrails.js check",
     "mcp": "node ./bin/agent-guardrails.js mcp",
     "test": "node ./tests/run-tests.js",
+    "build:rust-native": "node ./scripts/build-rust-native.js",
+    "release:rust-readiness": "node ./scripts/check-rust-release-readiness.js",
     "benchmark": "node ./scripts/run-benchmarks.js",
     "demo": "node ./examples/bounded-scope-demo/scripts/run-demo.mjs all",
     "demo:python-fastapi": "node ./examples/python-fastapi-demo/scripts/run-demo.mjs all",
@@ -28,6 +31,7 @@
     "demo:source-test-relevance": "node ./examples/source-test-relevance-demo/scripts/run-demo.mjs all",
     "smoke:help": "node ./bin/agent-guardrails.js help",
     "smoke:install": "node ./tests/install-smoke.js",
+    "smoke:rust-installed": "node ./tests/rust-installed-runtime-smoke.js",
     "plan": "node ./bin/agent-guardrails.js plan --task \"Sample bounded task\"",
     "init:local": "node ./bin/agent-guardrails.js init . --preset node-service"
   },

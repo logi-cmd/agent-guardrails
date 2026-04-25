@@ -41,6 +41,16 @@ function listTrackedFiles() {
     .filter(Boolean);
 }
 
+function readJsonCommand(command, args) {
+  return JSON.parse(
+    execFileSync(command, args, {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"]
+    })
+  );
+}
+
 export async function run() {
   const packageJson = JSON.parse(read("package.json"));
   const readme = read("README.md");
@@ -138,8 +148,21 @@ export async function run() {
   assert.match(workflow, /macos-latest/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /npm run benchmark/);
+  assert.match(workflow, /npm run build:rust-native/);
+  assert.match(workflow, /Run unit and doc validation with packaged Rust runtime default/);
+  assert.match(workflow, /native-matrix/);
+  assert.match(workflow, /x86_64-pc-windows-msvc/);
+  assert.match(workflow, /x86_64-unknown-linux-gnu/);
+  assert.match(workflow, /x86_64-apple-darwin/);
+  assert.match(workflow, /aarch64-apple-darwin/);
+  assert.match(workflow, /native-package-smoke/);
+  assert.match(workflow, /actions\/upload-artifact@v4/);
+  assert.match(workflow, /actions\/download-artifact@v4/);
+  assert.match(workflow, /--require-complete-native-matrix/);
   assert.match(workflow, /npm pack --dry-run/);
   assert.match(workflow, /node \.\/tests\/install-smoke\.js/);
+  assert.match(workflow, /npm run smoke:rust-installed/);
+  assert.match(workflow, /npm run release:rust-readiness/);
   assert.match(workflow, /cache: npm/);
   assert.match(workflow, /static-verify/);
   assert.match(templateWorkflow, /npx agent-guardrails check/);
@@ -182,6 +205,26 @@ export async function run() {
   const publishDryRun = runNpmPublishDryRun();
   assert.doesNotMatch(publishDryRun, /npm auto-corrected some errors/i);
   assert.doesNotMatch(publishDryRun, /bin\[agent-guardrails\].*invalid and removed/i);
+
+  const rustReadiness = readJsonCommand(process.execPath, ["./scripts/check-rust-release-readiness.js"]);
+  assert.equal(rustReadiness.ok, true);
+  assert.match(rustReadiness.releaseMode, /node-fallback-with-rust-where-packaged|rust-default-with-node-fallback/);
+  assert.equal(rustReadiness.checks.packageIncludesNativeRoot, true);
+  assert.equal(rustReadiness.checks.hasBuildRustNativeScript, true);
+  assert.equal(rustReadiness.checks.hasInstalledRustSmokeScript, true);
+  assert.equal(rustReadiness.checks.coreRustDefaults.check, true);
+  assert.equal(rustReadiness.checks.coreRustDefaults.mcp, true);
+  assert.equal(rustReadiness.checks.coreRustDefaultReady, true);
+  assert.equal(rustReadiness.checks.daemonAndServeRustDefaults.start, true);
+  assert.equal(rustReadiness.checks.daemonAndServeRustDefaults.serve, true);
+  assert.equal(rustReadiness.checks.daemonAndServeRustDefaultReady, true);
+  assert.equal(rustReadiness.checks.allRustDefaultReady, true);
+
+  const missingNativeReadiness = readJsonCommand(process.execPath, [
+    "./scripts/check-rust-release-readiness.js",
+    "--require-rust-default"
+  ]);
+  assert.equal(missingNativeReadiness.ok, true);
 
   assert.equal(
     listTrackedFiles().includes(".agent-guardrails/evidence/current-task.md"),
