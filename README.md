@@ -234,9 +234,10 @@ agent-guardrails pro status
 agent-guardrails pro activate <license-key>
 agent-guardrails pro report
 agent-guardrails pro workbench --open
+agent-guardrails pro workbench --live
 ```
 
-`pro activate` delegates license activation to the installed Pro package and stores only the Pro-owned local activation cache. If a personal license reaches its device limit, the OSS CLI shows the limit, current device, and Pro-provided next action instead of only returning an error code. `pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. `pro workbench --open` writes and opens the optional local Pro operator workbench so users can review the ship/no-ship decision without inspecting raw JSON. If Pro is absent or unlicensed, OSS behavior stays unchanged.
+`pro activate` delegates license activation to the installed Pro package and stores only the Pro-owned local activation cache. If a personal license reaches its device limit, the OSS CLI shows the limit, current device, and Pro-provided next action instead of only returning an error code. `pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. `pro workbench --open` writes and opens the local Pro workbench so users can review the ship or no-ship answer without inspecting raw JSON. `pro workbench --live` starts a local browser workbench with refresh, rerun, current-loop, next-proof, short-loop, visible-check completion, and evidence-note actions, shows the current agent handoff with copyable Codex and Claude Code execution packages plus the rerun command, can export the whole handoff bundle into local files for the next agent step, automatically saves proof notes after each run, and keeps a readable summary of the last proof loop on the same page. Visible verification now has its own watch list and “finish visible check and rerun” path, so users can stay in one UI instead of bouncing between the browser, the terminal, and raw JSON. If Pro is absent or unlicensed, OSS behavior stays unchanged.
 
 When `@agent-guardrails/pro` exposes Pro MCP tools, the OSS MCP server lists and calls them dynamically. This lets existing MCP-capable agents read Pro Workbench data through the same `agent-guardrails mcp` connection without moving Pro decision logic into the OSS package.
 
@@ -254,7 +255,7 @@ When `@agent-guardrails/pro` exposes Pro MCP tools, the OSS MCP server lists and
 | `pro status` | Show optional Pro install and license status |
 | `pro activate` | Activate the optional Pro package without writing license keys to repo config |
 | `pro report` | Print the optional Pro go-live report |
-| `pro workbench` | Write and optionally open the optional Pro operator workbench |
+| `pro workbench` | Write, open, or serve the optional local Pro workbench |
 | `pro cleanup` | Preview or apply Pro proof memory cleanup |
 | `start` | Start daemon |
 | `stop` | Stop daemon |

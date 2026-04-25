@@ -46,6 +46,10 @@ export async function run() {
   const cliBinaryCheck = result.results.find((r) => r.key === "cliBinary");
   assert.equal(cliBinaryCheck.passed, true, "CLI binary should be available");
 
+  const runtimeCheck = result.results.find((r) => r.key === "checkRuntime");
+  assert.equal(runtimeCheck.passed, true, "Check runtime selection should be available");
+  assert.match(runtimeCheck.detail, /Check runtime:/);
+
   await runSetup({
     positional: [tempDir],
     flags: { agent: "claude-code", lang: "en" },
@@ -68,7 +72,7 @@ export async function run() {
 
   const rawChecks = runDoctorChecks(tempDir);
   assert.equal(Array.isArray(rawChecks), true);
-  assert.equal(rawChecks.length, 5);
+  assert.equal(rawChecks.length, 6);
 
   const { output: jsonOutput } = await captureLogs(() =>
     runDoctor({
@@ -81,7 +85,7 @@ export async function run() {
   const parsed = JSON.parse(jsonOutput);
   assert.equal(parsed.ok, false);
   assert.equal(Array.isArray(parsed.checks), true);
-  assert.equal(parsed.checks.length, 5);
+  assert.equal(parsed.checks.length, 6);
 
   const { output: textOutput } = await captureLogs(() =>
     runDoctor({
@@ -91,7 +95,8 @@ export async function run() {
     })
   );
   assert.match(textOutput, /Agent Guardrails Doctor/);
-  assert.match(textOutput, /\d+\/5/);
+  assert.match(textOutput, /\d+\/6/);
+  assert.match(textOutput, /Check runtime/);
 
   const zhDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-doctor-zh-"));
   await runSetup({

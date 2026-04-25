@@ -56,6 +56,9 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT, options 
   ];
 
   fs.writeFileSync(path.join(packageDir, "index.js"), [
+    "import fs from 'node:fs';",
+    "import path from 'node:path';",
+    "",
     "export function buildProStatus() {",
     "  return {",
     "    packageName: '@agent-guardrails/pro',",
@@ -206,11 +209,65 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT, options 
     "    state: 'ready',",
     "    format: 'markdown',",
     "    verdict: { verdict: 'hold', riskTier: 'high' },",
-    "    nextAction: { code: 'run-cheapest-proof', command: 'npm test -- auth' },",
-    "    operatorWorkbench: { headline: 'Can I ship? No, hold this high change.' },",
+    "    nextAction: { code: 'run-cheapest-proof', command: 'npm test -- auth', label: 'Run required proof', value: 'Run npm test -- auth and refresh the answer.' },",
+    "    operatorWorkbench: {",
+    "      headline: 'Can I ship? No, hold this high change.',",
+    "      decisionCard: { verdict: 'hold' },",
+    "      proofQueue: [",
+    "        { title: 'Run required command: npm test -- auth', code: 'run-required-command', surface: 'validation', command: 'npm test -- auth', expectedEvidence: 'Paste the passing output for npm test -- auth.' }",
+    "      ],",
+    "      automationDecision: {",
+    "        state: 'agent_runs_then_glance',",
+    "        label: 'Let the agent run the next step, then take a quick look',",
+    "        badge: 'Agent first',",
+    "        summary: 'Let the agent run the next proof, save the evidence, rerun the answer, and hand back the result.',",
+    "        humanRole: 'Read the refreshed answer after the rerun.'",
+    "      },",
+    "      automationContract: {",
+    "        mode: 'agent_runs_then_glance',",
+    "        reviewLevel: 'quick_glance',",
+    "        nextCommand: 'npm test -- auth',",
+    "        rerunCommand: 'agent-guardrails check --review',",
+    "        humanChecks: ['Read the refreshed release answer after the rerun.'],",
+    "        stopConditions: ['Stop and hand back if the answer stays blocked.'],",
+    "        copyBrief: 'Mode: Let the agent run the next step, then take a quick look\\nRun: npm test -- auth\\nThen rerun agent-guardrails check --review.'",
+    "      }",
+    "    },",
     "    html: '<!doctype html><html><body><h1>Agent Guardrails Pro Workbench</h1><p>Can I ship? No.</p></body></html>',",
     "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
     "  };",
+    "}",
+    "function appendMockToolCall(name, args = {}) {",
+    "  const repoRoot = args.repoRoot || process.cwd();",
+    "  const callsPath = path.join(repoRoot, '.agent-guardrails', 'pro', 'mock-tool-calls.json');",
+    "  const current = fs.existsSync(callsPath) ? JSON.parse(fs.readFileSync(callsPath, 'utf8')) : [];",
+    "  fs.mkdirSync(path.dirname(callsPath), { recursive: true });",
+    "  current.push({ name, args });",
+    "  fs.writeFileSync(callsPath, JSON.stringify(current, null, 2), 'utf8');",
+    "}",
+    "export async function callProMcpTool(name, args = {}) {",
+    "  appendMockToolCall(name, args);",
+    "  if (name === 'pro_capture_evidence_note') {",
+    "    return {",
+    "      format: 'agent-guardrails-pro-mcp-evidence-note.v1',",
+    "      state: 'captured',",
+    "      repoRoot: args.repoRoot || null,",
+    "      evidencePath: args.evidencePath || '.agent-guardrails/evidence/current-task.md',",
+    "      artifactPaths: Array.isArray(args.artifactPaths) ? args.artifactPaths : [],",
+    "      nextAction: { command: 'agent-guardrails check --review' }",
+    "    };",
+    "  }",
+    "  if (name === 'pro_record_proof_outcome') {",
+    "    return {",
+    "      format: 'agent-guardrails-pro-mcp-proof-outcome.v1',",
+    "      state: 'recorded',",
+    "      repoRoot: args.repoRoot || null,",
+    "      outcome: args.outcome || null,",
+    "      matchedCount: 1,",
+    "      updated: true",
+    "    };",
+    "  }",
+    "  throw new Error('Unknown mock Pro MCP tool: ' + name);",
     "}",
     ...activateLicenseLines
   ].join("\n"), "utf8");
@@ -540,6 +597,367 @@ export async function run() {
         assert.equal(parsed.action, "operator-workbench");
         assert.equal(parsed.state, "ready");
         assert.match(parsed.outputPath, /operator-workbench\.html$/);
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("starts a live Pro workbench server with browser actions", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              assert.equal(result.installed, true);
+              assert.match(result.liveUrl, /^http:\/\/127\.0\.0\.1:\d+\/$/);
+              assert.equal(fs.existsSync(result.statePath), true);
+
+              const page = await fetch(result.liveUrl);
+              const html = await page.text();
+              assert.equal(page.status, 200);
+              assert.match(html, /Live mode/);
+              assert.match(html, /Copy generic handoff/);
+              assert.match(html, /Copy Codex handoff/);
+              assert.match(html, /Copy Claude Code handoff/);
+              assert.match(html, /Export handoff bundle/);
+              assert.match(html, /Run current loop/);
+              assert.match(html, /Finish visible check and rerun/);
+              assert.match(html, /Rerun answer only/);
+              assert.match(html, /Run next proof/);
+              assert.match(html, /Run short loop/);
+              assert.match(html, /Refresh answer/);
+              assert.match(html, /Save note and rerun/);
+              assert.match(html, /Evidence note/);
+
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const parsed = await state.json();
+              assert.equal(state.status, 200);
+              assert.equal(parsed.action, "operator-workbench");
+              assert.equal(parsed.state, "ready");
+              assert.equal(parsed.currentLoop.command, "npm test -- auth");
+              assert.match(parsed.currentLoop.label, /Run required proof/i);
+              assert.equal(parsed.automationHandoff.mode, "agent_runs_then_glance");
+              assert.equal(parsed.automationHandoff.nextCommand, "npm test -- auth");
+              assert.match(parsed.automationHandoff.copyBrief, /rerun agent-guardrails check --review/i);
+              assert.match(parsed.handoffPackages.codex.text, /Run `npm test -- auth`/);
+              assert.match(parsed.handoffPackages.claudeCode.text, /reviewer summary/i);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("captures proof notes and records proof outcomes from live workbench actions", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-proof-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const runNext = await fetch(new URL("/__agent_guardrails__/workbench/run-next", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: "{}"
+              });
+              const runNextJson = await runNext.json();
+              assert.equal(runNext.status, 200);
+              assert.equal(runNextJson.proofCapture.state, "captured");
+              assert.match(runNextJson.statusMessage, /saved a proof note/i);
+              assert.equal(runNextJson.automationHandoff.mode, "agent_runs_then_glance");
+              assert.match(runNextJson.handoffPackages.codex.text, /Run `npm test -- auth`/);
+
+              const record = await fetch(new URL("/__agent_guardrails__/workbench/record-outcome", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ outcome: "failed" })
+              });
+              const recordJson = await record.json();
+              assert.equal(record.status, 200);
+              assert.equal(recordJson.proofOutcome.state, "recorded");
+              assert.equal(recordJson.liveSession.recordedOutcome, "failed");
+
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const stateJson = await state.json();
+              assert.equal(state.status, 200);
+              assert.equal(stateJson.liveSession.code, "run-required-command");
+              assert.equal(stateJson.liveSession.surface, "validation");
+              assert.equal(stateJson.liveSession.recordedOutcome, "failed");
+
+              const callsPath = path.join(repoRoot, ".agent-guardrails", "pro", "mock-tool-calls.json");
+              const calls = JSON.parse(fs.readFileSync(callsPath, "utf8"));
+              assert.deepEqual(calls.map(call => call.name), [
+                "pro_capture_evidence_note",
+                "pro_record_proof_outcome"
+              ]);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("captures a manual evidence note and reruns from the live workbench", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-note-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const capture = await fetch(new URL("/__agent_guardrails__/workbench/capture-note-rerun", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  summary: "Watched the auth flow fail safely in the browser.",
+                  artifactPaths: ".agent-guardrails/evidence/visual/auth-watch.png",
+                  outputExcerpt: "Observed a controlled auth failure and preserved the rollback path.",
+                  outcome: "observed"
+                })
+              });
+              const captureJson = await capture.json();
+              assert.equal(capture.status, 200);
+              assert.equal(captureJson.proofCapture.state, "captured");
+              assert.match(captureJson.statusMessage, /Saved the evidence note and refreshed the answer/i);
+              assert.equal(captureJson.currentLoop.command, "npm test -- auth");
+              assert.equal(captureJson.liveSession.proofNoteState, "captured");
+              assert.ok(captureJson.liveSession.evidencePaths.some(item => /current-task\.md$/.test(item)));
+
+              const callsPath = path.join(repoRoot, ".agent-guardrails", "pro", "mock-tool-calls.json");
+              const calls = JSON.parse(fs.readFileSync(callsPath, "utf8"));
+              assert.equal(calls[0].name, "pro_capture_evidence_note");
+              assert.equal(calls[0].args.outcome, "observed");
+              assert.match(calls[0].args.summary, /auth flow fail safely/i);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("runs the current loop from the live workbench", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-current-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const current = await fetch(new URL("/__agent_guardrails__/workbench/run-current", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: "{}"
+              });
+              const currentJson = await current.json();
+              assert.equal(current.status, 200);
+              assert.equal(currentJson.proofCapture.state, "captured");
+              assert.equal(currentJson.liveSession.command, "npm test -- auth");
+              assert.equal(currentJson.currentLoop.command, "npm test -- auth");
+              assert.match(currentJson.handoffPackages.codex.text, /Capture this evidence/i);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("exports a local handoff bundle from the live workbench", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-export-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const exported = await fetch(new URL("/__agent_guardrails__/workbench/export-handoff", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: "{}"
+              });
+              const exportedJson = await exported.json();
+              assert.equal(exported.status, 200);
+              assert.match(exportedJson.statusMessage, /Exported the handoff bundle/i);
+              assert.equal(typeof exportedJson.handoffBundle.directory, "string");
+              assert.equal(fs.existsSync(exportedJson.handoffBundle.directory), true);
+              assert.ok(exportedJson.handoffBundle.files.some(item => /codex-handoff\.md$/.test(item)));
+              assert.ok(exportedJson.handoffBundle.files.some(item => /manifest\.json$/.test(item)));
+
+              const manifest = JSON.parse(fs.readFileSync(exportedJson.handoffBundle.manifestPath, "utf8"));
+              assert.equal(manifest.format, "agent-guardrails-live-handoff-bundle.v1");
+              assert.equal(manifest.currentLoop.command, "npm test -- auth");
+              assert.equal(manifest.automationHandoff.mode, "agent_runs_then_glance");
+              assert.match(fs.readFileSync(manifest.files.codex, "utf8"), /Run `npm test -- auth`/);
+
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const stateJson = await state.json();
+              assert.equal(state.status, 200);
+              assert.equal(stateJson.handoffBundle.directory, exportedJson.handoffBundle.directory);
+              assert.ok(stateJson.handoffBundle.files.some(item => /generic-handoff\.md$/.test(item)));
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("finishes a visible verification loop from the live workbench", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-visible-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const packageIndex = path.join(repoRoot, "node_modules", "@agent-guardrails", "pro", "index.js");
+            const source = fs.readFileSync(packageIndex, "utf8");
+            const updated = source.replace(
+              "    operatorWorkbench: {",
+              [
+                "    operatorWorkbench: {",
+                "      primaryAction: { type: 'visible_agent_verification', label: 'Watch the auth flow', command: 'npm test -- auth', description: 'Run a visible verification so the user can watch the auth flow and save proof.' },",
+                "      visualVerification: {",
+                "        state: 'recommended',",
+                "        summary: 'Run a visible verification so the user can watch the auth flow and save proof.',",
+                "        target: 'http://localhost:3000/login',",
+                "        command: 'npm test -- auth',",
+                "        watchPoints: ['login screen opens', 'error branch stays understandable', 'screenshot is saved'],",
+                "        evidencePaths: ['.agent-guardrails/evidence/visual/login-watch.md', '.agent-guardrails/evidence/visual/screenshots/'],",
+                "        steps: [",
+                "          { code: 'open-visible-surface', instruction: 'Open the login screen visibly.', expectedObservation: 'The user can watch the login screen open.' },",
+                "          { code: 'exercise-primary-path', instruction: 'Exercise the primary login flow.', expectedObservation: 'The user can see the success path.' },",
+                "          { code: 'capture-visual-evidence', instruction: 'Capture a screenshot and note what happened.', expectedObservation: 'Saved visual proof is ready for the receipt.' }",
+                "        ]",
+                "      },"
+              ].join("\\n")
+            );
+            fs.writeFileSync(packageIndex, updated, "utf8");
+
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const stateJson = await state.json();
+              assert.equal(state.status, 200);
+              assert.equal(stateJson.currentLoop.isVisible, true);
+              assert.equal(stateJson.visualVerification.target, "http://localhost:3000/login");
+
+              const visible = await fetch(new URL("/__agent_guardrails__/workbench/complete-visible", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  summary: "Watched the login flow and the denied branch stayed readable.",
+                  artifactPaths: ".agent-guardrails/evidence/visual/login-watch.png",
+                  outputExcerpt: "Visible login check stayed stable and saved a screenshot."
+                })
+              });
+              const visibleJson = await visible.json();
+              assert.equal(visible.status, 200);
+              assert.equal(visibleJson.proofCapture.state, "captured");
+              assert.match(visibleJson.statusMessage, /visible check/i);
+              assert.equal(visibleJson.currentLoop.isVisible, true);
+              assert.ok(visibleJson.liveSession.evidencePaths.some(item => /current-task\.md$/.test(item)));
+
+              const callsPath = path.join(repoRoot, ".agent-guardrails", "pro", "mock-tool-calls.json");
+              const calls = JSON.parse(fs.readFileSync(callsPath, "utf8"));
+              assert.equal(calls[0].name, "pro_capture_evidence_note");
+              assert.equal(calls[0].args.outcome, "observed");
+              assert.match(calls[0].args.summary, /denied branch stayed readable/i);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("runs a bounded short loop from the live workbench", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-loop-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "en", repoRoot });
+            try {
+              const loop = await fetch(new URL("/__agent_guardrails__/workbench/auto-loop", result.liveUrl), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: "{}"
+              });
+              const loopJson = await loop.json();
+              assert.equal(loop.status, 200);
+              assert.equal(loopJson.liveSession.lastLoop.stepCount, 1);
+              assert.equal(loopJson.liveSession.lastLoop.stopReason, "repeated_command");
+              assert.equal(loopJson.liveSession.lastLoop.commands.length, 1);
+              assert.equal(loopJson.liveSession.lastLoop.commands[0], "npm test -- auth");
+              assert.match(loopJson.statusMessage, /Ran 1 short-loop step/i);
+              assert.equal(loopJson.automationHandoff.mode, "agent_runs_then_glance");
+              assert.match(loopJson.handoffPackages.claudeCode.text, /reviewer summary/i);
+
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const stateJson = await state.json();
+              assert.equal(state.status, 200);
+              assert.equal(stateJson.liveSession.lastLoop.stepCount, 1);
+              assert.equal(stateJson.liveSession.lastLoop.stopReason, "repeated_command");
+              assert.equal(stateJson.liveSession.lastLoop.commands[0], "npm test -- auth");
+
+              const callsPath = path.join(repoRoot, ".agent-guardrails", "pro", "mock-tool-calls.json");
+              const calls = JSON.parse(fs.readFileSync(callsPath, "utf8"));
+              assert.deepEqual(calls.map(call => call.name), [
+                "pro_capture_evidence_note",
+                "pro_record_proof_outcome"
+              ]);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
+      } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+      }
+    });
+
+    it("localizes the live workbench handoff for Chinese", async () => {
+      const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-live-zh-"));
+      try {
+        await withMockInstalledPro(
+          async () => {
+            const result = await runProWorkbench({ flags: { live: true }, locale: "zh-CN", repoRoot });
+            try {
+              const page = await fetch(result.liveUrl);
+              const html = await page.text();
+              assert.equal(page.status, 200);
+              assert.match(html, /实时模式/);
+              assert.match(html, /复制 Codex 委托包/);
+              assert.match(html, /运行短闭环/);
+
+              const state = await fetch(new URL("/__agent_guardrails__/workbench/state", result.liveUrl));
+              const parsed = await state.json();
+              assert.equal(state.status, 200);
+              assert.match(parsed.handoffPackages.codex.text, /请在这个仓库里继续使用 Agent Guardrails/);
+              assert.match(parsed.handoffPackages.claudeCode.text, /reviewer summary/);
+            } finally {
+              result.liveServer?.close?.();
+            }
+          },
+          repoRoot
+        );
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }

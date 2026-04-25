@@ -253,7 +253,7 @@ export async function run() {
     "continuity requirements"
   ]);
   assert.equal(typeof autoContract.session.sessionId, "string");
-  assert.equal(autoContract.session.repoRoot, tempDir);
+  assert.equal(fs.realpathSync(autoContract.session.repoRoot), fs.realpathSync(tempDir));
   assert.deepEqual(autoContract.session.requiredCommandsSuggested, config.workflow.planDefaults.requiredCommands);
   assert.equal(autoContract.session.evidencePathSuggested, config.workflow.planDefaults.evidencePaths[0]);
   assert.deepEqual(autoContract.session.riskDimensions.securityRequirements, ["Mention auth, secrets, permissions, and sensitive-data handling explicitly."]);

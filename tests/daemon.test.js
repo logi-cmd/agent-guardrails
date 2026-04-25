@@ -259,6 +259,7 @@ async function testWindowsPidExactMatch() {
 async function testFallbackWatcherDetectsChange() {
   const tempDir = createTempDir();
   try {
+    const { setTimeout: delay } = await import("node:timers/promises");
     const watchDir = path.join(tempDir, "watched");
     fs.mkdirSync(watchDir, { recursive: true });
 
@@ -277,13 +278,13 @@ async function testFallbackWatcherDetectsChange() {
       changes.push(filePath);
       if (changes.length >= 1) resolveWatch();
     }, () => {});
+    await watcher.ready;
 
     // Create a file to trigger the watcher
     const testFile = path.join(watchDir, "test-change.js");
     fs.writeFileSync(testFile, "// test");
 
     // Wait for the event (with timeout)
-    const { setTimeout: delay } = await import("node:timers/promises");
     await Promise.race([watchReady, delay(2000)]);
 
     watcher.close();

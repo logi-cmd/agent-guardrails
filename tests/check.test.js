@@ -13,6 +13,18 @@ import { listChangedFiles, listChangedFilesFromBaseRef, resolveRepoRoot, resolve
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const OSS_REPO_ROOT = path.resolve(TEST_DIR, "..");
 
+function realPath(filePath) {
+  try {
+    return fs.realpathSync.native(filePath);
+  } catch {
+    return path.resolve(filePath);
+  }
+}
+
+function assertSameRealPath(actual, expected, message) {
+  assert.equal(realPath(actual), realPath(expected), message);
+}
+
 function captureLogs(run) {
   const original = console.log;
   let output = "";
@@ -777,13 +789,18 @@ async function listChangedFilesFromBaseRefIncludesDeletedFiles() {
   fs.writeFileSync(path.join(tempDir, "src", "critical.js"), "export const critical = true;\n", "utf8");
   execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
   execFileSync("git", ["commit", "-m", "initial"], { cwd: tempDir, stdio: "ignore" });
+  const initialCommit = execFileSync("git", ["rev-parse", "HEAD"], {
+    cwd: tempDir,
+    encoding: "utf8"
+  }).trim();
   execFileSync("git", ["checkout", "-b", "feature"], { cwd: tempDir, stdio: "ignore" });
   fs.rmSync(path.join(tempDir, "src", "critical.js"));
   execFileSync("git", ["add", "-A"], { cwd: tempDir, stdio: "ignore" });
   execFileSync("git", ["commit", "-m", "delete critical file"], { cwd: tempDir, stdio: "ignore" });
 
-  const result = listChangedFilesFromBaseRef(tempDir, "master");
+  const result = listChangedFilesFromBaseRef(tempDir, initialCommit);
 
+  assert.equal(result.error, null);
   assert.deepEqual(result.files, ["src/critical.js"]);
 }
 
@@ -1946,7 +1963,7 @@ async function resolveRepoRootPrefersConfigAtStartDir() {
   fs.writeFileSync(path.join(subDir, ".agent-guardrails", "config.json"), JSON.stringify({ checks: {} }), "utf8");
 
   const resolved = resolveRepoRoot(subDir);
-  assert.equal(resolved, subDir);
+  assertSameRealPath(resolved, subDir);
 }
 
 async function resolveRepoRootFallsBackToGitRoot() {
@@ -1960,5 +1977,5 @@ async function resolveRepoRootFallsBackToGitRoot() {
   fs.mkdirSync(subDir, { recursive: true });
 
   const resolved = resolveRepoRoot(subDir);
-  assert.equal(resolved, tempDir, "should resolve to git root when config is there but not in subdirectory");
+  assertSameRealPath(resolved, tempDir, "should resolve to git root when config is there but not in subdirectory");
 }

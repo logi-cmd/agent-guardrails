@@ -26,8 +26,13 @@ agent-guardrails plan --task "Add user authentication"
 agent-guardrails check --review
 agent-guardrails check --json
 agent-guardrails pro status
+agent-guardrails pro activate <license-key>
 agent-guardrails pro report
+agent-guardrails pro workbench --open
+agent-guardrails pro workbench --live
 ```
+
+`pro workbench --live` 会启动一个本地浏览器 workbench，提供刷新答案、只 rerun、运行当前闭环、运行下一条 proof、短闭环、完成可见验证，以及保存证据备注的动作；页面里还会直接显示可复制的 Codex / Claude Code 委托包和 rerun 命令，也可以把整套 handoff 导出到本地文件。每次运行后会自动保存 proof note，并在同一页保留最近一次 proof loop 的可读摘要；如果当前闭环需要用户看着 AI 做可见验证，页面会直接显示目标、观察点、要留存的证据，以及“完成可见验证并 rerun”的路径，尽量减少回到终端的次数。
 
 ## 什么时候有用
 

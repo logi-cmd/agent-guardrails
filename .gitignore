@@ -1,4 +1,5 @@
 node_modules/
+target/
 dist/
 .DS_Store
 .npm-cache/
