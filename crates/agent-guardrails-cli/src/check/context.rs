@@ -193,10 +193,7 @@ pub fn build_check_context(
             .map(|file_path| get_top_level_entry(file_path))
             .collect(),
     );
-    let required_paths = required_paths()
-        .into_iter()
-        .map(ToString::to_string)
-        .collect::<Vec<_>>();
+    let required_paths = required_paths(&config);
     let required_path_status = required_paths
         .iter()
         .map(|relative_path| {

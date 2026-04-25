@@ -35,6 +35,9 @@
     ]
   },
   "checks": {
+    "requiredPaths": [
+      ".agent-guardrails/config.json"
+    ],
     "maxChangedFilesPerTask": 20,
     "requireTestsWithSourceChanges": true,
     "allowedPaths": [],

@@ -91,6 +91,10 @@ const testModules = [
     path: "./config-validation.test.js"
   },
   {
+    name: "policy",
+    path: "./policy.test.js"
+  },
+  {
     name: "doctor",
     path: "./doctor.test.js"
   },

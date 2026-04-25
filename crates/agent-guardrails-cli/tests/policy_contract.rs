@@ -4,13 +4,25 @@ use serde_json::json;
 #[test]
 fn required_paths_match_current_js_policy() {
     assert_eq!(
-        required_paths(),
+        required_paths(&json!({})),
         vec![
             "AGENTS.md",
             "docs/PROJECT_STATE.md",
             "docs/PR_CHECKLIST.md",
             ".agent-guardrails/config.json"
         ]
+    );
+}
+
+#[test]
+fn required_paths_can_be_overridden_for_public_repos() {
+    assert_eq!(
+        required_paths(&json!({
+            "checks": {
+                "requiredPaths": [".agent-guardrails/config.json", "  README.md  ", ""]
+            }
+        })),
+        vec![".agent-guardrails/config.json", "README.md"]
     );
 }
 

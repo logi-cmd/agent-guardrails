@@ -79,13 +79,27 @@ pub struct ScoringWeights {
     pub risk: f64,
 }
 
-pub fn required_paths() -> Vec<&'static str> {
-    vec![
+pub fn required_paths(config: &Value) -> Vec<String> {
+    let configured = object_field(object_field(config, "checks"), "requiredPaths");
+    if let Some(paths) = configured.as_array() {
+        return paths
+            .iter()
+            .filter_map(Value::as_str)
+            .map(str::trim)
+            .filter(|path| !path.is_empty())
+            .map(ToString::to_string)
+            .collect();
+    }
+
+    [
         "AGENTS.md",
         "docs/PROJECT_STATE.md",
         "docs/PR_CHECKLIST.md",
         ".agent-guardrails/config.json",
     ]
+    .into_iter()
+    .map(ToString::to_string)
+    .collect()
 }
 
 pub fn build_policy(config: &Value) -> Policy {
