@@ -411,6 +411,10 @@ fn default_daemon_config() -> Value {
 }
 
 fn read_daemon_status(repo_root: &Path) -> DaemonStatus {
+    read_daemon_status_inner(repo_root, true)
+}
+
+fn read_daemon_status_inner(repo_root: &Path, prune_stale_pid: bool) -> DaemonStatus {
     let pid_path = repo_root.join(DAEMON_PID_FILE);
     let pid = fs::read_to_string(&pid_path)
         .ok()
@@ -426,7 +430,9 @@ fn read_daemon_status(repo_root: &Path) -> DaemonStatus {
     };
 
     if !process_is_running(pid) {
-        let _ = fs::remove_file(pid_path);
+        if prune_stale_pid {
+            let _ = fs::remove_file(pid_path);
+        }
         return DaemonStatus {
             running: false,
             pid: None,
@@ -516,9 +522,12 @@ fn detach_daemon_command(_command: &mut Command) {}
 fn wait_for_running_status(repo_root: &Path, timeout: Duration) -> DaemonStatus {
     let deadline = SystemTime::now() + timeout;
     loop {
-        let status = read_daemon_status(repo_root);
-        if status.running || SystemTime::now() >= deadline {
+        let status = read_daemon_status_inner(repo_root, false);
+        if status.running {
             return status;
+        }
+        if SystemTime::now() >= deadline {
+            return read_daemon_status(repo_root);
         }
         thread::sleep(Duration::from_millis(100));
     }
@@ -1252,4 +1261,39 @@ fn read_flag_value(args: &[String], index: usize, flag: &str) -> Result<String, 
 fn write_stdout_line(message: &str) -> Result<(), String> {
     println!("{message}");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn temp_repo(name: &str) -> PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let path = env::temp_dir().join(format!(
+            "agent-guardrails-daemon-{name}-{}-{unique}",
+            std::process::id()
+        ));
+        fs::create_dir_all(path.join(".agent-guardrails")).expect("guardrails dir");
+        path
+    }
+
+    #[test]
+    fn startup_status_read_does_not_prune_pid_file() {
+        let repo = temp_repo("startup-no-prune");
+        let pid_path = repo.join(DAEMON_PID_FILE);
+        fs::write(&pid_path, "999999999").expect("pid");
+
+        let startup_status = read_daemon_status_inner(&repo, false);
+        assert!(!startup_status.running);
+        assert!(pid_path.exists());
+
+        let normal_status = read_daemon_status(&repo);
+        assert!(!normal_status.running);
+        assert!(!pid_path.exists());
+
+        let _ = fs::remove_dir_all(repo);
+    }
 }
