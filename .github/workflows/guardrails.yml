@@ -165,6 +165,9 @@ jobs:
           name: native-darwin-arm64
           path: native/darwin-arm64
 
+      - name: Restore native executable bits
+        run: chmod +x native/linux-x64/agent-guardrails-rs native/darwin-x64/agent-guardrails-rs native/darwin-arm64/agent-guardrails-rs
+
       - name: Check complete Rust release readiness
         run: npm run release:rust-readiness -- --require-rust-default --require-complete-native-matrix
 

@@ -163,7 +163,8 @@ export async function run() {
   assert.match(workflow, /node \.\/tests\/install-smoke\.js/);
   assert.match(workflow, /npm run smoke:rust-installed/);
   assert.match(workflow, /npm run release:rust-readiness/);
-  assert.match(workflow, /cache: npm/);
+  assert.doesNotMatch(workflow, /cache: npm/);
+  assert.match(workflow, /Restore native executable bits/);
   assert.match(workflow, /static-verify/);
   assert.match(templateWorkflow, /npx agent-guardrails check/);
   assert.match(templateWorkflow, /cache: npm/);
