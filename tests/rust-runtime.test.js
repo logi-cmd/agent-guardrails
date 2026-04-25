@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   packagedRustRuntimeCandidate,
   resolveRustCheckRuntime,
+  hasInstalledProPackage,
   selectCheckRuntime,
   selectDoctorRuntime,
   selectEnforceRuntime,
@@ -92,6 +93,35 @@ function testDefaultRuntimeUsesPackagedRustWhenPresent() {
         arch: "x64"
       }),
       { kind: "rust", reason: "packaged-rust", binary: binaryPath }
+    );
+  });
+}
+
+function testDefaultCheckRuntimeUsesNodeWhenProIsInstalledInRepo() {
+  withTempDir((tempDir) => {
+    const binaryPath = path.join(tempDir, "native", "win32-x64", "agent-guardrails-rs.exe");
+    fs.mkdirSync(path.dirname(binaryPath), { recursive: true });
+    fs.writeFileSync(binaryPath, "", "utf8");
+
+    const repoRoot = path.join(tempDir, "repo");
+    fs.mkdirSync(path.join(repoRoot, "node_modules", "@agent-guardrails", "pro"), { recursive: true });
+    fs.writeFileSync(path.join(repoRoot, "package.json"), "{}", "utf8");
+    fs.writeFileSync(
+      path.join(repoRoot, "node_modules", "@agent-guardrails", "pro", "package.json"),
+      `${JSON.stringify({ name: "@agent-guardrails/pro", version: "0.0.0" })}\n`,
+      "utf8"
+    );
+
+    assert.equal(hasInstalledProPackage({ repoRoot, root: tempDir }), true);
+    assert.deepEqual(
+      selectCheckRuntime({
+        env: {},
+        root: tempDir,
+        repoRoot,
+        platform: "win32",
+        arch: "x64"
+      }),
+      { kind: "node", reason: "pro-package-installed" }
     );
   });
 }
@@ -1395,6 +1425,7 @@ export async function run() {
   testPackagedRuntimeCandidateUsesNpmNativePath();
   testDefaultRuntimeUsesNodeWhenPackagedRustIsAbsent();
   testDefaultRuntimeUsesPackagedRustWhenPresent();
+  testDefaultCheckRuntimeUsesNodeWhenProIsInstalledInRepo();
   testNodeRuntimeCanBeForcedEvenWhenPackagedRustExists();
   testInvalidRuntimeSelectionFailsActionably();
   testCoreRuntimesUsePackagedRustByDefaultWhenPresent();
