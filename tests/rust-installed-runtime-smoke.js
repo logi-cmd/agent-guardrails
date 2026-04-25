@@ -66,7 +66,7 @@ function runNpm(args, cwd, env = {}) {
   return run(npm.command, [...npm.prefixArgs, ...args], cwd, env);
 }
 
-function runProcess(command, args, cwd, env = {}) {
+function runProcess(command, args, cwd, env = {}, timeoutMs = 120_000) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
@@ -76,14 +76,22 @@ function runProcess(command, args, cwd, env = {}) {
     });
     let stdout = "";
     let stderr = "";
+    const timeout = setTimeout(() => {
+      child.kill();
+      reject(new Error(`Process timed out after ${timeoutMs}ms: ${command} ${args.join(" ")}\nstdout:\n${stdout}\nstderr:\n${stderr}`));
+    }, timeoutMs);
     child.stdout.on("data", (chunk) => {
       stdout += chunk.toString("utf8");
     });
     child.stderr.on("data", (chunk) => {
       stderr += chunk.toString("utf8");
     });
-    child.on("error", reject);
+    child.on("error", (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
     child.on("exit", (code, signal) => {
+      clearTimeout(timeout);
       resolve({ code: code ?? 1, signal, stdout, stderr });
     });
   });
@@ -315,6 +323,17 @@ async function assertInstalledDaemonUsesRustDefault(cliPath, repoDir, env) {
     const finalStatus = parseJsonCommand(process.execPath, [cliPath, "status", "--json"], repoDir, env);
     trace("daemon final status returned");
     assert.equal(finalStatus.status.running, false);
+
+    const humanStart = await runProcess(process.execPath, [cliPath, "start", "--lang", "en"], repoDir, env, 15_000);
+    assert.equal(
+      humanStart.code,
+      0,
+      `installed Rust human start should exit successfully when stdout is captured\nstdout:\n${humanStart.stdout}\nstderr:\n${humanStart.stderr}\n` +
+        `diagnostics:\n${JSON.stringify(installedDaemonDiagnostics(repoDir), null, 2)}`
+    );
+    assert.match(humanStart.stdout, /daemon started/i);
+    const humanStop = parseJsonCommand(process.execPath, [cliPath, "stop", "--json"], repoDir, env);
+    assert.equal(humanStop.ok, true);
   } finally {
     try {
       run(process.execPath, [cliPath, "stop", "--json"], repoDir, env);

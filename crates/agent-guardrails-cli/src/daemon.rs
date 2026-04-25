@@ -144,21 +144,7 @@ fn run_start(args: &[String]) -> Result<i32, String> {
     }
 
     ensure_guardrails_dir(&repo_root)?;
-    let current_exe =
-        env::current_exe().map_err(|error| format!("failed to resolve current exe: {error}"))?;
-    let mut command = Command::new(current_exe);
-    command
-        .arg("daemon-worker")
-        .arg("--repo-root")
-        .arg(repo_root.to_string_lossy().to_string())
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .current_dir(&repo_root);
-    detach_daemon_command(&mut command);
-    command
-        .spawn()
-        .map_err(|error| format!("failed to spawn daemon worker: {error}"))?;
+    spawn_daemon_worker(&repo_root)?;
 
     let status = wait_for_running_status(&repo_root, daemon_start_timeout());
     let ok = status.running;
@@ -505,15 +491,71 @@ fn stop_process(pid: u32) -> bool {
     }
 }
 
+fn spawn_daemon_worker(repo_root: &Path) -> Result<(), String> {
+    let current_exe =
+        env::current_exe().map_err(|error| format!("failed to resolve current exe: {error}"))?;
+
+    spawn_daemon_worker_for_platform(current_exe, repo_root)
+}
+
 #[cfg(windows)]
-fn detach_daemon_command(command: &mut Command) {
-    use std::os::windows::process::CommandExt;
+fn spawn_daemon_worker_for_platform(current_exe: PathBuf, repo_root: &Path) -> Result<(), String> {
+    let exe = powershell_single_quote(&current_exe.to_string_lossy());
+    let repo = powershell_single_quote(&repo_root.to_string_lossy());
+    // Hidden Start-Process gives the daemon worker fresh stdio handles. Direct
+    // Command::spawn can leave a captured caller stdout pipe open on Windows.
+    let script = format!(
+        "$ErrorActionPreference='Stop'; Start-Process -FilePath '{exe}' -ArgumentList @('daemon-worker','--repo-root','{repo}') -WorkingDirectory '{repo}' -WindowStyle Hidden"
+    );
+    let status = Command::new("powershell.exe")
+        .arg("-NoProfile")
+        .arg("-NonInteractive")
+        .arg("-WindowStyle")
+        .arg("Hidden")
+        .arg("-ExecutionPolicy")
+        .arg("Bypass")
+        .arg("-Command")
+        .arg(script)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .current_dir(repo_root)
+        .status()
+        .map_err(|error| format!("failed to launch daemon worker via PowerShell: {error}"))?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "failed to launch daemon worker via PowerShell: exit code {}",
+            status
+                .code()
+                .map(|code| code.to_string())
+                .unwrap_or_else(|| "unknown".to_string())
+        ))
+    }
+}
 
-    const DETACHED_PROCESS: u32 = 0x0000_0008;
-    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
-    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+#[cfg(windows)]
+fn powershell_single_quote(value: &str) -> String {
+    value.replace('\'', "''")
+}
 
-    command.creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW);
+#[cfg(not(windows))]
+fn spawn_daemon_worker_for_platform(current_exe: PathBuf, repo_root: &Path) -> Result<(), String> {
+    let mut command = Command::new(current_exe);
+    command
+        .arg("daemon-worker")
+        .arg("--repo-root")
+        .arg(repo_root.to_string_lossy().to_string())
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .current_dir(repo_root);
+    detach_daemon_command(&mut command);
+    command
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| format!("failed to spawn daemon worker: {error}"))
 }
 
 #[cfg(not(windows))]
