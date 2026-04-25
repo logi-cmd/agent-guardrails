@@ -3,8 +3,19 @@
  * This replaces the regex-based parsing for more accurate semantic analysis.
  */
 
-import { parse } from "@typescript-eslint/parser";
-import { simpleTraverse } from "@typescript-eslint/typescript-estree";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+let parse = null;
+let simpleTraverse = null;
+
+try {
+  ({ parse } = require("@typescript-eslint/parser"));
+  ({ simpleTraverse } = require("@typescript-eslint/typescript-estree"));
+} catch {
+  // Keep the plugin usable from a source checkout even when optional parser
+  // dependencies are not installed. Detectors fall back to regex-based logic.
+}
 
 /**
  * Parse a TypeScript/JavaScript file and return the AST
@@ -13,6 +24,8 @@ import { simpleTraverse } from "@typescript-eslint/typescript-estree";
  * @returns {object|null} - The parsed AST or null if parsing fails
  */
 export function parseFile(content, filePath) {
+  if (!parse) return null;
+
   try {
     return parse(content, {
       filePath,
@@ -37,7 +50,7 @@ export function parseFile(content, filePath) {
  * @returns {Array<{type: string, names: string[], line: number}>}
  */
 export function extractExports(ast) {
-  if (!ast || !ast.body) return [];
+  if (!ast || !ast.body || !simpleTraverse) return [];
 
   const exports = [];
 
@@ -158,7 +171,7 @@ export function extractExports(ast) {
  * @returns {Array<{source: string, specifiers: string[], line: number}>}
  */
 export function extractImports(ast) {
-  if (!ast || !ast.body) return [];
+  if (!ast || !ast.body || !simpleTraverse) return [];
 
   const imports = [];
 
@@ -220,7 +233,7 @@ export function extractImports(ast) {
  * @returns {Array<{name: string, type: string, line: number, exported: boolean}>}
  */
 export function extractDeclaredSymbols(ast) {
-  if (!ast || !ast.body) return [];
+  if (!ast || !ast.body || !simpleTraverse) return [];
 
   const symbols = [];
 
@@ -309,7 +322,7 @@ export function extractDeclaredSymbols(ast) {
  * @returns {Array<{name: string, line: number}>}
  */
 export function extractFunctionCalls(ast) {
-  if (!ast || !ast.body) return [];
+  if (!ast || !ast.body || !simpleTraverse) return [];
 
   const calls = [];
 

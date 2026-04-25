@@ -777,12 +777,16 @@ async function listChangedFilesFromBaseRefIncludesDeletedFiles() {
   fs.writeFileSync(path.join(tempDir, "src", "critical.js"), "export const critical = true;\n", "utf8");
   execFileSync("git", ["add", "."], { cwd: tempDir, stdio: "ignore" });
   execFileSync("git", ["commit", "-m", "initial"], { cwd: tempDir, stdio: "ignore" });
+  const initialBranch = execFileSync("git", ["branch", "--show-current"], {
+    cwd: tempDir,
+    encoding: "utf8"
+  }).trim();
   execFileSync("git", ["checkout", "-b", "feature"], { cwd: tempDir, stdio: "ignore" });
   fs.rmSync(path.join(tempDir, "src", "critical.js"));
   execFileSync("git", ["add", "-A"], { cwd: tempDir, stdio: "ignore" });
   execFileSync("git", ["commit", "-m", "delete critical file"], { cwd: tempDir, stdio: "ignore" });
 
-  const result = listChangedFilesFromBaseRef(tempDir, "master");
+  const result = listChangedFilesFromBaseRef(tempDir, initialBranch);
 
   assert.deepEqual(result.files, ["src/critical.js"]);
 }
