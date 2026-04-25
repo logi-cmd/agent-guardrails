@@ -48,6 +48,7 @@ The npm package should ship only what runtime users need:
 
 - `bin`
 - `lib`
+- `native`
 - `templates`
 - `adapters`
 - `README.md`
@@ -110,6 +111,8 @@ Expected:
 ```bash
 npm test
 node ./tests/install-smoke.js
+npm run smoke:rust-installed
+npm run release:rust-readiness -- --require-rust-default --require-complete-native-matrix
 npm pack --dry-run
 ```
 

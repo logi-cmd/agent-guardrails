@@ -2,11 +2,32 @@
 
 ## Unreleased
 
+## 0.20.0 - 2026-04-25
+
+### Added: Rust native runtime with safe Node fallback
+
+- Added a Rust native CLI/runtime path for the core OSS commands, including `check`, `init`, `setup`, `plan`, `doctor`, `enforce`, `unenforce`, `generate-agents`, `mcp`, `serve`, `start`, `stop`, and `status`.
+- Packaged native runtime support now covers Windows x64, Linux x64, macOS x64, and macOS arm64 when the release package includes the matching `native/*` binary.
+- `AGENT_GUARDRAILS_RUNTIME=node` remains available as a compatibility escape hatch, and installs without a matching native binary safely fall back to the existing Node runtime.
+- Added cross-platform native CI and installed-package smoke coverage so the release package is tested after `npm pack`, not only from the source checkout.
+
+### Fixed: installed package and daemon robustness
+
+- Hardened npm CLI discovery for real Windows, macOS, Linux, and WSL layouts used by hosted runners and OS package managers.
+- Fixed Windows installed daemon startup readiness so a just-spawned worker is not mistaken for a stale pid during startup.
+- Fixed path-identity edge cases on Windows short paths and macOS `/var` versus `/private/var` temp roots.
+- Restored executable permissions for downloaded Linux/macOS native artifacts before aggregate package smoke.
+
 ### Improved: Pro activation guidance
 
 - `agent-guardrails pro activate` now passes an optional `--instance-id` through to the installed Pro package for hosted activation diagnostics.
 - Personal-license device-limit failures now render the active device usage, current device, and Pro-provided next action in the OSS CLI.
 - The OSS MCP server now dynamically exposes MCP tools from an installed `@agent-guardrails/pro` package, keeping Pro logic out of OSS while letting agents read the Pro Workbench through the existing MCP connection.
+
+### Upgrade notes
+
+- No migration is required for existing OSS users.
+- If the packaged native binary is available for the user's platform, `auto` runtime uses Rust by default. Set `AGENT_GUARDRAILS_RUNTIME=node` to force the previous Node path.
 
 ## 0.19.7 - 2026-04-22
 

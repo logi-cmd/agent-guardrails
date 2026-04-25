@@ -11,7 +11,7 @@ fn version_output_matches_npm_cli_contract() {
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8_lossy(&output.stdout).trim(),
-        "agent-guardrails v0.19.7"
+        format!("agent-guardrails v{}", env!("CARGO_PKG_VERSION"))
     );
     assert!(output.stderr.is_empty());
 }

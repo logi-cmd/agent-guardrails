@@ -1,6 +1,6 @@
 [package]
 name = "agent-guardrails-cli"
-version = "0.19.7"
+version = "0.20.0"
 edition = "2024"
 license = "MIT"
 description = "Rust CLI core for agent-guardrails"
