@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Improved: Pro Workbench contract bridge
+
+- `agent-guardrails pro workbench` now prefers the installed Pro package's structured Workbench view contract over Pro-rendered HTML. The OSS live workbench renders from that contract first and keeps legacy HTML only as a fallback for older Pro versions.
+- `pro workbench` writes `.agent-guardrails/pro/operator-workbench-view.json` when Pro provides `agent-guardrails-workbench-view.v1`, keeping the public OSS bridge as a renderer/host layer instead of a Pro HTML carrier.
+- `pro workbench` now also writes `.agent-guardrails/pro/operator-workbench-panel.json`, a compact native panel model for future desktop, MCP, or terminal UI surfaces so hosts do not need to parse HTML or raw Pro JSON.
+- `pro workbench` now prints a compact non-HTML panel preview by default, showing the ship answer, status strip, next proof, handoff, and key sections before listing supporting file paths.
+- The Rust native runtime now includes `workbench-panel`, which reads `operator-workbench-panel.json` and renders the same panel without HTML. `pro workbench --native-panel` uses this native renderer when the packaged runtime is available, and the public `workbench-panel` command keeps a JavaScript fallback for older or source-checkout installs.
+- Native builds now write a small manifest next to each packaged Rust binary. Release readiness compares those manifests to the current Rust source signature, so stale macOS/Linux artifacts are caught before a full native-matrix release.
+
 ## 0.20.0 - 2026-04-25
 
 ### Added: Rust native runtime with safe Node fallback

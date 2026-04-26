@@ -104,6 +104,11 @@ const testModules = [
     mode: "node-test"
   },
   {
+    name: "workbench-panel",
+    path: "./workbench-panel.test.js",
+    mode: "node-test"
+  },
+  {
     name: "pro-stub",
     path: "./pro-stub.test.js",
     mode: "node-test"

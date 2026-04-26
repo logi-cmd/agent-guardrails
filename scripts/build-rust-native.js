@@ -3,8 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const MANIFEST_FORMAT = "agent-guardrails-native-manifest.v1";
 
 function parseArgs(argv) {
   const flags = {
@@ -80,6 +82,43 @@ function rustBinaryName(platform = process.platform) {
   return platform === "win32" ? "agent-guardrails-rs.exe" : "agent-guardrails-rs";
 }
 
+function rustManifestName(platform = process.platform) {
+  return `${rustBinaryName(platform)}.manifest.json`;
+}
+
+function listFilesRecursive(rootDir) {
+  if (!fs.existsSync(rootDir)) {
+    return [];
+  }
+  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
+  return entries.flatMap((entry) => {
+    const absolutePath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      return listFilesRecursive(absolutePath);
+    }
+    return entry.isFile() ? [absolutePath] : [];
+  });
+}
+
+function rustSourceSignature() {
+  const relativeFiles = [
+    "Cargo.lock",
+    "Cargo.toml",
+    "crates/agent-guardrails-cli/Cargo.toml",
+    ...listFilesRecursive(path.join(repoRoot, "crates", "agent-guardrails-cli", "src"))
+      .filter((filePath) => filePath.endsWith(".rs"))
+      .map((filePath) => path.relative(repoRoot, filePath).replace(/\\/g, "/"))
+  ].sort();
+
+  const hash = createHash("sha256");
+  for (const relativeFile of relativeFiles) {
+    hash.update(`${relativeFile}\0`);
+    hash.update(fs.readFileSync(path.join(repoRoot, relativeFile)));
+    hash.update("\0");
+  }
+  return hash.digest("hex");
+}
+
 function inferPlatformArchFromTarget(target) {
   if (!target) return null;
   const knownTargets = new Map([
@@ -124,7 +163,10 @@ function buildPlan({
     sourcePath,
     outputDir: path.join(repoRoot, "native", `${resolvedPlatform}-${resolvedArch}`),
     outputPath: path.join(repoRoot, "native", `${resolvedPlatform}-${resolvedArch}`, binaryName),
-    packagePath: `native/${resolvedPlatform}-${resolvedArch}/${binaryName}`
+    manifestPath: path.join(repoRoot, "native", `${resolvedPlatform}-${resolvedArch}`, rustManifestName(resolvedPlatform)),
+    packagePath: `native/${resolvedPlatform}-${resolvedArch}/${binaryName}`,
+    manifestPackagePath: `native/${resolvedPlatform}-${resolvedArch}/${rustManifestName(resolvedPlatform)}`,
+    sourceSignature: rustSourceSignature()
   };
 }
 
@@ -173,8 +215,25 @@ export function buildRustNative(argv = process.argv.slice(2)) {
   if (process.platform !== "win32") {
     fs.chmodSync(plan.outputPath, 0o755);
   }
+  fs.writeFileSync(
+    plan.manifestPath,
+    `${JSON.stringify({
+      format: MANIFEST_FORMAT,
+      packageName: "agent-guardrails",
+      binary: "agent-guardrails-rs",
+      platform: plan.platform,
+      arch: plan.arch,
+      target: plan.target,
+      profile: flags.profile,
+      packagePath: plan.packagePath,
+      sourceSignature: plan.sourceSignature,
+      builtAt: new Date().toISOString()
+    }, null, 2)}\n`,
+    "utf8"
+  );
 
   console.log(`Built ${plan.packagePath}`);
+  console.log(`Wrote ${plan.manifestPackagePath}`);
   return plan;
 }
 

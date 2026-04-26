@@ -17,6 +17,7 @@ use agent_guardrails_cli::plan::run_plan_cli;
 use agent_guardrails_cli::repo::read_config;
 use agent_guardrails_cli::serve::run_serve_cli;
 use agent_guardrails_cli::setup::run_setup_cli;
+use agent_guardrails_cli::workbench_panel::run_workbench_panel_cli;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -42,6 +43,10 @@ const COMMANDS: &[(&str, &str)] = &[
         "Open or run the local Pro operator workbench",
     ),
     ("pro cleanup", "Preview or apply Pro proof memory cleanup"),
+    (
+        "workbench-panel",
+        "Render a local Workbench native panel model",
+    ),
     ("generate-agents", "Generate AGENTS.md for agent setup"),
     (
         "serve",
@@ -125,6 +130,10 @@ fn run(args: Vec<String>) -> i32 {
 
     if command == "check" {
         return run_check(&args[1..]);
+    }
+
+    if command == "workbench-panel" {
+        return run_workbench_panel_cli(&args[1..]);
     }
 
     eprintln!("agent-guardrails: Unknown command: {command}");
@@ -523,8 +532,11 @@ fn print_help() {
         "  agent-guardrails pro activate <license-key> [--instance-name <name>] [--instance-id <id>] [--json]"
     );
     println!("  agent-guardrails pro report [--json]");
-    println!("  agent-guardrails pro workbench [--open] [--live] [--json]");
+    println!("  agent-guardrails pro workbench [--open] [--live] [--native-panel] [--json]");
     println!("  agent-guardrails pro cleanup [--apply] [--json]");
+    println!(
+        "  agent-guardrails workbench-panel [--file <operator-workbench-panel.json>] [--json]"
+    );
     println!("  agent-guardrails generate-agents [targetDir] [--preset <name>] [--lang <locale>]");
     println!("  agent-guardrails serve [--port <port>] [--host <host>] [--lang <locale>]");
     println!("  agent-guardrails mcp");

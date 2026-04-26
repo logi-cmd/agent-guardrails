@@ -13,3 +13,4 @@ pub mod policy;
 pub mod repo;
 pub mod serve;
 pub mod setup;
+pub mod workbench_panel;
