@@ -81,25 +81,25 @@ export async function run() {
 
   assert.match(readme, /## Quick Start/);
   assert.match(readme, /## Core Workflow/);
-  assert.match(readme, /## Before vs After/);
-  assert.match(readme, /## Three-layer Enforcement/);
-  assert.match(readme, /## Competitor Comparison/);
-  assert.match(readme, /## CLI Reference/);
-  assert.match(readme, /agent-guardrails setup --agent <your-agent>/);
+  assert.match(readme, /## MCP Integration/);
+  assert.match(readme, /## Commands/);
+  assert.match(readme, /## Public Docs/);
+  assert.match(readme, /agent-guardrails setup \. --agent codex --lang en/);
   assert.match(readme, /agent-guardrails enforce --all/);
-  assert.match(readme, /agent-guardrails unenforce --all/);
+  assert.match(readme, /unenforce --all/);
   assert.match(readme, /CLAUDE\.md/);
-  assert.match(readme, /L1.*enforce/i);
-  assert.match(readme, /L2.*AGENTS\.md/i);
-  assert.match(readme, /L3.*pre-commit hook/i);
-  assert.match(readme, /## Docs/);
+  assert.match(readme, /readme-plan\.svg/);
+  assert.match(readme, /readme-check-review\.svg/);
   assert.match(readme, /docs\/WORKFLOWS\.md/);
   assert.match(readme, /docs\/TROUBLESHOOTING\.md/);
   assert.match(readme, /docs\/PROOF\.md/);
   assert.match(readme, /docs\/BENCHMARKS\.md/);
   assert.match(readme, /MIT/);
 
-  assert.match(zhReadme, /中文/);
+  assert.match(zhReadme, /Agent Guardrails 中文说明/);
+  assert.match(zhReadme, /## 快速开始/);
+  assert.match(zhReadme, /readme-plan\.svg/);
+  assert.match(zhReadme, /readme-check-review\.svg/);
 
   assert.match(roadmap, /## Phase 1 \(Shipped\)/);
   assert.match(roadmap, /## Phase 2 \(Shipped\)/);

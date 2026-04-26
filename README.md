@@ -1,179 +1,126 @@
 # Agent Guardrails
 
-**[Chinese](./docs/zh-CN/README.md)** | **[English](./README.md)**
+**[Chinese](./docs/zh-CN/README.md)** | **English**
 
-![Agent Guardrails — Merge Gate for AI-Generated Code](./assets/hero-banner.svg)
+![Agent Guardrails](./assets/hero-banner.svg)
 
-`agent-guardrails` is a **merge gate for AI-generated code**. It checks that AI changes match expectations *before* you merge.
+`agent-guardrails` is a local safety layer for AI coding agents. It helps you turn a vague request into a bounded task, keeps the diff inside that boundary, and gives reviewers a clear answer before merge.
 
-- 🎯 **Scope validation** — AI only touches allowed files
-- ✅ **Test verification** — tests must pass
-- 🔍 **Drift detection** — catches parallel abstractions, interface changes
-- 🛡 **Protected paths** — critical files stay untouched
-- 🔒 **Security hygiene** — warns on hardcoded secrets, unsafe patterns, sensitive file changes
-- 📊 **Trust score** — 0-100 composite score with graduated verdicts
-- 🔧 **Auto-fix** — Tier-1 issues fixed automatically, zero side effects
-- 🧬 **Mutation testing** — optional lightweight built-in slice catches vacuous tests (config-gated, default-disabled)
+It does not replace Claude Code, Codex, Cursor, Gemini, or OpenCode. It works beside them as a repo-level guardrail.
 
-## Who it is for
+## Why Use It
 
-`agent-guardrails` is aimed first at **solo developers and small teams** already using AI coding tools.
+AI coding tools are fast, but the hard part is often the handoff:
 
-- solo founders shipping real product code with Claude Code, Cursor, Codex, Gemini, or OpenCode
-- small product teams that want the same repo guardrails even when each developer uses a different agent
-- consultants and agencies that need safer AI-assisted changes across multiple client repos
+- What exactly was the agent supposed to change?
+- Did it touch files outside the task?
+- Were tests or validation actually run?
+- Is there evidence a reviewer can trust later?
+- Did a small request turn into a broad rewrite?
 
-It is **not** primarily for one-off toy prompts or teams looking to replace their coding agent entirely.
+`agent-guardrails` makes those questions explicit and repeatable.
 
-## Prerequisites
+## What It Checks
 
-- **Node.js 18+**
-- **Git** — your project must be a git repository (`git init`). All change detection relies on `git diff`.
+- Scope: flags changes outside the declared task, allowed paths, or intended files.
+- Validation: checks reported commands and required evidence files.
+- Consistency: warns when a task spreads across too many files or directories.
+- Risk: surfaces protected paths, interface changes, config changes, migration changes, and secret-like patterns.
+- Reviewer output: prints a score, verdict, findings, next actions, and a short review summary.
+- Agent setup: writes repo-local helper files and MCP configuration guidance for supported agents.
+
+## Supported Agents
+
+`agent-guardrails` can generate or update helper files for:
+
+| Agent | Helper location |
+| --- | --- |
+| Claude Code | `CLAUDE.md` |
+| Codex | `.codex/instructions.md` |
+| Cursor | `.cursor/rules/agent-guardrails-enforce.mdc` |
+| Gemini CLI | `GEMINI.md` |
+| OpenCode | `.opencode/rules/agent-guardrails-enforce.md` |
+
+## Requirements
+
+- Node.js 18+
+- Git
+- A git repository for the project you want to protect
+
+The npm package includes native runtime binaries for Windows x64, macOS x64/arm64, and Linux x64. The Node runtime remains available as a fallback.
 
 ## Quick Start
 
 ```bash
-# 1. Install
 npm install -g agent-guardrails
 
-# 2. Set up in your project (must be a git repo)
 cd your-repo
-agent-guardrails setup --agent claude-code
-
-# 3. Enforce rules (recommended)
-agent-guardrails enforce --all
+agent-guardrails setup . --agent codex --lang en
+agent-guardrails enforce --all --lang en
+agent-guardrails doctor --lang en
 ```
 
-Supports 5 agents: `claude-code`, `cursor`, `opencode`, `codex`, `gemini`.
-
-## How It Works
-
-![Core Workflow — Setup → Enforce → AI Codes → Check & Merge](./assets/workflow.svg)
+Use the agent name you actually work with: `claude-code`, `codex`, `cursor`, `gemini`, or `opencode`.
 
 ## Core Workflow
 
-### 1. Setup — Initialize your project
+1. Set up the repo once.
+2. Ask your agent to use `agent-guardrails` for the task.
+3. Create a task brief with `plan`, or let an MCP-capable agent start the guarded loop.
+4. Implement the smallest safe change.
+5. Run validation, then run `check --review` before merge.
 
 ```bash
-agent-guardrails setup --agent <your-agent>
+agent-guardrails plan \
+  --task "Add input validation" \
+  --intended-files "src/add.js,tests/add.test.js" \
+  --allow-paths "src/,tests/,evidence/" \
+  --required-commands "npm test" \
+  --evidence "evidence/add-validation.md" \
+  --lang en
 ```
 
-This automatically:
-- ✅ Generates `.agent-guardrails/config.json`
-- ✅ Generates/appends `AGENTS.md`
-- ✅ Injects a git pre-commit hook
-- ✅ Creates AI tool config files (MCP)
-
-### 2. Enforce — Make AI follow the rules (recommended)
-
-The `AGENTS.md` from `setup` is advisory. AI agents may ignore it. **`enforce` injects guardrail instructions directly into each agent's system-level auto-read files** (like `CLAUDE.md`, `GEMINI.md`), which take far higher priority.
+![Plan output from agent-guardrails 0.20.0](./assets/readme-plan.svg)
 
 ```bash
-# Enforce for all supported agents
-agent-guardrails enforce --all
-
-# Or a specific agent
-agent-guardrails enforce --agent claude-code
-
-# See which agents are supported
-agent-guardrails enforce --help
+npm test
+agent-guardrails check --base-ref HEAD~1 --commands-run "npm test" --review --lang en
 ```
 
-| Agent | Injection file | Auto-read level |
-|-------|---------------|-----------------|
-| Claude Code | `CLAUDE.md` | ⭐⭐⭐ System |
-| Cursor | `.cursor/rules/agent-guardrails-enforce.mdc` | ⭐⭐⭐ System |
-| OpenCode | `.opencode/rules/agent-guardrails-enforce.md` | ⭐⭐⭐ System |
-| Codex | `.codex/instructions.md` | ⭐⭐⭐ System |
-| Gemini CLI | `GEMINI.md` | ⭐⭐⭐ System |
+![Review output from agent-guardrails 0.20.0](./assets/readme-check-review.svg)
 
-**Remove enforcement** (safely preserves your existing content):
+The screenshots above were generated from `agent-guardrails@0.20.0` in a temporary git repository.
 
-```bash
-agent-guardrails unenforce --all
-agent-guardrails unenforce --agent claude-code
+## MCP Integration
+
+`setup` prints the MCP snippet for the selected agent. For Codex, the snippet looks like this:
+
+```toml
+[mcp_servers.agent-guardrails]
+command = "npx"
+args = ["agent-guardrails", "mcp"]
 ```
 
-### 3. Daily workflow
+Once connected, MCP-capable agents can read repo guardrails, start a bounded implementation loop, check after edits, and finish with a review summary.
 
-After setup, the AI automatically runs checks before finishing tasks:
+## Commands
 
-```bash
-agent-guardrails check --base-ref HEAD~1
-```
-
-Results appear directly in the chat. The git pre-commit hook provides a safety net.
-
-![AI Agent Chat — Guardrails Auto-Trigger](./assets/agent-chat.svg)
-
-![Check Output — Review Mode](./assets/check-output.svg)
-
-**Manual check (optional):**
-
-```bash
-agent-guardrails check --review
-```
-
-### 4. Plan a task (optional)
-
-Keep the AI focused by creating a task contract first:
-
-```bash
-agent-guardrails plan --task "Add user authentication"
-```
-
-## Before vs After
-
-| Before | After |
-|--------|-------|
-| "AI changed 47 files, no idea why" | "AI changed 3 files, all in scope" |
-| "Tests probably passed?" | "Tests ran: 12 passed, 0 failed" |
-| "That looks like a new pattern" | "⚠️ Parallel abstraction detected" |
-| "Hope nothing breaks" | "✓ Safe to merge, residual risk: low" |
-
-## Why this beats a DIY plugin stack
-
-Many users already have Claude Code, Cursor, Codex, or Gemini plus custom prompts, hooks, and MCP tools.
-
-The reason to use `agent-guardrails` is not that those tools cannot generate code.
-It is that a DIY stack still leaves a lot of manual work around:
-
-- defining repo-safe boundaries before implementation
-- checking whether the diff stayed inside those boundaries
-- proving validation actually ran
-- summarizing residual risk for a human reviewer
-- keeping repeated AI edits from slowly fragmenting the repo
-
-`agent-guardrails` is strongest when users want to keep their current coding agent and add a repeatable trust layer on top.
-
-## Three-layer Enforcement
-
-| Layer | Mechanism | Effect |
-|-------|-----------|--------|
-| L1: enforce | Inject into agent system-level instruction files | ⭐⭐⭐ Strongest — auto-read by AI |
-| L2: AGENTS.md | Project-level rule file | ⭐⭐ Medium — AI may ignore |
-| L3: pre-commit hook | Git commit interception | ⭐⭐⭐ Safety net — enforced |
-
-**Recommended**: `setup` + `enforce --all` = double protection.
-
-## Competitor Comparison
-
-| Feature | CodeRabbit | Sonar | agent-guardrails |
-|---------|-----------|-------|------------------|
-| Pre-generation constraints | ❌ Post-comment | ❌ Post-check | ✅ |
-| Scope control | ❌ | ❌ | ✅ |
-| Task context | ❌ | ❌ | ✅ |
-| Test relevance checks | ❌ | ❌ | ✅ |
-
-**Key difference**: define boundaries *before* code generation, not *after* discovering problems.
+| Command | Purpose |
+| --- | --- |
+| `setup . --agent <name>` | Initialize guardrails and agent helper files for a repo. |
+| `enforce --all` | Add stronger guardrail instructions for all supported agents. |
+| `unenforce --all` | Remove injected guardrail instructions. |
+| `plan --task "..."` | Write a task contract before implementation. |
+| `check --review` | Run a reviewer-facing guardrail check. |
+| `doctor` | Diagnose repo setup and runtime availability. |
+| `generate-agents` | Regenerate agent helper files. |
+| `mcp` | Start the stdio MCP server. |
+| `serve` | Start the local API service for integrations. |
+| `start`, `stop`, `status` | Manage the local background daemon. |
 
 ## Configuration
 
-All settings live in `.agent-guardrails/config.json`, created by `setup`. Key sections:
-
-### Scope (`checks.scope`)
-
-Controls how out-of-scope file changes are handled.
+`setup` creates `.agent-guardrails/config.json`. The most common settings are:
 
 ```json
 {
@@ -181,99 +128,42 @@ Controls how out-of-scope file changes are handled.
     "scope": {
       "violationSeverity": "error",
       "violationBudget": 5
+    },
+    "correctness": {
+      "requireCommandsReported": true,
+      "requireEvidenceFiles": true
     }
   }
 }
 ```
 
-| Field | Default | Values | Description |
-|-------|---------|--------|-------------|
-| `violationSeverity` | `"error"` | `"error"` \| `"warning"` | Severity for scope violations. `"error"` blocks merge; `"warning"` lets acknowledged violations pass. |
-| `violationBudget` | `5` | Number | Minor scope slips within this count are surfaced as soft warnings instead of hard errors. Only applies when explicit scope (allowedPaths, intendedFiles) is not configured. |
+Useful options:
 
-**Tip**: Keep `violationSeverity` at `"error"` (default) for safety-first workflows. Lower to `"warning"` only for exploratory prototyping where scope flexibility is acceptable.
+| Setting | What it controls |
+| --- | --- |
+| `checks.scope.violationSeverity` | Whether scope violations are blocking errors or warnings. |
+| `checks.scope.violationBudget` | How many minor scope slips can be treated as soft warnings. |
+| `checks.consistency.maxChangedFilesPerTask` | File-count warning threshold for one task. |
+| `checks.correctness.requireCommandsReported` | Whether validation commands must be reported. |
+| `checks.correctness.requireEvidenceFiles` | Whether declared evidence files must exist. |
+| `checks.risk.requireReviewNotesForProtectedAreas` | Whether protected areas need review notes. |
 
-### Consistency (`checks.consistency`)
+## Optional Pro Compatibility
 
-| Field | Default | Description |
-|-------|---------|-------------|
-| `maxChangedFilesPerTask` | `20` | Maximum files per task before warning |
-| `maxTopLevelEntries` | `3` | Maximum unique top-level directories |
-| `maxBreadthMultiplier` | `2` | Breadth multiplier for change diffusion |
+The OSS package is usable on its own. It does not include Pro-only decision logic.
 
-### Correctness (`checks.correctness`)
-
-| Field | Default | Description |
-|-------|---------|-------------|
-| `requireTestsWithSourceChanges` | Preset-dependent | Require test file changes when source files change |
-| `requireCommandsReported` | Preset-dependent | Require validation commands to be reported as run |
-| `requireEvidenceFiles` | `true` | Require evidence file to exist |
-
-### Scoring (`scoring`)
-
-| Field | Default | Description |
-|-------|---------|-------------|
-| `weights` | Category defaults | Per-category weights (scope, validation, consistency, continuity, performance, risk), auto-normalized to 100 |
-
-### Risk (`checks.risk`)
-
-| Field | Default | Description |
-|-------|---------|-------------|
-| `requireReviewNotesForProtectedAreas` | `true` | Require review notes when touching protected paths |
-| `warnOnInterfaceChangesWithoutContract` | `true` | Warn on interface changes not in task contract |
-| `warnOnConfigOrMigrationChanges` | `true` | Warn on config/migration file changes |
-
-## Pro (optional)
-
-The OSS package is a complete merge gate. Pro is optional and only activates when the separate Pro package is installed and licensed.
-
-**Check local Pro availability:**
+If a separately installed and licensed Pro package is present, the OSS CLI can surface Pro status and reports through:
 
 ```bash
 agent-guardrails pro status
 agent-guardrails pro activate <license-key>
 agent-guardrails pro report
 agent-guardrails pro workbench --open
-agent-guardrails pro workbench --live
-agent-guardrails pro workbench --native-panel
 ```
 
-`pro activate` delegates license activation to the installed Pro package and stores only the Pro-owned local activation cache. If a personal license reaches its device limit, the OSS CLI shows the limit, current device, and Pro-provided next action instead of only returning an error code. `pro report` prints the optional Pro go-live report when `@agent-guardrails/pro` is installed. `pro workbench` now prints a compact non-HTML panel preview first, then writes the local Workbench view contract plus a native panel model. `pro workbench --native-panel` asks the packaged Rust runtime to render that panel model when available, falling back to the JavaScript preview if the native renderer is not present yet. `workbench-panel` can also render the same saved panel model directly; it uses the native runtime when available and keeps a JavaScript fallback for older or source-checkout installs. `pro workbench --open` opens the live surface when available, so users can review the ship or no-ship answer without inspecting raw JSON. `pro workbench --live` renders the Pro Workbench from the structured view contract first, with legacy HTML only as a fallback for older Pro versions. It includes refresh, rerun, current-loop, next-proof, short-loop, visible-check completion, and evidence-note actions, shows the current agent handoff with copyable Codex and Claude Code execution packages plus the rerun command, can export the whole handoff bundle into local files for the next agent step, automatically saves proof notes after each run, and keeps a readable summary of the last proof loop on the same page. Visible verification has its own watch list and finish-and-rerun path, so users can stay in one UI instead of bouncing between the browser, the terminal, and raw JSON. If Pro is absent or unlicensed, OSS behavior stays unchanged.
+If Pro is not installed or not licensed, normal OSS commands continue to work.
 
-When `@agent-guardrails/pro` exposes Pro MCP tools, the OSS MCP server lists and calls them dynamically. This lets existing MCP-capable agents read Pro Workbench data through the same `agent-guardrails mcp` connection without moving Pro decision logic into the OSS package.
-
-## CLI Reference
-
-| Command | Purpose |
-|---------|---------|
-| `setup --agent <name>` | Initialize project |
-| `enforce --all` | Enforce rules (recommended) |
-| `unenforce --all` | Remove enforcement |
-| `plan --task "..."` | Create task contract |
-| `check --review` | Run reviewer-facing guardrail check |
-| `generate-agents` | Generate agent-specific config files |
-| `doctor` | Diagnose current installation |
-| `pro status` | Show optional Pro install and license status |
-| `pro activate` | Activate the optional Pro package without writing license keys to repo config |
-| `pro report` | Print the optional Pro go-live report |
-| `pro workbench` | Write, open, or serve the optional local Pro workbench |
-| `pro cleanup` | Preview or apply Pro proof memory cleanup |
-| `workbench-panel` | Render a local Workbench panel model with the native runtime |
-| `start` | Start daemon |
-| `stop` | Stop daemon |
-| `status` | Show daemon status |
-
-## Install & Update
-
-```bash
-# Install
-npm install -g agent-guardrails
-
-# Update
-npm update -g agent-guardrails
-```
-
-## Docs
+## Public Docs
 
 - [CHANGELOG](./CHANGELOG.md)
 - [Workflows](./docs/WORKFLOWS.md)
