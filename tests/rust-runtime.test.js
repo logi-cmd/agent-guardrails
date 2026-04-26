@@ -21,6 +21,7 @@ import {
   selectStatusRuntime,
   selectStopRuntime,
   selectUnenforceRuntime,
+  selectWorkbenchPanelRuntime,
   rustRuntimeCandidates,
   shouldUseRustCheckRuntime
 } from "../lib/rust-runtime.js";
@@ -177,7 +178,8 @@ function testCoreRuntimesUsePackagedRustByDefaultWhenPresent() {
       [selectStartRuntime, "start-no-packaged-rust"],
       [selectStopRuntime, "stop-no-packaged-rust"],
       [selectStatusRuntime, "status-no-packaged-rust"],
-      [selectServeRuntime, "serve-no-packaged-rust"]
+      [selectServeRuntime, "serve-no-packaged-rust"],
+      [selectWorkbenchPanelRuntime, "workbench-panel-no-packaged-rust"]
     ];
 
     for (const [selector, fallbackReason] of selectors) {

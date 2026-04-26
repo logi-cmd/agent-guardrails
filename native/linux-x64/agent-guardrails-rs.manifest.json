@@ -1,0 +1,12 @@
+{
+  "format": "agent-guardrails-native-manifest.v1",
+  "packageName": "agent-guardrails",
+  "binary": "agent-guardrails-rs",
+  "platform": "linux",
+  "arch": "x64",
+  "target": "x86_64-unknown-linux-gnu",
+  "profile": "release",
+  "packagePath": "native/linux-x64/agent-guardrails-rs",
+  "sourceSignature": "6c60b3e0092c42b537c48b1e8de79defd6e47d1781646baf5bc2741dc71583ac",
+  "builtAt": "2026-04-26T05:13:40.839Z"
+}

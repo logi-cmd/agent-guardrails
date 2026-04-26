@@ -35,6 +35,7 @@ fn help_includes_current_public_command_surface() {
         "pro report",
         "pro workbench",
         "pro cleanup",
+        "workbench-panel",
         "generate-agents",
         "serve",
         "mcp",

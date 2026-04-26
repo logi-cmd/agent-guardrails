@@ -2,8 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const MANIFEST_FORMAT = "agent-guardrails-native-manifest.v1";
 const releaseTargets = [
   { platform: "win32", arch: "x64", binary: "agent-guardrails-rs.exe" },
   { platform: "linux", arch: "x64", binary: "agent-guardrails-rs" },
@@ -17,6 +19,58 @@ function readJson(relativePath) {
 
 function nativePathFor(target) {
   return path.join(repoRoot, "native", `${target.platform}-${target.arch}`, target.binary);
+}
+
+function manifestPathFor(target) {
+  return `${nativePathFor(target)}.manifest.json`;
+}
+
+function listFilesRecursive(rootDir) {
+  if (!fs.existsSync(rootDir)) {
+    return [];
+  }
+  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
+  return entries.flatMap((entry) => {
+    const absolutePath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      return listFilesRecursive(absolutePath);
+    }
+    return entry.isFile() ? [absolutePath] : [];
+  });
+}
+
+function rustSourceSignature() {
+  const relativeFiles = [
+    "Cargo.lock",
+    "Cargo.toml",
+    "crates/agent-guardrails-cli/Cargo.toml",
+    ...listFilesRecursive(path.join(repoRoot, "crates", "agent-guardrails-cli", "src"))
+      .filter((filePath) => filePath.endsWith(".rs"))
+      .map((filePath) => path.relative(repoRoot, filePath).replace(/\\/g, "/"))
+  ].sort();
+
+  const hash = createHash("sha256");
+  for (const relativeFile of relativeFiles) {
+    hash.update(`${relativeFile}\0`);
+    hash.update(fs.readFileSync(path.join(repoRoot, relativeFile)));
+    hash.update("\0");
+  }
+  return hash.digest("hex");
+}
+
+function readNativeManifest(target) {
+  const manifestPath = manifestPathFor(target);
+  if (!fs.existsSync(manifestPath)) {
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch (error) {
+    return {
+      format: "invalid",
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
@@ -56,6 +110,7 @@ function checkReadiness(argv = process.argv.slice(2)) {
   const flags = parseArgs(argv);
   const packageJson = readJson("package.json");
   const runtimeSource = fs.readFileSync(path.join(repoRoot, "lib", "rust-runtime.js"), "utf8");
+  const currentSourceSignature = rustSourceSignature();
   const currentTarget = {
     platform: process.platform,
     arch: process.arch,
@@ -64,15 +119,35 @@ function checkReadiness(argv = process.argv.slice(2)) {
 
   const targets = releaseTargets.map((target) => {
     const binaryPath = nativePathFor(target);
+    const manifestPath = manifestPathFor(target);
+    const manifest = readNativeManifest(target);
+    const manifestFormatOk = manifest?.format === MANIFEST_FORMAT;
+    const manifestMatchesTarget = Boolean(
+      manifestFormatOk &&
+      manifest.platform === target.platform &&
+      manifest.arch === target.arch &&
+      manifest.binary === "agent-guardrails-rs"
+    );
+    const sourceFresh = Boolean(
+      manifestMatchesTarget &&
+      typeof manifest.sourceSignature === "string" &&
+      manifest.sourceSignature === currentSourceSignature
+    );
     return {
       ...target,
       packagePath: path.relative(repoRoot, binaryPath).replace(/\\/g, "/"),
-      present: fs.existsSync(binaryPath)
+      manifestPath: path.relative(repoRoot, manifestPath).replace(/\\/g, "/"),
+      present: fs.existsSync(binaryPath),
+      manifestPresent: Boolean(manifest),
+      manifestFormatOk,
+      manifestMatchesTarget,
+      sourceFresh
     };
   });
   const currentBinaryPath = nativePathFor(currentTarget);
   const currentTargetPresent = fs.existsSync(currentBinaryPath);
   const missingTargets = targets.filter((target) => !target.present);
+  const staleTargets = targets.filter((target) => target.present && !target.sourceFresh);
   const packageFiles = packageJson.files ?? [];
   const includesNativeRoot = packageFiles.includes("native");
 
@@ -97,9 +172,17 @@ function checkReadiness(argv = process.argv.slice(2)) {
     status: selectorUsesPackagedRustDefault(runtimeSource, "selectStatusRuntime", "status-no-packaged-rust"),
     serve: selectorUsesPackagedRustDefault(runtimeSource, "selectServeRuntime", "serve-no-packaged-rust")
   };
+  const uiRustDefaults = {
+    workbenchPanel: selectorUsesPackagedRustDefault(
+      runtimeSource,
+      "selectWorkbenchPanelRuntime",
+      "workbench-panel-no-packaged-rust"
+    )
+  };
   const coreRustDefaultReady = Object.values(coreRustDefaults).every(Boolean);
   const daemonAndServeRustDefaultReady = Object.values(daemonAndServeRustDefaults).every(Boolean);
-  const allRustDefaultReady = coreRustDefaultReady && daemonAndServeRustDefaultReady;
+  const uiRustDefaultReady = Object.values(uiRustDefaults).every(Boolean);
+  const allRustDefaultReady = coreRustDefaultReady && daemonAndServeRustDefaultReady && uiRustDefaultReady;
 
   const blocking = [];
   const warnings = [];
@@ -118,7 +201,8 @@ function checkReadiness(argv = process.argv.slice(2)) {
   if (flags.requireRustDefault && !allRustDefaultReady) {
     const missing = Object.entries({
       ...coreRustDefaults,
-      ...daemonAndServeRustDefaults
+      ...daemonAndServeRustDefaults,
+      ...uiRustDefaults
     })
       .filter(([, ready]) => !ready)
       .map(([name]) => name)
@@ -128,6 +212,11 @@ function checkReadiness(argv = process.argv.slice(2)) {
   if (flags.requireCompleteNativeMatrix && missingTargets.length > 0) {
     blocking.push(
       `complete native matrix required but missing ${missingTargets.map((target) => target.packagePath).join(", ")}.`
+    );
+  }
+  if (flags.requireCompleteNativeMatrix && staleTargets.length > 0) {
+    blocking.push(
+      `complete native matrix required but stale or unverified native manifests found for ${staleTargets.map((target) => target.packagePath).join(", ")}. Rebuild native artifacts from the current Rust source.`
     );
   }
   if (!currentTargetPresent) {
@@ -140,6 +229,11 @@ function checkReadiness(argv = process.argv.slice(2)) {
       `Native matrix incomplete: missing ${missingTargets.map((target) => target.packagePath).join(", ")}. Users on missing platforms will safely fall back to Node.`
     );
   }
+  if (staleTargets.length > 0) {
+    warnings.push(
+      `Native artifacts need refresh or manifests: ${staleTargets.map((target) => `${target.packagePath} (${target.manifestPresent ? "stale manifest" : "missing manifest"})`).join(", ")}.`
+    );
+  }
   if (!flags.requireRustDefault && !allRustDefaultReady) {
     warnings.push("Some commands are not set to packaged-Rust default. Use --require-rust-default in release CI.");
   }
@@ -147,7 +241,7 @@ function checkReadiness(argv = process.argv.slice(2)) {
   return {
     ok: blocking.length === 0,
     releaseMode:
-      missingTargets.length === 0 && allRustDefaultReady
+      missingTargets.length === 0 && staleTargets.length === 0 && allRustDefaultReady
         ? "rust-default-with-node-fallback"
         : "node-fallback-with-rust-where-packaged",
     currentTarget: {
@@ -164,7 +258,10 @@ function checkReadiness(argv = process.argv.slice(2)) {
       coreRustDefaultReady,
       daemonAndServeRustDefaults,
       daemonAndServeRustDefaultReady,
+      uiRustDefaults,
+      uiRustDefaultReady,
       allRustDefaultReady,
+      currentSourceSignature,
       requireCompleteNativeMatrix: flags.requireCompleteNativeMatrix,
       requireRustDefault: flags.requireRustDefault
     },

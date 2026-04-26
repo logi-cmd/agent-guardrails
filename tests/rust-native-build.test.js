@@ -39,7 +39,16 @@ function testDryRunPlansCurrentPlatformNativeRuntime() {
     "--release"
   ]);
   assert.equal(plan.packagePath, `native/${process.platform}-${process.arch}/${rustBinaryName()}`);
+  assert.equal(
+    plan.manifestPackagePath,
+    `native/${process.platform}-${process.arch}/${rustBinaryName()}.manifest.json`
+  );
+  assert.match(plan.sourceSignature, /^[a-f0-9]{64}$/);
   assert.equal(plan.outputPath, path.join(repoRoot, "native", `${process.platform}-${process.arch}`, rustBinaryName()));
+  assert.equal(
+    plan.manifestPath,
+    path.join(repoRoot, "native", `${process.platform}-${process.arch}`, `${rustBinaryName()}.manifest.json`)
+  );
 }
 
 function testDryRunSupportsDebugProfile() {
@@ -74,6 +83,7 @@ function testDryRunSupportsExplicitReleaseTarget() {
   assert.equal(plan.platform, "darwin");
   assert.equal(plan.arch, "arm64");
   assert.equal(plan.packagePath, "native/darwin-arm64/agent-guardrails-rs");
+  assert.equal(plan.manifestPackagePath, "native/darwin-arm64/agent-guardrails-rs.manifest.json");
   assert.equal(
     plan.sourcePath,
     path.join(repoRoot, "target", "aarch64-apple-darwin", "release", "agent-guardrails-rs")

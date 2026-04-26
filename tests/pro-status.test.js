@@ -233,6 +233,41 @@ async function withMockInstalledPro(callback, repoRoot = OSS_REPO_ROOT, options 
     "        copyBrief: 'Mode: Let the agent run the next step, then take a quick look\\nRun: npm test -- auth\\nThen rerun agent-guardrails check --review.'",
     "      }",
     "    },",
+    "    workbenchView: {",
+    "      format: 'agent-guardrails-workbench-view.v1',",
+    "      schemaVersion: 1,",
+    "      renderer: 'structured-ui-contract',",
+    "      renderHints: { primarySurface: 'native-panel', tone: 'blocked', avoid: ['raw-json-first', 'html-iframe-first'] },",
+    "      decision: { id: 'ship-answer', title: 'Not ready', question: 'Can I ship this change?', answer: 'No', verdict: 'hold', state: 'blocked', riskTier: 'high', riskLabel: 'High risk', mergeGate: 'do-not-merge', trustScore: 62, reason: 'High-risk auth change is missing proof.' },",
+    "      navigation: [",
+    "        { id: 'ship', title: 'Ship', value: 'No', state: 'blocked', description: 'Decision blocked', progress: 34 },",
+    "        { id: 'evidence', title: 'Evidence', value: '1 open', state: 'needs_work', description: 'Close the next proof', progress: 84 },",
+    "        { id: 'memory', title: 'Memory', value: '0 recipes', state: 'quiet', description: 'Learning starts here', progress: 22 },",
+    "        { id: 'docs', title: 'Docs', value: 'Aligned', state: 'ready', description: 'Baseline present', progress: 100 }",
+    "      ],",
+    "      primaryActions: [",
+    "        { id: 'run-next-command', type: 'command', label: 'Run next proof', command: 'npm test -- auth', intent: 'execute_next_proof', placement: 'primary', requiresUserApproval: true, enabled: true },",
+    "        { id: 'copy-execution-package', type: 'copy', label: 'Copy execution package', value: 'Mode: Let the agent run the next step, then take a quick look\\nRun: npm test -- auth', intent: 'handoff_to_agent', placement: 'primary', enabled: true }",
+    "      ],",
+    "      agentLoop: {",
+    "        state: 'agent_runs_then_glance',",
+    "        reviewLevel: 'quick_glance',",
+    "        badge: 'Agent first',",
+    "        headline: 'Let the agent run the next step, then take a quick look',",
+    "        humanRole: 'Read the refreshed answer after the rerun.',",
+    "        nextLoopPackage: { nextCommand: 'npm test -- auth', rerunCommand: 'agent-guardrails check --review', agentBrief: 'Mode: Let the agent run the next step, then take a quick look\\nRun: npm test -- auth' },",
+    "        rerunCommand: 'agent-guardrails check --review',",
+    "        humanChecks: ['Read the refreshed release answer after the rerun.'],",
+    "        stopConditions: ['Stop and hand back if the answer stays blocked.']",
+    "      },",
+    "      sections: [",
+    "        { id: 'ship-answer', type: 'decision', title: 'Can I ship this change?', status: 'blocked', summary: 'High-risk auth change is missing proof.', rows: [{ label: 'Answer', value: 'No' }, { label: 'Risk', value: 'High risk' }] },",
+    "        { id: 'next-proof', type: 'proof_queue', title: 'Next proof', status: 'needs_work', summary: 'Run npm test -- auth and refresh the answer.', items: [{ title: 'Run required command: npm test -- auth', code: 'run-required-command', surface: 'validation', command: 'npm test -- auth', expectedEvidence: 'Paste the passing output for npm test -- auth.' }], actions: [{ id: 'run-proof-command', type: 'command', label: 'Run proof command', command: 'npm test -- auth', intent: 'execute_proof_command', enabled: true }] },",
+    "        { id: 'visible-verification', type: 'visible_verification', title: 'Visible verification', status: 'not_applicable', summary: 'No visible verification is required.' },",
+    "        { id: 'maintenance', type: 'maintenance', title: 'Maintenance', status: 'ready', summary: 'Project maintenance context is available.' }",
+    "      ],",
+    "      legacy: { htmlRenderer: 'renderOperatorWorkbenchHtml', status: 'compatibility_only' }",
+    "    },",
     "    html: '<!doctype html><html><body><h1>Agent Guardrails Pro Workbench</h1><p>Can I ship? No.</p></body></html>',",
     "    markdown: ['# Agent Guardrails Pro Go-Live Report', '', 'Verdict: HOLD (high)', '', '## Trust Receipt', 'Do not merge: high-risk auth change is missing required proof.', '', '## Cheapest Proof', '- Run required command: npm test -- auth', '- Command: npm test -- auth'].join('\\n')",
     "  };",
@@ -564,7 +599,7 @@ export async function run() {
       assert.match(parsed.markdown, /Agent Guardrails Pro Go-Live Report/);
     });
 
-    it("writes a local Pro workbench HTML file", async () => {
+    it("writes a local Pro workbench view contract file", async () => {
       const repoRoot = fs.mkdtempSync(path.join(fs.realpathSync.native(process.env.TEMP || process.cwd()), "agent-guardrails-pro-workbench-"));
       try {
         const { output, result } = await withMockInstalledPro(
@@ -575,10 +610,27 @@ export async function run() {
         assert.equal(result.installed, true);
         assert.equal(result.action, "operator-workbench");
         assert.equal(result.state, "ready");
+        assert.equal(result.format, "workbench-view");
         assert.match(output, /Operator workbench: ready/);
-        assert.match(output, /Local HTML:/);
-        assert.equal(fs.existsSync(result.outputPath), true);
-        assert.match(fs.readFileSync(result.outputPath, "utf8"), /Agent Guardrails Pro Workbench/);
+        assert.match(output, /Agent Guardrails Workbench \| BLOCKED \| High risk/);
+        assert.match(output, /Can I ship this change\? -> No/);
+        assert.match(output, /Next step/);
+        assert.match(output, /\$ npm test -- auth/);
+        assert.match(output, /Agent handoff/);
+        assert.match(output, /Local view contract:/);
+        assert.match(output, /Local native panel model:/);
+        assert.equal(result.outputPath, undefined);
+        assert.equal(fs.existsSync(result.viewPath), true);
+        assert.equal(fs.existsSync(result.panelPath), true);
+        const view = JSON.parse(fs.readFileSync(result.viewPath, "utf8"));
+        const panel = JSON.parse(fs.readFileSync(result.panelPath, "utf8"));
+        assert.equal(view.format, "agent-guardrails-workbench-view.v1");
+        assert.equal(view.renderer, "structured-ui-contract");
+        assert.equal(panel.format, "agent-guardrails-workbench-panel.v1");
+        assert.equal(panel.sourceFormat, "agent-guardrails-workbench-view.v1");
+        assert.equal(panel.renderer, "native-panel-model");
+        assert.equal(panel.nextStep.command, "npm test -- auth");
+        assert.equal(panel.handoff.intent, "handoff_to_agent");
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }
@@ -596,7 +648,14 @@ export async function run() {
         assert.equal(parsed.installed, true);
         assert.equal(parsed.action, "operator-workbench");
         assert.equal(parsed.state, "ready");
-        assert.match(parsed.outputPath, /operator-workbench\.html$/);
+        assert.equal(parsed.format, "workbench-view");
+        assert.match(parsed.viewPath, /operator-workbench-view\.json$/);
+        assert.match(parsed.panelPath, /operator-workbench-panel\.json$/);
+        assert.equal(parsed.outputPath, undefined);
+        assert.equal(parsed.view.format, "agent-guardrails-workbench-view.v1");
+        assert.equal(parsed.panel.format, "agent-guardrails-workbench-panel.v1");
+        assert.equal(parsed.panel.displayRules.rawJsonIsSupportingDetail, true);
+        assert.equal(parsed.panel.displayRules.htmlIsLegacyFallback, true);
       } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
       }
@@ -616,6 +675,8 @@ export async function run() {
               const page = await fetch(result.liveUrl);
               const html = await page.text();
               assert.equal(page.status, 200);
+              assert.match(html, /Contract-first Workbench/);
+              assert.doesNotMatch(html, /Agent Guardrails Pro Workbench<\/h1>/);
               assert.match(html, /Live mode/);
               assert.match(html, /Copy generic handoff/);
               assert.match(html, /Copy Codex handoff/);
@@ -635,6 +696,9 @@ export async function run() {
               assert.equal(state.status, 200);
               assert.equal(parsed.action, "operator-workbench");
               assert.equal(parsed.state, "ready");
+              assert.equal(parsed.panel.format, "agent-guardrails-workbench-panel.v1");
+              assert.equal(parsed.panel.hero.question, "Can I ship this change?");
+              assert.equal(parsed.panel.nextStep.command, "npm test -- auth");
               assert.equal(parsed.currentLoop.command, "npm test -- auth");
               assert.match(parsed.currentLoop.label, /Run required proof/i);
               assert.equal(parsed.automationHandoff.mode, "agent_runs_then_glance");

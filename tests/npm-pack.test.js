@@ -65,7 +65,9 @@ function withPackableNativeRuntime(callback) {
   for (const target of nativeTargets) {
     const nativeDir = path.join(repoRoot, "native", `${target.platform}-${target.arch}`);
     const nativeBinaryPath = path.join(nativeDir, rustBinaryName(target.platform));
+    const nativeManifestPath = `${nativeBinaryPath}.manifest.json`;
     packagePaths.push(`native/${target.platform}-${target.arch}/${rustBinaryName(target.platform)}`);
+    packagePaths.push(`native/${target.platform}-${target.arch}/${rustBinaryName(target.platform)}.manifest.json`);
     if (!fs.existsSync(nativeDir)) {
       createdDirs.push(nativeDir);
     }
@@ -73,6 +75,22 @@ function withPackableNativeRuntime(callback) {
     if (!fs.existsSync(nativeBinaryPath)) {
       fs.writeFileSync(nativeBinaryPath, "placeholder for npm pack dry-run\n", "utf8");
       createdFiles.push(nativeBinaryPath);
+    }
+    if (!fs.existsSync(nativeManifestPath)) {
+      fs.writeFileSync(
+        nativeManifestPath,
+        `${JSON.stringify({
+          format: "agent-guardrails-native-manifest.v1",
+          packageName: "agent-guardrails",
+          binary: "agent-guardrails-rs",
+          platform: target.platform,
+          arch: target.arch,
+          packagePath: `native/${target.platform}-${target.arch}/${rustBinaryName(target.platform)}`,
+          sourceSignature: "npm-pack-test-placeholder"
+        }, null, 2)}\n`,
+        "utf8"
+      );
+      createdFiles.push(nativeManifestPath);
     }
   }
 

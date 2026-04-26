@@ -183,6 +183,57 @@ function assertSafeRustCheck(cliPath, repoDir, env) {
   assert.equal(result.counts.testFiles, 1);
 }
 
+function writeWorkbenchPanelSmoke() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-guardrails-workbench-panel-smoke-"));
+  const panelPath = path.join(tempDir, "operator-workbench-panel.json");
+  fs.writeFileSync(
+    panelPath,
+    `${JSON.stringify({
+      format: "agent-guardrails-workbench-panel.v1",
+      hero: {
+        question: "Can I ship this change?",
+        answer: "No",
+        state: "blocked",
+        riskLabel: "High risk",
+        trustScore: 41,
+        reason: "Visible proof is missing."
+      },
+      nextStep: {
+        label: "Run visible proof",
+        command: "npm run test:visible",
+        rerunCommand: "agent-guardrails pro workbench --native-panel"
+      },
+      sections: [
+        {
+          title: "Next proof",
+          status: "needs_work",
+          summary: "Run the visible proof."
+        }
+      ]
+    }, null, 2)}\n`,
+    "utf8"
+  );
+  return { panelPath, tempDir };
+}
+
+function assertInstalledWorkbenchPanel(cliPath, repoDir, env) {
+  const { panelPath, tempDir } = writeWorkbenchPanelSmoke();
+  try {
+    const autoOutput = run(process.execPath, [cliPath, "workbench-panel", "--file", panelPath], repoDir, withAutoRuntime(env));
+    assert.match(autoOutput, /Agent Guardrails Workbench \| BLOCKED \| High risk/);
+    assert.match(autoOutput, /\$ npm run test:visible/);
+
+    const nodeOutput = run(process.execPath, [cliPath, "workbench-panel", "--file", panelPath], repoDir, {
+      ...env,
+      AGENT_GUARDRAILS_RUNTIME: "node"
+    });
+    assert.match(nodeOutput, /Agent Guardrails Workbench \| BLOCKED \| High risk/);
+    assert.match(nodeOutput, /Next proof/);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
 function parseJsonCommand(command, args, cwd, env) {
   return JSON.parse(run(command, args, cwd, env));
 }
@@ -564,6 +615,11 @@ export async function runRustInstalledRuntimeSmoke() {
     trace("forced Rust check completed");
     assertSafeRustCheck(cliPath, repoDir, withAutoRuntime(npmEnv));
     trace("auto runtime check completed");
+    assertInstalledWorkbenchPanel(cliPath, repoDir, {
+      ...process.env,
+      ...npmEnv
+    });
+    trace("installed workbench panel smoke completed");
     await assertInstalledDaemonUsesRustDefault(cliPath, repoDir, withAutoRuntime({
       ...process.env,
       ...npmEnv

@@ -219,7 +219,10 @@ export async function run() {
   assert.equal(rustReadiness.checks.daemonAndServeRustDefaults.start, true);
   assert.equal(rustReadiness.checks.daemonAndServeRustDefaults.serve, true);
   assert.equal(rustReadiness.checks.daemonAndServeRustDefaultReady, true);
+  assert.equal(rustReadiness.checks.uiRustDefaults.workbenchPanel, true);
+  assert.equal(rustReadiness.checks.uiRustDefaultReady, true);
   assert.equal(rustReadiness.checks.allRustDefaultReady, true);
+  assert.match(rustReadiness.checks.currentSourceSignature, /^[a-f0-9]{64}$/);
 
   const missingNativeReadiness = readJsonCommand(process.execPath, [
     "./scripts/check-rust-release-readiness.js",

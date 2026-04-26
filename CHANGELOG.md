@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 0.20.0 - 2026-04-25
+## 0.20.0 - 2026-04-26
 
 ### Added: Rust native runtime with safe Node fallback
 
@@ -10,6 +10,7 @@
 - Packaged native runtime support now covers Windows x64, Linux x64, macOS x64, and macOS arm64 when the release package includes the matching `native/*` binary.
 - `AGENT_GUARDRAILS_RUNTIME=node` remains available as a compatibility escape hatch, and installs without a matching native binary safely fall back to the existing Node runtime.
 - Added cross-platform native CI and installed-package smoke coverage so the release package is tested after `npm pack`, not only from the source checkout.
+- Added a public `workbench-panel` command that renders saved Pro Workbench panel models without requiring the browser or raw JSON.
 
 ### Fixed: installed package and daemon robustness
 
@@ -17,12 +18,17 @@
 - Fixed Windows installed daemon startup readiness so a just-spawned worker is not mistaken for a stale pid during startup.
 - Fixed path-identity edge cases on Windows short paths and macOS `/var` versus `/private/var` temp roots.
 - Restored executable permissions for downloaded Linux/macOS native artifacts before aggregate package smoke.
+- Native builds now write a manifest next to each packaged Rust binary, and release readiness blocks stale or unverified native artifacts before a full native-matrix release.
 
-### Improved: Pro activation guidance
+### Improved: Pro activation and Workbench guidance
 
 - `agent-guardrails pro activate` now passes an optional `--instance-id` through to the installed Pro package for hosted activation diagnostics.
 - Personal-license device-limit failures now render the active device usage, current device, and Pro-provided next action in the OSS CLI.
 - The OSS MCP server now dynamically exposes MCP tools from an installed `@agent-guardrails/pro` package, keeping Pro logic out of OSS while letting agents read the Pro Workbench through the existing MCP connection.
+- `agent-guardrails pro workbench` now prefers the installed Pro package's structured Workbench view contract over Pro-rendered HTML, keeping HTML as a legacy fallback for older Pro versions.
+- `pro workbench` now writes both `.agent-guardrails/pro/operator-workbench-view.json` and `.agent-guardrails/pro/operator-workbench-panel.json` when Pro provides the matching contracts.
+- `pro workbench` prints a compact non-HTML panel preview by default, including the ship answer, status strip, next proof, handoff, and key sections.
+- `pro workbench --native-panel` uses the packaged Rust `workbench-panel` renderer when available and falls back to the JavaScript panel preview for older or source-checkout installs.
 
 ### Upgrade notes
 
